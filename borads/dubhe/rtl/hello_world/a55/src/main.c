@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "main.h"
 
 #define REG64(addr) (*(volatile uint64_t *)(uint32_t)(addr))
 #define REG32(addr) (*(volatile uint32_t *)(uint32_t)(addr))
@@ -12,7 +13,6 @@
 
 int main()
 {
-	REG64(CORE0_ADDR);
-	
+	REG64(CORE0_ADDR) = 0xa5a5a5a55a5a5a5a;
 	while(1);
 }

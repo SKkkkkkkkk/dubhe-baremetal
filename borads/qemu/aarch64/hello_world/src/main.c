@@ -13,10 +13,38 @@
 #define CORE2_ADDR (0x40000000 + 16)
 #define CORE3_ADDR (0x40000000 + 24)
 
+typedef enum core_statue
+{
+	sleep = 0,
+	running = 1,
+	unknow = 2
+} core_statue_t;
+typedef struct core_entry_list
+{
+	uint32_t entry_addr;
+	uint32_t keys;
+	core_statue_t state;
+} core_entry_list_t;
+
+#define CORE_NUMS 4
+core_entry_list_t core_entry_list[CORE_NUMS] = {
+	[0]={.entry_addr=0,.keys=0,.state=unknow},
+	[1]={.entry_addr=0,.keys=0,.state=unknow},
+	[2]={.entry_addr=0,.keys=0,.state=unknow},
+	[3]={.entry_addr=0,.keys=0,.state=unknow},	
+};
+
+
+
+
+// volatile uint8_t bss_buf[32*1024] = {1,1};
+volatile uint8_t bss_buf[32*1024];
 int core0_c_entry()
 {
+	bss_buf[0] = 1;
 	void printf_init();
 	printf_init();
+	core_entry_list[get_core_id()].state = running;
 	printf("hello world in core.%lu\n", get_core_id());
 	while(1);
 }
