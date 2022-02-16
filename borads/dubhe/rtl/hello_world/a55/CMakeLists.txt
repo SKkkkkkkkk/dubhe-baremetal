@@ -69,6 +69,11 @@ add_custom_target( ${PROJECT_NAME}.bin ALL
 	DEPENDS ${PROJECT_NAME}.elf
 )
 
+add_custom_target( ${PROJECT_NAME}.hex ALL
+	COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
+	DEPENDS ${PROJECT_NAME}.bin
+)
+
 set_property(TARGET ${PROJECT_NAME}.elf
 	APPEND
 	PROPERTY 
@@ -76,4 +81,5 @@ set_property(TARGET ${PROJECT_NAME}.elf
 				${PROJECT_NAME}.map
 				${PROJECT_NAME}.dump
 				${PROJECT_NAME}.bin
+				${PROJECT_NAME}.hex
 )
