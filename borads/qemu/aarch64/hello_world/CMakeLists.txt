@@ -22,6 +22,8 @@ add_subdirectory(${SDK_DIR}/devices/qemu/aarch64 qemu_aarch64.dir)
 
 # add_subdirectory(${SDK_DIR}/hal hal.dir)
 
+add_subdirectory(${SDK_DIR}/utilities/snprintf snprintf.dir)
+
 add_executable(${PROJECT_NAME}.elf )
 
 target_sources(${PROJECT_NAME}.elf
@@ -32,7 +34,7 @@ target_sources(${PROJECT_NAME}.elf
 )
 
 target_include_directories(${PROJECT_NAME}.elf
-	PUBLIC
+	PRIVATE
 		${SDK_DIR}/hal/uart/pl001/
 )
 
@@ -60,6 +62,7 @@ target_link_options( ${PROJECT_NAME}.elf
 target_link_libraries( ${PROJECT_NAME}.elf
 	PRIVATE 
 		qemu_aarch64
+		seehi_printf
 )
 
 target_include_directories( ${PROJECT_NAME}.elf

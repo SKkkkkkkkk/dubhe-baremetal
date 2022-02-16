@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "uart.h"
 #include "main.h"
+#include "seehi_print.h"
 
 #define REG64(addr) (*(volatile uint64_t *)(uint32_t)(addr))
 #define REG32(addr) (*(volatile uint32_t *)(uint32_t)(addr))
@@ -46,6 +47,7 @@ int core0_c_entry()
 	printf_init();
 	core_entry_list[get_core_id()].state = running;
 	printf("hello world in core.%lu\n", get_core_id());
+	seehi_printf("hello world in core.%d\n", get_core_id());
 	while(1);
 }
 
