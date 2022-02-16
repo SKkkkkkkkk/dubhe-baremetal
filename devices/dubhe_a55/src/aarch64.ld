@@ -2,8 +2,8 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 MEMORY {
-    ROM (rx): ORIGIN = 0x00400000, LENGTH = 0x00010000
-    RAM (rwx): ORIGIN = 0x00a00000, LENGTH = 0x00010000
+    ROM (rx): ORIGIN = 0x00400000, LENGTH = 0x00010000 /*16384*32bit 64KB*/
+    RAM (rwx): ORIGIN = 0x00a00000, LENGTH = 0x00020000 /*8192*128bit  128KB*/
 }
 
 _stack_size = 8*1024;
@@ -91,5 +91,5 @@ SECTIONS
     ASSERT(__ROM_END__ <= (0x00400000 + 0x00010000), "BL1's ROM content has exceeded its limit.")
     
     /* ASSERT(. <= (0x0e000000 + 0x01000000), "BL1's RW section has exceeded its limit.") */
-    ASSERT(__RAM_END__ <= (0x00a00000 + 0x00010000), "BL1's RW section has exceeded its limit.")
+    ASSERT(__RAM_END__ <= (0x00a00000 + 0x00020000), "BL1's RW section has exceeded its limit.")
 }
