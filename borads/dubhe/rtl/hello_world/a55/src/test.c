@@ -1,0 +1,5 @@
+void fun()
+{
+
+	return;
+}

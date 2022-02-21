@@ -1,7 +1,7 @@
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR riscv)
 
-set( TOOLCHAIN riscv32-unknown-elf- )
+set( TOOLCHAIN ${CROSS_COMPILER_PATH}riscv32-unknown-elf- )
 set( CMAKE_C_COMPILER ${TOOLCHAIN}gcc )
 set( CMAKE_CXX_COMPILER ${TOOLCHAIN}g++ )
 set( CMAKE_ASM_COMPILER ${TOOLCHAIN}gcc )

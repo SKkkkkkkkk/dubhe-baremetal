@@ -13,6 +13,7 @@
 
 int main()
 {
-	REG64(CORE0_ADDR) = 0xa5a5a5a55a5a5a5a;
+	// REG64(CORE0_ADDR) = 0xa5a5a5a55a5a5a5a;
+	REG8(0x0e000fe0) = 0xa5;
 	while(1);
 }
