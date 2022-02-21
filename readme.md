@@ -21,7 +21,7 @@ sudo apt install cmake
 sudo apt install make
 ```
 
-## complie
+### complie
 
 1. 切换到对应的board的相关工程
 
@@ -43,6 +43,20 @@ sudo apt install make
    // 1. cd build
    // 2. make -j100
    ```
+
+### build options
+
+下面是一些可选的cmake命令行options：
+
+1. CROSS_COMPILER_PATH
+   1. 编译器路径
+   2. 设置为空或者不设置，需要将编译器路径加入PATH
+2. EXTRA_SRC
+   1. 编译额外的.c文件
+3. EXTRA_INC
+   1. 额外的头文件路径
+
+
 
 # 目录结构
 
