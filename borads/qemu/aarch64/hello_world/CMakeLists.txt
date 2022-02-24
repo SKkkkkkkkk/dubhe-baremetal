@@ -16,7 +16,7 @@ if(EXISTS "${LOC_PATH}")
                         "remove CMakeCache.txt and CMakeFiles.")
 endif()
 
-set(SDK_DIR ../../../..)
+set(SDK_DIR  ${CMAKE_SOURCE_DIR}/../../../..)
 
 add_subdirectory(${SDK_DIR}/devices/qemu/aarch64 qemu_aarch64.dir)
 
@@ -53,7 +53,7 @@ target_compile_options(${PROJECT_NAME}.elf
 
 target_link_options( ${PROJECT_NAME}.elf
 	PRIVATE
-		-Wl,-T ${CMAKE_CURRENT_SOURCE_DIR}/${SDK_DIR}/devices/qemu/aarch64/src/aarch64.ld
+		-Wl,-T ${SDK_DIR}/devices/qemu/aarch64/src/aarch64.ld
 		-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.map
 		-nostartfiles --specs=nosys.specs
 		-Wl,--fatal-warnings -Wl,--gc-sections

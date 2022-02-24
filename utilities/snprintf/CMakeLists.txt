@@ -12,7 +12,7 @@ target_include_directories( ${LIB_OBJS_NAME}
 	PUBLIC
 		.
 	PRIVATE
-		../../hal/uart/pl001
+		${SDK_DIR}/hal/uart/pl001
 )
 
 

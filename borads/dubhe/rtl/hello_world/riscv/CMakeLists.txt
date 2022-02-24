@@ -16,7 +16,7 @@ if(EXISTS "${LOC_PATH}")
                         "remove CMakeCache.txt and CMakeFiles.")
 endif()
 
-set(SDK_DIR ../../../../..)
+set(SDK_DIR ${CMAKE_SOURCE_DIR}/../../../../..)
 
 add_subdirectory(${SDK_DIR}/devices/dubhe_riscv device_dubhe_riscv.dir)
 
@@ -45,11 +45,11 @@ target_compile_options(${PROJECT_NAME}.elf
 
 target_link_options( ${PROJECT_NAME}.elf
 	PRIVATE
-		-Wl,-T ${CMAKE_CURRENT_SOURCE_DIR}/${SDK_DIR}/devices/dubhe_riscv/src/ld/idram.ld
+		-Wl,-T ${SDK_DIR}/devices/dubhe_riscv/src/ld/idram.ld
 		-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.map
 		-nostartfiles -nostdlib
 		-Wl,--fatal-warnings -Wl,--gc-sections
-		-L ${CMAKE_CURRENT_SOURCE_DIR}/${SDK_DIR}/devices/dubhe_riscv/src/ld
+		-L ${SDK_DIR}/devices/dubhe_riscv/src/ld
 )
 
 target_link_libraries( ${PROJECT_NAME}.elf
