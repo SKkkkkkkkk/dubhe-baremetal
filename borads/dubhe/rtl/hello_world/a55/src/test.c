@@ -1,5 +1,0 @@
-void fun()
-{
-
-	return;
-}
