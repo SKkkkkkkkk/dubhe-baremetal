@@ -5,7 +5,7 @@ include (${SDK_DIR}/tools/cmake_toolchains/out_of_source.cmake)
 
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
 set(PROJECT_PATH "${SDK_DIR}/app/hello_world" CACHE STRING "Project path.")
-set(DEVICE "A55" CACHE STRING "Device: A55, RISCY, CV32E40P.")
+set(DEVICE "A55" CACHE STRING "Device: A55, RI5CY, CV32E40P.")
 set(BOARD "RTL" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
 
@@ -25,7 +25,7 @@ if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 	set(compile_options_arch ${compile_options_arch} -mlittle-endian -march=armv8-a)
 	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/src/aarch64.ld -static -nostartfiles --specs=nosys.specs)
 	set(device_lib a55)
-elseif($CACHE{DEVICE} STREQUAL "RISCY") # "RISCY"
+elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
 
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
@@ -80,8 +80,8 @@ add_executable(${PROJECT_NAME}.elf)
 # add subdirectoy
 if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 	add_subdirectory(${SDK_DIR}/devices/a55 a55.dir)
-elseif($CACHE{DEVICE} STREQUAL "RISCY") # "RISCY"
-	add_subdirectory(${SDK_DIR}/devices/riscy riscy.dir)
+elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
+	add_subdirectory(${SDK_DIR}/devices/ri5cy ri5cy.dir)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
 	message(WARNING "?????")
 	add_subdirectory(${SDK_DIR}/devices/cv32e40p cv32e40p.dir)
