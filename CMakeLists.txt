@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 
 set(SDK_DIR ${CMAKE_SOURCE_DIR})
 include (${SDK_DIR}/tools/cmake_toolchains/out_of_source.cmake)
-set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/aarch64gcc.cmake)
 
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
 set(PROJECT_PATH "${SDK_DIR}/app/hello_world" CACHE STRING "Project path.")
@@ -22,13 +21,17 @@ set(link_options -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_
 set(device_lib)
 
 if($CACHE{DEVICE} STREQUAL "A55") # "A55"
+	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/aarch64gcc.cmake)
 	set(compile_options_arch ${compile_options_arch} -mlittle-endian -march=armv8-a)
-	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/src/aarch64.ld -nostartfiles --specs=nosys.specs)
+	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/src/aarch64.ld -static -nostartfiles --specs=nosys.specs)
 	set(device_lib a55)
 elseif($CACHE{DEVICE} STREQUAL "RISCY") # "RISCY"
 
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
-
+	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
+	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32)
+	set(link_options ${link_options} -T ${SDK_DIR}/devices/cv32e40p/link.ld -static -nostartfiles)
+	set(device_lib cv32e40p)
 else()
 	message(FATAL_ERROR "unsupport device!")
 endif()
@@ -80,6 +83,7 @@ if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 elseif($CACHE{DEVICE} STREQUAL "RISCY") # "RISCY"
 	add_subdirectory(${SDK_DIR}/devices/riscy riscy.dir)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
+	message(WARNING "?????")
 	add_subdirectory(${SDK_DIR}/devices/cv32e40p cv32e40p.dir)
 else()
 	message(FATAL_ERROR "unsupport device!")
@@ -110,6 +114,7 @@ target_compile_options(${PROJECT_NAME}.elf
 # link options
 target_link_options(${PROJECT_NAME}.elf
 	PRIVATE
+		${compile_options_arch}
 		${link_options}
 )
 
