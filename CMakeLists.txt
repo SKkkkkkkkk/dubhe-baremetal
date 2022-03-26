@@ -26,7 +26,10 @@ if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/src/aarch64.ld -static -nostartfiles --specs=nosys.specs)
 	set(device_lib a55)
 elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
-
+	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
+	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32)
+	set(link_options ${link_options} -L ${SDK_DIR}/devices/ri5cy/ld -T ${SDK_DIR}/devices/ri5cy/ld/idram.ld -static -nostartfiles)
+	set(device_lib ri5cy)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
 	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32)
@@ -63,11 +66,11 @@ else()
 	message(WARNING "unsupport BUILD_TYPE, using Debug!")
 endif()
 
-message(STATUS "compile_options_arch: ${compile_options_arch}")
-message(STATUS "compile_options_board: ${compile_options_board}")
-message(STATUS "compile_options_warning: ${compile_options_warning}")
-message(STATUS "compile_options_opt: ${compile_options_opt}")
-message(STATUS "link_options: ${link_options}")
+# message(STATUS "compile_options_arch: ${compile_options_arch}")
+# message(STATUS "compile_options_board: ${compile_options_board}")
+# message(STATUS "compile_options_warning: ${compile_options_warning}")
+# message(STATUS "compile_options_opt: ${compile_options_opt}")
+# message(STATUS "link_options: ${link_options}")
 
 project($CACHE{PROJECT_NAME}
   VERSION 0.1
@@ -83,7 +86,6 @@ if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
 	add_subdirectory(${SDK_DIR}/devices/ri5cy ri5cy.dir)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
-	message(WARNING "?????")
 	add_subdirectory(${SDK_DIR}/devices/cv32e40p cv32e40p.dir)
 else()
 	message(FATAL_ERROR "unsupport device!")
@@ -142,6 +144,13 @@ add_custom_target( ${PROJECT_NAME}.bin ALL
 	DEPENDS ${PROJECT_NAME}.elf
 )
 
+if(${BOARD} STREQUAL "RTL")
+	add_custom_target( ${PROJECT_NAME}.hex ALL
+		COMMAND ${CMAKE_OBJCOPY} -O verilog  ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
+		DEPENDS ${PROJECT_NAME}.elf
+	)
+endif()
+
 set_property(TARGET ${PROJECT_NAME}.elf
 	APPEND
 	PROPERTY 
@@ -149,4 +158,5 @@ set_property(TARGET ${PROJECT_NAME}.elf
 				${PROJECT_NAME}.map
 				${PROJECT_NAME}.dump
 				${PROJECT_NAME}.bin
+				${PROJECT_NAME}.hex
 )
