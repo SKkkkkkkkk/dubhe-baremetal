@@ -1,5 +1,5 @@
 #include <math.h>
-#include "uart.h"
+#include "pl001.h"
 
 static uart_registers* uart0 = (uart_registers*)0x09000000U;
 static const uint32_t refclock = 24000000u; /* 24 MHz */

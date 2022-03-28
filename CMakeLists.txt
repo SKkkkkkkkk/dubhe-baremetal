@@ -91,18 +91,24 @@ else()
 	message(FATAL_ERROR "unsupport device!")
 endif()
 
+file(GLOB_RECURSE C_SRCS ${SDK_DIR}/sources/common/*.c)
+file(GLOB_RECURSE S_SRCS ${SDK_DIR}/sources/common/*.S)
+set(SRCS ${S_SRCS} ${C_SRCS} ${EXTRA_SRC})
 include (${PROJECT_PATH}/app.cmake)
 # app sources
 target_sources(${PROJECT_NAME}.elf
-	PRIVATE 
+	PRIVATE
 		${app_sources}
+		${SRCS}
 )
 
 # app include dirs
 target_include_directories(${PROJECT_NAME}.elf
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
+		include
 		${app_include_dirs}
+		${EXTRA_INC_DIR}
 )
 
 # app compile options
