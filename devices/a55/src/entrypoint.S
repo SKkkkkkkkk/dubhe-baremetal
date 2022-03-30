@@ -71,10 +71,13 @@ func entrypoint
 
 	ldr	x0, =__BSS_START__
 	ldr	x1, =__BSS_END__
+	cmp x0, x1
+	b.eq clear_loop_end
 clear_loop:
 	str	xzr, [x0], #8
 	cmp	x0, x1
 	b.lo	clear_loop
+clear_loop_end:
 
 	ldr x0, =__DATA_RAM_START__
 	ldr x1, =__DATA_ROM_START__
