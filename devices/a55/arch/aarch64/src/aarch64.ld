@@ -11,7 +11,7 @@ MEMORY {
 }
 
 _stack_size = 16*1024;
-_heap_size = 0*1024;
+_heap_size = 8*1024;
 SECTIONS
 {
     . = 0x0;
@@ -24,15 +24,15 @@ SECTIONS
         *(.vectors)
         . = ALIGN(((1) << (12)));
         __TEXT_END__ = .;
-     } >ROM
-     .ARM.extab . : 
-     {
-        *(.ARM.extab* .gnu.linkonce.armextab.*)
-     } >ROM
-     .ARM.exidx . : 
-     {
-        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-     } >ROM
+    } >ROM
+    .ARM.extab . : 
+    {
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+    } >ROM
+    .ARM.exidx . : 
+    {
+    *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    } >ROM
     .rodata . : 
     {
         __RODATA_START__ = .;

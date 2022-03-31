@@ -26,7 +26,7 @@ set(device_lib)
 if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/aarch64gcc.cmake)
 	set(compile_options_arch ${compile_options_arch} -mlittle-endian -march=armv8-a)
-	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/src/aarch64.ld -static -nostartfiles --specs=nosys.specs)
+	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/arch/aarch64/src/aarch64.ld -static -nostartfiles --specs=nosys.specs)
 	set(device_lib a55)
 elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)

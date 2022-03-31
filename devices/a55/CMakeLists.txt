@@ -1,17 +1,20 @@
 set(LIB_OBJS_NAME a55)
 
-add_library(${LIB_OBJS_NAME} STATIC)
+add_library(${LIB_OBJS_NAME} OBJECT)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE
-		src/entrypoint.S
-		src/exceptions.S
+		arch/aarch64/src/entrypoint.S
+		arch/aarch64/src/exceptions.S
+		newlib/newlib_port.c
 		# src/mmu_test.S
 )
 
 target_include_directories(${LIB_OBJS_NAME}
 	PUBLIC
-		inc
+		arch/aarch64/inc
+	PRIVATE
+		${SDK_DIR}/include
 )
 
 target_compile_options(${LIB_OBJS_NAME}
