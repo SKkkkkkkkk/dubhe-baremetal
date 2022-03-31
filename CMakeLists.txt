@@ -180,7 +180,7 @@ add_custom_target(${PROJECT_NAME}.dump ALL
 	DEPENDS ${PROJECT_NAME}.elf
 )
 
-if(${BOARD} STREQUAL "RTL")
+# if(${BOARD} STREQUAL "RTL")
 	if(${DEVICE} STREQUAL "A55")
 		add_custom_target( ${PROJECT_NAME}.bin ALL
 			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
@@ -249,7 +249,7 @@ if(${BOARD} STREQUAL "RTL")
 	else()
 		message(FATAL_ERROR "unsupport device!")
 	endif()
-endif()
+# endif()
 
 set_property(TARGET ${PROJECT_NAME}.elf
 	APPEND

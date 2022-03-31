@@ -3,7 +3,7 @@
 #define __WAKEUP_CORE_H__
 #include <stdint.h>
 
-uint64_t get_core_id();
+uint32_t get_core_id();
 void wakeup_core(uint8_t core_id, void* func);
 
 #endif

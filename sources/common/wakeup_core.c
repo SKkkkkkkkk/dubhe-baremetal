@@ -4,11 +4,15 @@
 #define CORE_NUMS 4
 volatile uint64_t secondary_cores_entry[(CORE_NUMS-1)*2];
 // 0 1 | 2 3 | 4 5
-uint64_t get_core_id()
+uint32_t get_core_id()
 {
-	uint64_t core_id;
+	uint32_t core_id;
 	asm volatile("mrs %0, mpidr_el1":"=r"(core_id));
+#if defined QEMU
 	return core_id&0xff;
+#else
+	return (core_id&0xffff)>>8;
+#endif
 }
 
 void wakeup_core(uint8_t core_id, void* func)

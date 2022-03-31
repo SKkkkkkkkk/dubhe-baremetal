@@ -65,7 +65,7 @@ func entrypoint
 	bl setup_stack
 
 	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xff //x1 => core_id
+	and x1, x1, 0xffff //x1 => core_id
 	cmp x1, #0
 	bne data_init_end
 
@@ -91,8 +91,11 @@ data_init_start:
 data_init_end:
 
 	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xff //x1 => core_id
-	cmp x1, #0
+	and x1, x1, 0xffff //x1 => core_id
+#ifndef QEMU
+	ubfx w1, w1, #8, #8
+#endif
+	cmp w1, #0
 	bne secondary_core
 
 #define el2_main main
@@ -128,8 +131,10 @@ func setup_stack
 	// and x1, x1, 0xf00 //x1 => core_id
 	// lsr x1, x1, #8 //ubfx x1, x1, #8, #8
 	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xff //x1 => core_id
-
+	and x1, x1, 0xffff //x1 => core_id
+#ifndef QEMU
+	ubfx w1, w1, #8, #8
+#endif
 	/* 
 	** x0 => stack_top
 	** x1 => core_id
@@ -155,8 +160,6 @@ func secondary_core
 	cmp x1, 3
 	b.eq core3_sleep
 	b .
-	wfi
-	b secondary_core
 endfunc secondary_core
 
 #define CORE_WAKEUP_KEY 0x123456788654321
