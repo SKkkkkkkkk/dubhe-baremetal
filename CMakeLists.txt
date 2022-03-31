@@ -3,16 +3,19 @@ cmake_minimum_required(VERSION 3.15)
 set(SDK_DIR ${CMAKE_SOURCE_DIR})
 include (${SDK_DIR}/tools/cmake_toolchains/out_of_source.cmake)
 
+
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
-set(PROJECT_PATH "${SDK_DIR}/app/hello_world" CACHE STRING "Project path.")
+set(PROJECT_PATH "${SDK_DIR}/app/hello_world" CACHE STRING "Project path.(not ABS)")
 set(DEVICE "A55" CACHE STRING "Device: A55, RI5CY, CV32E40P.")
 set(BOARD "RTL" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
+set(ABS_PROJECT_PATH "$ENV{PWD}/${PROJECT_PATH}" CACHE STRING "ABS Project path.")
 
 message(STATUS "Project     : ${PROJECT_NAME}")
 message(STATUS "Device      : ${DEVICE}")
 message(STATUS "Board       : ${BOARD}")
 message(STATUS "Build Type  : ${BUILD_TYPE}")
+message(STATUS "Proj Path   : ${ABS_PROJECT_PATH}")
 
 set(compile_options_arch)
 set(compile_options_warning -Wall -Werror)
@@ -78,6 +81,8 @@ project($CACHE{PROJECT_NAME}
   LANGUAGES C ASM
 )
 
+# message(WARNING "ABS_PROJECT_PATH $ENV{PWD}/${PROJECT_PATH}")
+
 add_executable(${PROJECT_NAME}.elf)
 
 # add subdirectoy
@@ -94,7 +99,7 @@ endif()
 file(GLOB_RECURSE C_SRCS ${SDK_DIR}/sources/common/*.c)
 file(GLOB_RECURSE S_SRCS ${SDK_DIR}/sources/common/*.S)
 set(SRCS ${S_SRCS} ${C_SRCS} ${EXTRA_SRC})
-include (${PROJECT_PATH}/app.cmake)
+include (${ABS_PROJECT_PATH}/app.cmake)
 # app sources
 target_sources(${PROJECT_NAME}.elf
 	PRIVATE
