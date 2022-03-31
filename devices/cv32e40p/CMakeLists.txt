@@ -1,6 +1,6 @@
 set(LIB_OBJS_NAME cv32e40p)
 
-add_library(${LIB_OBJS_NAME} STATIC)
+add_library(${LIB_OBJS_NAME} OBJECT)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE

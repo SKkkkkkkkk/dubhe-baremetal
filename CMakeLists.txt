@@ -186,10 +186,28 @@ add_custom_target( ${PROJECT_NAME}.bin ALL
 )
 
 if(${BOARD} STREQUAL "RTL")
-	add_custom_target( ${PROJECT_NAME}.hex ALL
-		COMMAND ${CMAKE_OBJCOPY} -O verilog  ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
-		DEPENDS ${PROJECT_NAME}.elf
-	)
+	if(${DEVICE} STREQUAL "A55")
+		add_custom_target( ${PROJECT_NAME}.hex ALL
+			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+			COMMAND ${CMAKE_OBJCOPY} -O binary -j .text -j .ARM.extab -j .ARM.exidx -j .rodata ${PROJECT_NAME}.elf ${PROJECT_NAME}.ro.bin
+			COMMAND ${CMAKE_OBJCOPY} -O binary -j .data ${PROJECT_NAME}.elf ${PROJECT_NAME}.rw.bin
+			DEPENDS ${PROJECT_NAME}.elf
+		)
+	elseif(${DEVICE} STREQUAL "RI5CY")
+		add_custom_target( ${PROJECT_NAME}.hex ALL
+			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+			COMMAND ${CMAKE_OBJCOPY} -O binary -j .text ${PROJECT_NAME}.elf ${PROJECT_NAME}.ro.bin
+			COMMAND ${CMAKE_OBJCOPY} -O binary -j .data ${PROJECT_NAME}.elf ${PROJECT_NAME}.rw.bin
+			DEPENDS ${PROJECT_NAME}.elf
+		)
+	elseif(${DEVICE} STREQUAL "CV32E40P")
+		add_custom_target( ${PROJECT_NAME}.hex ALL
+			COMMAND ${CMAKE_OBJCOPY} -O verilog  ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
+			DEPENDS ${PROJECT_NAME}.elf
+		)
+	else()
+		message(FATAL_ERROR "unsupport device!")
+	endif()
 endif()
 
 set_property(TARGET ${PROJECT_NAME}.elf

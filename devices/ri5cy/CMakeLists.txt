@@ -1,6 +1,6 @@
 set(LIB_OBJS_NAME ri5cy)
 
-add_library(${LIB_OBJS_NAME} STATIC)
+add_library(${LIB_OBJS_NAME} OBJECT)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE
