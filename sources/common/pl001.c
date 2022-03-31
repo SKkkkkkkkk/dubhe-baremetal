@@ -1,3 +1,4 @@
+#ifdef QEMU
 #include <math.h>
 #include "pl001.h"
 
@@ -106,3 +107,4 @@ uart_error uart_getchar(char* c) {
     }
     return UART_OK;
 }
+#endif

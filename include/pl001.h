@@ -1,3 +1,4 @@
+#ifdef QEMU
 #ifndef __UART_PL011_H__
 #define __UART_PL011_H__
 
@@ -59,4 +60,5 @@ void uart_putchar(char c);
 void uart_write(const char* data);
 uart_error uart_getchar(char* c);
 
+#endif
 #endif
