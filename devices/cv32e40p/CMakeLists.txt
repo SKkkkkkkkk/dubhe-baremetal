@@ -17,6 +17,7 @@ target_sources(${LIB_OBJS_NAME}
 target_compile_options(${LIB_OBJS_NAME}
 	PRIVATE
 		${compile_options_arch}
+		${compile_options_board}
 		${compile_options_warning}
 		${compile_options_opt}
 		-mstrict-align

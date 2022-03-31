@@ -24,6 +24,7 @@ target_compile_options(${LIB_OBJS_NAME}
 	# 	$<$<CONFIG:Release>:-Ofast -g0 -DNDEBUG>
 	PRIVATE
 		${compile_options_arch}
+		${compile_options_board}
 		${compile_options_warning}
 		${compile_options_opt}
 		-mstrict-align

@@ -5,17 +5,41 @@ include (${SDK_DIR}/tools/cmake_toolchains/out_of_source.cmake)
 
 
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
-set(PROJECT_PATH "${SDK_DIR}/app/hello_world" CACHE STRING "Project path.(not ABS)")
+set(PROJECT_PATH "" CACHE STRING "Project path.(not ABS)")
+set(EXTRA_SRC "" CACHE STRING "a extra src.") #向下兼容
 set(DEVICE "A55" CACHE STRING "Device: A55, RI5CY, CV32E40P.")
 set(BOARD "RTL" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
-set(ABS_PROJECT_PATH "$ENV{PWD}/${PROJECT_PATH}" CACHE STRING "ABS Project path.")
+
+
+if(IS_ABSOLUTE ${PROJECT_PATH})
+	set(ABS_PROJECT_PATH "${PROJECT_PATH}" CACHE STRING "ABS Project path.")
+else()
+	set(ABS_PROJECT_PATH "$ENV{PWD}/${PROJECT_PATH}" CACHE STRING "ABS Project path.")
+endif()
+
+if(IS_ABSOLUTE ${EXTRA_SRC})
+	set(ABS_EXTRA_SRC "${EXTRA_SRC}" CACHE STRING "ABS EXTRA_SRC.")
+else()
+	set(ABS_EXTRA_SRC "$ENV{PWD}/${EXTRA_SRC}" CACHE STRING "ABS EXTRA_SRC.")
+endif()
+
+
 
 message(STATUS "Project     : ${PROJECT_NAME}")
 message(STATUS "Device      : ${DEVICE}")
 message(STATUS "Board       : ${BOARD}")
 message(STATUS "Build Type  : ${BUILD_TYPE}")
+if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
 message(STATUS "Proj Path   : ${ABS_PROJECT_PATH}")
+else()
+message(STATUS "No PROJECT_PATH.")
+endif()
+if(NOT $CACHE{EXTRA_SRC} STREQUAL "")
+message(STATUS "EXTRA_SRC   : ${ABS_EXTRA_SRC}")
+else()
+message(STATUS "No EXTRA_SRC.")
+endif()
 
 set(compile_options_arch)
 set(compile_options_warning -Wall -Werror)
@@ -25,17 +49,17 @@ set(device_lib)
 
 if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/aarch64gcc.cmake)
-	set(compile_options_arch ${compile_options_arch} -mlittle-endian -march=armv8-a)
+	set(compile_options_arch ${compile_options_arch} -mlittle-endian -march=armv8-a -DA55)
 	set(link_options ${link_options} -T ${SDK_DIR}/devices/a55/arch/aarch64/src/aarch64.ld -static -nostartfiles --specs=nosys.specs)
 	set(device_lib a55)
 elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
-	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32)
+	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DRI5CY)
 	set(link_options ${link_options} -L ${SDK_DIR}/devices/ri5cy/ld -T ${SDK_DIR}/devices/ri5cy/ld/idram.ld -static -nostartfiles)
 	set(device_lib ri5cy)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
-	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32)
+	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
 	set(link_options ${link_options} -T ${SDK_DIR}/devices/cv32e40p/link.ld -static -nostartfiles)
 	set(device_lib cv32e40p)
 else()
@@ -81,8 +105,6 @@ project($CACHE{PROJECT_NAME}
   LANGUAGES C ASM
 )
 
-# message(WARNING "ABS_PROJECT_PATH $ENV{PWD}/${PROJECT_PATH}")
-
 add_executable(${PROJECT_NAME}.elf)
 
 # add subdirectoy
@@ -98,8 +120,10 @@ endif()
 
 file(GLOB_RECURSE C_SRCS ${SDK_DIR}/sources/common/*.c)
 file(GLOB_RECURSE S_SRCS ${SDK_DIR}/sources/common/*.S)
-set(SRCS ${S_SRCS} ${C_SRCS} ${EXTRA_SRC})
+set(SRCS ${S_SRCS} ${C_SRCS} $CACHE{ABS_EXTRA_SRC})
+if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
 include (${ABS_PROJECT_PATH}/app.cmake)
+endif()
 # app sources
 target_sources(${PROJECT_NAME}.elf
 	PRIVATE
@@ -120,6 +144,7 @@ target_include_directories(${PROJECT_NAME}.elf
 target_compile_options(${PROJECT_NAME}.elf
 	PRIVATE
 		${compile_options_arch}
+		${compile_options_board}
 		${compile_options_warning}
 		${compile_options_opt}
 )

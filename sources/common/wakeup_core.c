@@ -1,3 +1,4 @@
+#ifdef A55
 #include <stdint.h>
 
 #define CORE_NUMS 4
@@ -19,3 +20,4 @@ void wakeup_core(uint8_t core_id, void* func)
 	asm volatile("sev");
 	return;
 }
+#endif
