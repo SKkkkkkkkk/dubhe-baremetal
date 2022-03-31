@@ -1,9 +1,7 @@
-// #include "main.h"
+#if defined A55
 #include <stdio.h>
 #include "wakeup_core.h"
 #include "pl001.h"
-
-#if defined A55
 void core1_c_entry(void)
 {
 	printf("hello world,in core.%lu\n", get_core_id());
