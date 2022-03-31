@@ -180,30 +180,71 @@ add_custom_target(${PROJECT_NAME}.dump ALL
 	DEPENDS ${PROJECT_NAME}.elf
 )
 
-add_custom_target( ${PROJECT_NAME}.bin ALL
-	COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
-	DEPENDS ${PROJECT_NAME}.elf
-)
-
 if(${BOARD} STREQUAL "RTL")
 	if(${DEVICE} STREQUAL "A55")
-		add_custom_target( ${PROJECT_NAME}.hex ALL
+		add_custom_target( ${PROJECT_NAME}.bin ALL
 			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
 			COMMAND ${CMAKE_OBJCOPY} -O binary -j .text -j .ARM.extab -j .ARM.exidx -j .rodata ${PROJECT_NAME}.elf ${PROJECT_NAME}.ro.bin
 			COMMAND ${CMAKE_OBJCOPY} -O binary -j .data ${PROJECT_NAME}.elf ${PROJECT_NAME}.rw.bin
 			DEPENDS ${PROJECT_NAME}.elf
 		)
-	elseif(${DEVICE} STREQUAL "RI5CY")
 		add_custom_target( ${PROJECT_NAME}.hex ALL
+			COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
+			COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.ro.bin > ${PROJECT_NAME}.ro.hex
+			COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.rw.bin > ${PROJECT_NAME}.rw.hex
+			DEPENDS ${PROJECT_NAME}.bin
+		)
+		set_property(TARGET ${PROJECT_NAME}.elf
+			APPEND
+			PROPERTY 
+				ADDITIONAL_CLEAN_FILES
+						${PROJECT_NAME}.bin
+						${PROJECT_NAME}.ro.bin
+						${PROJECT_NAME}.rw.bin
+						${PROJECT_NAME}.hex
+						${PROJECT_NAME}.ro.hex
+						${PROJECT_NAME}.rw.hex
+		)
+	elseif(${DEVICE} STREQUAL "RI5CY")
+		add_custom_target( ${PROJECT_NAME}.bin ALL
 			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
 			COMMAND ${CMAKE_OBJCOPY} -O binary -j .text ${PROJECT_NAME}.elf ${PROJECT_NAME}.ro.bin
 			COMMAND ${CMAKE_OBJCOPY} -O binary -j .data ${PROJECT_NAME}.elf ${PROJECT_NAME}.rw.bin
 			DEPENDS ${PROJECT_NAME}.elf
 		)
+		add_custom_target( ${PROJECT_NAME}.hex ALL
+			COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
+			COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.ro.bin > ${PROJECT_NAME}.ro.hex
+			COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.rw.bin > ${PROJECT_NAME}.rw.hex
+			DEPENDS
+				${PROJECT_NAME}.bin
+		)
+		set_property(TARGET ${PROJECT_NAME}.elf
+			APPEND
+			PROPERTY 
+				ADDITIONAL_CLEAN_FILES
+						${PROJECT_NAME}.bin
+						${PROJECT_NAME}.ro.bin
+						${PROJECT_NAME}.rw.bin
+						${PROJECT_NAME}.hex
+						${PROJECT_NAME}.ro.hex
+						${PROJECT_NAME}.rw.hex
+		)
 	elseif(${DEVICE} STREQUAL "CV32E40P")
+		add_custom_target( ${PROJECT_NAME}.bin ALL
+			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+			DEPENDS ${PROJECT_NAME}.elf
+		)
 		add_custom_target( ${PROJECT_NAME}.hex ALL
 			COMMAND ${CMAKE_OBJCOPY} -O verilog  ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
 			DEPENDS ${PROJECT_NAME}.elf
+		)
+		set_property(TARGET ${PROJECT_NAME}.elf
+			APPEND
+			PROPERTY 
+				ADDITIONAL_CLEAN_FILES
+						${PROJECT_NAME}.bin
+						${PROJECT_NAME}.hex
 		)
 	else()
 		message(FATAL_ERROR "unsupport device!")
@@ -216,6 +257,4 @@ set_property(TARGET ${PROJECT_NAME}.elf
 		ADDITIONAL_CLEAN_FILES
 				${PROJECT_NAME}.map
 				${PROJECT_NAME}.dump
-				${PROJECT_NAME}.bin
-				${PROJECT_NAME}.hex
 )
