@@ -1,63 +1,84 @@
 #include <errno.h>
 #include <sys/stat.h>
-#include "pl001.h"
+#if defined QEMU
+	#include "pl001.h"
+#endif
 
 #undef errno
 extern int errno;
 
-
-static bool uart_init = false;
-int _write (int fd, char *ptr, int len)
-{
-	if(!uart_init)
+#if defined QEMU
+	static bool uart_init = false;
+	int _write (int fd, char *ptr, int len)
 	{
-		uart_config _uart_config = {
-			.data_bits = 8,
-			.stop_bits = 1,
-			.parity = false,
-			.baudrate = 9600
-		};
-		if(uart_configure(&_uart_config) != UART_OK)
-			return 0;
-		uart_init = true;
+		if(!uart_init)
+		{
+			uart_config _uart_config = {
+				.data_bits = 8,
+				.stop_bits = 1,
+				.parity = false,
+				.baudrate = 9600
+			};
+			if(uart_configure(&_uart_config) != UART_OK)
+				return 0;
+			uart_init = true;
+		}
+
+		int i;
+		for(i=0;i<len;i++)
+		{
+			uart_putchar(ptr[i]);
+			if(ptr[i] == '\n')
+				uart_putchar('\r');
+		}
+		(void)fd;
+		return i;
 	}
 
-	int i;
-	for(i=0;i<len;i++)
+	int _read(int fd, char* ptr, int len)
 	{
-		uart_putchar(ptr[i]);
-		if(ptr[i] == '\n')
-			uart_putchar('\r');
-	}
-	(void)fd;
-	return i;
-}
-
-int _read(int fd, char* ptr, int len)
-{
-	if(!uart_init)
-	{
-		uart_config _uart_config = {
-			.data_bits = 8,
-			.stop_bits = 0,
-			.parity = true,
-			.baudrate = 115200
-		};
-		if(uart_configure(&_uart_config) != UART_OK)
-			return 0;
-		uart_init = true;
-	}
+		if(!uart_init)
+		{
+			uart_config _uart_config = {
+				.data_bits = 8,
+				.stop_bits = 0,
+				.parity = true,
+				.baudrate = 115200
+			};
+			if(uart_configure(&_uart_config) != UART_OK)
+				return 0;
+			uart_init = true;
+		}
 
 
-	int i;
-	for(i=0;i<len;i++)
-	{
-		if(uart_getchar(ptr+i) != UART_OK)
-			return 0;
+		int i;
+		for(i=0;i<len;i++)
+		{
+			if(uart_getchar(ptr+i) != UART_OK)
+				return 0;
+		}
+		(void)fd;
+		return i;
 	}
-	(void)fd;
-	return i;
-}
+#else
+	int _write (int fd, char *ptr, int len)
+	{
+		(void)fd;
+		(void)ptr;
+		(void)len;
+		return 0;
+	}
+
+	int _read(int fd, char* ptr, int len)
+	{
+		(void)fd;
+		(void)ptr;
+		(void)len;
+		return 0;
+	}
+#endif
+
+
 
 /* _exit */
 void _exit(int status) {

@@ -59,7 +59,7 @@ if($CACHE{DEVICE} STREQUAL "A55") # "A55"
 	set(device_lib a55)
 elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/riscv_gcc.cmake)
-	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DRI5CY)
+	set(compile_options_arch ${compile_options_arch} -m32 -march=IMXpulpv2 -Wa,-march=IMXpulpv2 -DRI5CY)
 	set(link_options ${link_options} -L ${SDK_DIR}/devices/ri5cy/ld -T ${SDK_DIR}/devices/ri5cy/ld/idram.ld -static -nostartfiles)
 	set(device_lib ri5cy)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
