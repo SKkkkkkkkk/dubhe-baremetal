@@ -12,11 +12,6 @@ func entrypoint
 	msr vbar_el3, x0
 	isb
 
-	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xff //x1 => core_id
-	cmp x1, #0
-	bne secondary_core
-
 	// bl init_general_regs
 	mov x0, XZR
 	mov x1, XZR
@@ -69,12 +64,20 @@ func entrypoint
 
 	bl setup_stack
 
+	mrs x1, mpidr_el1 //0x80000000
+	and x1, x1, 0xff //x1 => core_id
+	cmp x1, #0
+	bne data_init_end
+
 	ldr	x0, =__BSS_START__
 	ldr	x1, =__BSS_END__
+	cmp x0, x1
+	b.eq clear_loop_end
 clear_loop:
 	str	xzr, [x0], #8
 	cmp	x0, x1
 	b.lo	clear_loop
+clear_loop_end:
 
 	ldr x0, =__DATA_RAM_START__
 	ldr x1, =__DATA_ROM_START__
@@ -86,6 +89,11 @@ data_init_start:
 	sub x2, x2, #8
 	cbnz x2, data_init_start
 data_init_end:
+
+	mrs x1, mpidr_el1 //0x80000000
+	and x1, x1, 0xff //x1 => core_id
+	cmp x1, #0
+	bne secondary_core
 
 #define el2_main main
 	// bl config_mmu
@@ -110,7 +118,7 @@ data_init_end:
 endfunc entrypoint
 
 
-#define CORE_STACK_SIZE (128*1024/4)
+#define CORE_STACK_SIZE (16*1024/4)
 func setup_stack
 	.extern __STACK_TOP__
 	ldr x0, =__STACK_TOP__
@@ -136,7 +144,93 @@ func setup_stack
 endfunc setup_stack
 
 
+/*
+	x1 - core-id
+ */
 func secondary_core
+	cmp x1, 1
+	b.eq core1_sleep
+	cmp x1, 2
+	b.eq core2_sleep
+	cmp x1, 3
+	b.eq core3_sleep
+	b .
 	wfi
 	b secondary_core
 endfunc secondary_core
+
+#define CORE_WAKEUP_KEY 0x123456788654321
+
+/*
+	x0 - secondary_cores_entry addr
+	x1 - core-id(read only)
+	x2 - real-key
+	x3 - key
+	x4 - jump addr
+*/
+core1_sleep:
+	ldr x0, =secondary_cores_entry
+	ldr x4, [x0, #0]
+	cmp x4, 0
+	beq _core1_sleep
+	ldr x2, [x0, #8]
+	ldr x3, =CORE_WAKEUP_KEY
+	cmp x2, x3
+	bne _core1_sleep
+
+	blr x4
+	b .
+
+_core1_sleep:
+	wfe
+	b core1_sleep
+
+/*
+	x0 - secondary_cores_entry addr
+	x1 - core-id(read only)
+	x2 - real-key
+	x3 - key
+	x4 - jump addr
+*/
+core2_sleep:
+	ldr x0, =secondary_cores_entry
+	add x0, x0, 16
+	ldr x4, [x0, #0]
+	cmp x4, 0
+	beq _core2_sleep
+	ldr x2, [x0, #8]
+	ldr x3, =CORE_WAKEUP_KEY
+	cmp x2, x3
+	bne _core2_sleep
+
+	blr x4
+	b .
+
+_core2_sleep:
+	wfe
+	b core2_sleep
+
+/*
+	x0 - secondary_cores_entry addr
+	x1 - core-id(read only)
+	x2 - real-key
+	x3 - key
+	x4 - jump addr
+*/
+core3_sleep:
+	ldr x0, =secondary_cores_entry
+	add x0, x0, 32
+	ldr x4, [x0, #0]
+	cmp x4, 0
+	beq _core3_sleep
+	ldr x2, [x0, #8]
+	ldr x3, =CORE_WAKEUP_KEY
+	cmp x2, x3
+	bne _core3_sleep
+
+	blr x4
+	b .
+
+_core3_sleep:
+	wfe
+	b core3_sleep
