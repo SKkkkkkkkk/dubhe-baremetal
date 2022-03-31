@@ -1,16 +1,20 @@
 OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
+/*
+    0x00400000 0x00010000
+    0x00a00000 0x00020000
+*/
 MEMORY {
-    ROM (rx): ORIGIN = 0x00400000, LENGTH = 0x00010000 /*16384*32bit 64KB*/
-    RAM (rwx): ORIGIN = 0x00a00000, LENGTH = 0x00020000 /*8192*128bit  128KB*/
+    ROM (rx): ORIGIN = 0x0, LENGTH = 0x04000000 /*16384*32bit 64KB*/
+    RAM (rwx): ORIGIN = 0x0e000000, LENGTH = 0x01000000 /*8192*128bit  128KB*/
 }
 
-_stack_size = 8*1024;
+_stack_size = 16*1024;
 _heap_size = 0*1024;
 SECTIONS
 {
-    . = 0x00400000;
+    . = 0x0;
     ASSERT(. == ALIGN(((1) << (12))), "BL1_RO_BASE address is not aligned on a page boundary.")
     .text . :
     {
@@ -38,7 +42,7 @@ SECTIONS
     } >ROM
 
 
-    . = 0x00a00000;
+    . = 0x0e000000;
     ASSERT(. == ALIGN(((1) << (12))), "BL1_RW_BASE address is not aligned on a page boundary.")
     .data . : ALIGN(16) 
     {
@@ -87,9 +91,9 @@ SECTIONS
     __DATA_SIZE__ = SIZEOF(.data);
     __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     __BSS_SIZE__ = SIZEOF(.bss);
-    /* ASSERT(__ROM_END__ <= (0x00000000 + 0x00020000), "BL1's ROM content has exceeded its limit.") */
-    ASSERT(__ROM_END__ <= (0x00400000 + 0x00010000), "BL1's ROM content has exceeded its limit.")
+    ASSERT(__ROM_END__ <= (0x00000000 + 0x04000000), "BL1's ROM content has exceeded its limit.")
+    /* ASSERT(__ROM_END__ <= (0x00400000 + 0x00010000), "BL1's ROM content has exceeded its limit.") */
     
-    /* ASSERT(. <= (0x0e000000 + 0x01000000), "BL1's RW section has exceeded its limit.") */
-    ASSERT(__RAM_END__ <= (0x00a00000 + 0x00020000), "BL1's RW section has exceeded its limit.")
+    ASSERT(. <= (0x0e000000 + 0x01000000), "BL1's RW section has exceeded its limit.")
+    /* ASSERT(__RAM_END__ <= (0x00a00000 + 0x00020000), "BL1's RW section has exceeded its limit.") */
 }
