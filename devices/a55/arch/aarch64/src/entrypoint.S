@@ -45,23 +45,21 @@ func entrypoint
 	mov x29, XZR
 	mov x30, XZR
 
-	mov	x1, #0x100a //(SCTLR_I_BIT | SCTLR_A_BIT | SCTLR_SA_BIT)
-	mrs	x0, sctlr_el3
-	orr	x0, x0, x1
-	bfi x0, xzr, #1, #1 // clear bit1
-	msr	sctlr_el3, x0
-	isb
+	//mov	x1, #0x100a //(SCTLR_I_BIT | SCTLR_A_BIT | SCTLR_SA_BIT)
+	//mrs	x0, sctlr_el3
+	//orr	x0, x0, x1
+	//bfi x0, xzr, #1, #1 // clear bit1
+	//msr	sctlr_el3, x0
+	//isb
 
 	mrs x0, scr_el3
 	mov x0, #0x238                 	// #568
 	msr scr_el3, x0
 
-	mrs x0, daif
-	mrs x1, currentel
-	mrs x2, spsel
-
-	msr daifclr, #0x7	//enable syserror,irq,fiq
-
+	//mrs x0, daif
+	//mrs x1, currentel
+	//mrs x2, spsel
+	msr spsel, 0
 	bl setup_stack
 
 	mrs x1, mpidr_el1 //0x80000000
@@ -96,6 +94,7 @@ data_init_end:
 	ubfx w1, w1, #8, #8
 #endif
 	cmp w1, #0
+	msr daifclr, #0x7	//enable syserror,irq,fiq
 	bne secondary_core
 
 #define el2_main main
