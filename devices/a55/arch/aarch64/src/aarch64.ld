@@ -6,7 +6,7 @@ ENTRY(entrypoint)
     0x00a00000 0x00020000
 */
 MEMORY {
-    ROM (rx): ORIGIN = 0x00400000, LENGTH = 0x00010000 /*16384*32bit 64KB*/
+    ROM (rx): ORIGIN = 0x00000000, LENGTH = 0x00010000 /*16384*32bit 64KB*/
     RAM (rwx): ORIGIN = 0x00a00000, LENGTH = 0x00020000 /*8192*128bit  128KB*/
 }
 
@@ -14,7 +14,7 @@ _stack_size = 16*1024;
 _heap_size = 8*1024;
 SECTIONS
 {
-    . = 0x00400000;
+    . = ORIGIN(ROM);
     .text . :
     {
         __TEXT_START__ = .;
@@ -89,7 +89,7 @@ SECTIONS
     __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     __BSS_SIZE__ = SIZEOF(.bss);
     /* ASSERT(__ROM_END__ <= (0x00000000 + 0x04000000), "BL1's ROM content has exceeded its limit.") */
-    ASSERT(__ROM_END__ <= (0x00400000 + 0x00010000), "BL1's ROM content has exceeded its limit.")
+    ASSERT(__ROM_END__ <= (0x00000000 + 0x00010000), "BL1's ROM content has exceeded its limit.")
     
     /* ASSERT(. <= (0x0e000000 + 0x01000000), "BL1's RW section has exceeded its limit.") */
     ASSERT(__RAM_END__ <= (0x00a00000 + 0x00020000), "BL1's RW section has exceeded its limit.")
