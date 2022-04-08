@@ -51,6 +51,21 @@ int main()
 	while(1);
 }
 
+#elif defined(M3)
+	volatile unsigned int * const UART0DR = (unsigned int *)0x4000C000;
+ 
+	void print_uart0(const char *s) {
+	while(*s != '\0') { /* Loop until end of string */
+	*UART0DR = (unsigned int)(*s); /* Transmit char */
+	s++; /* Next char */
+	}
+	}
+
+	int main()
+	{
+		print_uart0("hello world.\n");
+		return 0;
+	}
 #else
 
 #error "unknowed device!"

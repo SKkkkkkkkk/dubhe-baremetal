@@ -7,7 +7,7 @@ include (${SDK_DIR}/tools/cmake_toolchains/out_of_source.cmake)
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
 set(PROJECT_PATH "" CACHE STRING "Project path.(not ABS)")
 set(EXTRA_SRC "" CACHE STRING "a extra src.") #向下兼容
-set(DEVICE "A55" CACHE STRING "Device: A55, RI5CY, CV32E40P.")
+set(DEVICE "A55" CACHE STRING "Device: A55, RI5CY, CV32E40P, M3.")
 set(BOARD "RTL" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
 
@@ -67,6 +67,16 @@ elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
 	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
 	set(link_options ${link_options} -T ${SDK_DIR}/devices/cv32e40p/link.ld -static -nostartfiles)
 	set(device_lib cv32e40p)
+elseif($CACHE{DEVICE} STREQUAL "M3") # "M3"
+	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/tools/cmake_toolchains/armgcc.cmake)
+	set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
+	set(link_options ${link_options} -static -nostartfiles --specs=nosys.specs)
+	if($CACHE{BOARD} STREQUAL "QEMU")
+		set(link_options ${link_options} -T ${SDK_DIR}/devices/m3/src/m3.ld)
+	else()
+		set(link_options ${link_options} -T ${SDK_DIR}/devices/m3/src/m3.ld)
+	endif()
+	set(device_lib m3)
 else()
 	message(FATAL_ERROR "unsupport device!")
 endif()
@@ -119,6 +129,8 @@ elseif($CACHE{DEVICE} STREQUAL "RI5CY") # "RI5CY"
 	add_subdirectory(${SDK_DIR}/devices/ri5cy ri5cy.dir)
 elseif($CACHE{DEVICE} STREQUAL "CV32E40P") # "CV32E40P"
 	add_subdirectory(${SDK_DIR}/devices/cv32e40p cv32e40p.dir)
+elseif($CACHE{DEVICE} STREQUAL "M3") # "M3"
+	add_subdirectory(${SDK_DIR}/devices/m3 m3.dir)
 else()
 	message(FATAL_ERROR "unsupport device!")
 endif()
@@ -231,6 +243,22 @@ add_custom_target(${PROJECT_NAME}.dump ALL
 						${PROJECT_NAME}.rw.hex
 		)
 	elseif(${DEVICE} STREQUAL "CV32E40P")
+		add_custom_target( ${PROJECT_NAME}.bin ALL
+			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+			DEPENDS ${PROJECT_NAME}.elf
+		)
+		add_custom_target( ${PROJECT_NAME}.hex ALL
+			COMMAND ${CMAKE_OBJCOPY} -O verilog  ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
+			DEPENDS ${PROJECT_NAME}.elf
+		)
+		set_property(TARGET ${PROJECT_NAME}.elf
+			APPEND
+			PROPERTY 
+				ADDITIONAL_CLEAN_FILES
+						${PROJECT_NAME}.bin
+						${PROJECT_NAME}.hex
+		)
+	elseif(${DEVICE} STREQUAL "M3")
 		add_custom_target( ${PROJECT_NAME}.bin ALL
 			COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
 			DEPENDS ${PROJECT_NAME}.elf

@@ -1,0 +1,1 @@
+arm-none-eabi-gdb build/m3/hello.elf -x gdb_config
