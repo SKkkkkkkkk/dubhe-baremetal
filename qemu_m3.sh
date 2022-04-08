@@ -4,5 +4,4 @@ qemu-system-arm \
 -serial stdio \
 -d unimp \
 -semihosting-config enable=on,target=native \
--kernel build/m3/hello.elf \
--S -s
+-kernel build/m3/hello.elf
