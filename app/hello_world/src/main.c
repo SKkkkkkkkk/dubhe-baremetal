@@ -7,7 +7,5 @@
 #elif defined(M3)
 	#include "main_m3.c"
 #else
-
-#error "unknowed device!"
-
+	#error "unknowed device!"
 #endif
