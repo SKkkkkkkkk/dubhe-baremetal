@@ -72,11 +72,13 @@ elseif($CACHE{DEVICE} STREQUAL "M3") # "M3"
 	set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
 	set(link_options ${link_options} -static -nostartfiles --specs=nosys.specs)
 	if($CACHE{BOARD} STREQUAL "QEMU")
-		set(link_options ${link_options} -T ${SDK_DIR}/devices/m3/src/m3.ld)
+		# set(link_options ${link_options} -T ${SDK_DIR}/devices/m3/src/m3.ld)
 	else()
-		set(link_options ${link_options} -T ${SDK_DIR}/devices/m3/src/m3.ld)
+		set(link_options ${link_options} -T ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.ld)
 	endif()
 	set(device_lib m3)
+	set(CPP arm-none-eabi-cpp)
+	set(lds ${SDK_DIR}/devices/m3/src/m3.ld.S)
 else()
 	message(FATAL_ERROR "unsupport device!")
 endif()
@@ -171,6 +173,25 @@ target_link_options(${PROJECT_NAME}.elf
 	PRIVATE
 		${compile_options_arch}
 		${link_options}
+)
+# ld.S => ld
+# add_dependencies(${PROJECT_NAME}.elf ${PROJECT_NAME}.ld)
+# set_target_properties(${PROJECT_NAME}.elf PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.ld)
+# add_custom_target(${PROJECT_NAME}.ld
+# 	COMMAND ${CPP} -P -x assembler-with-cpp -D__LINKER__ -o ${PROJECT_NAME}.ld ${lds}
+# 	DEPENDS
+# 		${lds}
+# )
+set_target_properties(${PROJECT_NAME}.elf PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.ld)
+add_dependencies(${PROJECT_NAME}.elf lds2ld)
+add_custom_target(lds2ld
+	DEPENDS ${PROJECT_NAME}.ld
+)
+add_custom_command(
+	OUTPUT ${PROJECT_NAME}.ld
+	COMMAND ${CPP} -P -x assembler-with-cpp -D__LINKER__ -o ${PROJECT_NAME}.ld ${lds}
+	DEPENDS ${lds}
+	VERBATIM
 )
 
 # link libs
