@@ -44,7 +44,7 @@ endif()
 set(compile_options_arch)
 set(compile_options_warning -Wall -Werror)
 set(compile_options_opt -ffunction-sections -fdata-sections)
-set(link_options -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map)
+set(link_options -Wl,--fatal-warning -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map)
 set(device_lib)
 
 if($CACHE{DEVICE} STREQUAL "A55") # "A55"
@@ -182,17 +182,19 @@ target_link_options(${PROJECT_NAME}.elf
 # 	DEPENDS
 # 		${lds}
 # )
-set_target_properties(${PROJECT_NAME}.elf PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.ld)
-add_dependencies(${PROJECT_NAME}.elf lds2ld)
-add_custom_target(lds2ld
-	DEPENDS ${PROJECT_NAME}.ld
-)
-add_custom_command(
-	OUTPUT ${PROJECT_NAME}.ld
-	COMMAND ${CPP} -P -x assembler-with-cpp -D__LINKER__ -o ${PROJECT_NAME}.ld ${lds}
-	DEPENDS ${lds}
-	VERBATIM
-)
+if($CACHE{DEVICE} STREQUAL "M3") 
+	set_target_properties(${PROJECT_NAME}.elf PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.ld)
+	add_dependencies(${PROJECT_NAME}.elf lds2ld)
+	add_custom_target(lds2ld
+		DEPENDS ${PROJECT_NAME}.ld
+	)
+	add_custom_command(
+		OUTPUT ${PROJECT_NAME}.ld
+		COMMAND ${CPP} -P -x assembler-with-cpp -D__LINKER__ -o ${PROJECT_NAME}.ld ${lds}
+		DEPENDS ${lds}
+		VERBATIM
+	)
+endif()
 
 # link libs
 target_link_libraries(${PROJECT_NAME}.elf
