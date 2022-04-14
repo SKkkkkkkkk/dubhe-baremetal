@@ -44,7 +44,7 @@ endif()
 set(compile_options_arch)
 set(compile_options_warning -Wall -Werror)
 set(compile_options_opt -ffunction-sections -fdata-sections)
-set(link_options -Wl,--fatal-warning -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map)
+set(link_options -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map)
 set(device_lib)
 
 if($CACHE{DEVICE} STREQUAL "A55") # "A55"

@@ -6,6 +6,7 @@ target_sources(${LIB_OBJS_NAME}
 	PRIVATE
 		crt0.S
 		spi_start.S
+		system_ri5cy.c
 )
 
 target_include_directories(${LIB_OBJS_NAME}

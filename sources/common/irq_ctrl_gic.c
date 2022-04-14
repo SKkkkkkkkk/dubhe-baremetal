@@ -29,15 +29,23 @@
 
 #define __WEAK  __attribute__((weak))
 #define __STATIC_FORCEINLINE __attribute__((always_inline)) static inline
-/**
-  \brief   Data Synchronization Barrier
-  \details Acts as a special kind of Data Memory Barrier.
-           It completes when all explicit memory accesses before this instruction complete.
- */
-__STATIC_FORCEINLINE  void __DSB(void)
-{
-  asm volatile ("dsb 0xF":::"memory");
-}
+
+#ifdef A55
+  /**
+    \brief   Data Synchronization Barrier
+    \details Acts as a special kind of Data Memory Barrier.
+            It completes when all explicit memory accesses before this instruction complete.
+  */
+  __STATIC_FORCEINLINE  void __DSB(void)
+  {
+    asm volatile ("dsb 0xF":::"memory");
+  }
+#else
+  __STATIC_FORCEINLINE  void __DSB(void)
+  {
+    asm volatile ("nop":::"memory");
+  }
+#endif
 
 
 #if defined(__GIC_PRESENT) && (__GIC_PRESENT == 1U)
@@ -425,6 +433,31 @@ __WEAK uint32_t IRQ_GetPriorityGroupBits (void) {
 
   return (7U - bp);
 }
+
+
+#ifdef RI5CY
+  __WEAK void IRQInterrupt()
+  {
+    uint32_t iar = GICInterface->IAR;
+    uint32_t int_id = iar & 0x3FFUL;
+    // seehi_printf("IRQ_Stack: 0x%x,iar:%u\n", &iar, iar);
+    if (int_id <= GPIO_IRQn)
+    {
+      IRQ_GetHandler(int_id)();
+    }
+    else if (int_id >= 1020)
+    {
+      // seehi_printf("IRQ%u :This is a spurious interrupt!\n", int_id);
+    }
+    else
+    {
+      // seehi_printf("IRQ%u :This IRQ is not use!\n", int_id);
+    }
+
+    // seehi_printf("GICInterface->IAR: %u\n", int_id);
+    GICInterface->EOIR = iar;
+  }
+#endif
 
 #endif
 
