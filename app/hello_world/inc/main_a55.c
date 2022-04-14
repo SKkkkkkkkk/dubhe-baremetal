@@ -11,6 +11,13 @@ uint32_t get_daif()
 	return daif;
 }
 
+// uint64_t get_allint()
+// {
+// 	uint64_t allint;
+// 	asm volatile("mrs %0, ALLINT":"=r"(allint));
+// 	return allint;
+// }
+
 uint32_t get_currentel()
 {
 	uint32_t currentel;
@@ -62,11 +69,16 @@ void gic_send_sgi(uint8_t core_id, IRQn_Type irqn)
 
 int main()
 {
+	// uint64_t allint = get_allint();
+	// (void)allint;
+
 	uint64_t sctlr = get_sctlr_el3();
 	sctlr |= (1<<1); //A
 	sctlr |= (1<<3); //SA
 	printf("0x%x\n", *(uint32_t*)1);
 	set_sctlr_el3(sctlr);
+	asm volatile("dsb 0xf":::"memory");
+	asm volatile("isb 0xf":::"memory");
 	sctlr = get_sctlr_el3();
 	printf("0x%x\n", *(uint32_t*)1);
 	GIC_Enable();
