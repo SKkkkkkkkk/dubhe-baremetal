@@ -114,7 +114,7 @@ rtl_init_end:
 	mov x0, #0x53e                 	// #568
 	msr scr_el3, x0
 
-	msr spsel, 0
+	msr spsel, 1
 	bl setup_stack
 
 	mrs x1, mpidr_el1 //0x80000000

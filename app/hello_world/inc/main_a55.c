@@ -75,31 +75,22 @@ void gic_send_sgi(uint8_t core_id, IRQn_Type irqn)
 	GICDistributor->SGIR = ((1 << (16 + core_id)) | irqn);
 }
 
+
+void irq32_handler(void)
+{
+	printf("this is irq.32.\n");
+}
+
 int main()
 {
-	double a = 1.1;
-	double b = 1.2;
-	printf("%f\n",(a+b)*1.1/3.1);
+	printf("hello world,in core.%u\n", get_core_id());
 
-	uint64_t sctlr = get_sctlr_el3();
-	sctlr |= (1<<1); //A
-	sctlr |= (1<<3); //SA
-	printf("0x%x\n", *(uint32_t*)1);
-	set_sctlr_el3(sctlr);
-	asm volatile("dsb 0xf":::"memory");
-	asm volatile("isb 0xf":::"memory");
-	sctlr = get_sctlr_el3();
-	printf("0x%x\n", *(uint32_t*)1);
-	GIC_Enable();
 	IRQ_Initialize();
-	IRQ_SetPriority(32, 0);
+	IRQ_SetHandler(32, irq32_handler);
+	// IRQ_SetPriority(32, 0);
 	IRQ_Enable(32);
 	IRQ_SetPending(32);
-	for(uint32_t i=0xffff;i!=0;i--);
-	gic_send_sgi(0, SGI0_IRQn);
-	gic_send_sgi(0, SGI1_IRQn);
-	printf("0x%x\n", *(uint32_t*)0);
-	printf("hello world,in core.%u\n", get_core_id());
+
 	wakeup_core(1, core1_c_entry);
 	// wakeup_core(2, core2_c_entry);
 	// wakeup_core(3, core3_c_entry);

@@ -457,6 +457,20 @@ __WEAK uint32_t IRQ_GetPriorityGroupBits (void) {
     // seehi_printf("GICInterface->IAR: %u\n", int_id);
     GICInterface->EOIR = iar;
   }
+#else
+  void irqs_handler(void)
+  {
+    uint32_t iar = GICInterface->IAR;
+    uint32_t int_id = iar & 0x3FFUL;
+    if(int_id <= 256)
+    {
+      IRQHandler_t irq_handler = IRQ_GetHandler(int_id);
+      if(irq_handler!=(IRQHandler_t)0)
+        irq_handler();
+    }
+    GICInterface->EOIR = iar;
+  }
+
 #endif
 
 #endif

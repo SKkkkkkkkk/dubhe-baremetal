@@ -40,7 +40,44 @@ vector_entry sync_exception_sph
 end_vector_entry sync_exception_sph
 
 vector_entry irq_sph
-	b .
+	/* Save volatile registers. */
+	STP		X0, X1, [SP, #-0x10]!
+	STP		X2, X3, [SP, #-0x10]!
+	STP		X4, X5, [SP, #-0x10]!
+	STP		X6, X7, [SP, #-0x10]!
+	STP		X8, X9, [SP, #-0x10]!
+	STP		X10, X11, [SP, #-0x10]!
+	STP		X12, X13, [SP, #-0x10]!
+	STP		X14, X15, [SP, #-0x10]!
+	STP		X16, X17, [SP, #-0x10]!
+	STP		X18, X19, [SP, #-0x10]!
+	STP		X29, X30, [SP, #-0x10]!
+
+	/* Save SPSR & ELR */
+	MRS		X3, SPSR_EL3
+	MRS		X2, ELR_EL3
+	STP 	X2, X3, [SP, #-0x10]!
+
+	bl		irqs_handler
+
+	/* Restore volatile registers. */
+	LDP 	X4, X5, [SP], #0x10  /* SPSR and ELR. */
+	MSR		SPSR_EL3, X5 /*_RB_ Assumes started in EL3. */
+	MSR		ELR_EL3, X4
+
+	LDP		X29, X30, [SP], #0x10
+	LDP		X18, X19, [SP], #0x10
+	LDP		X16, X17, [SP], #0x10
+	LDP		X14, X15, [SP], #0x10
+	LDP		X12, X13, [SP], #0x10
+	LDP		X10, X11, [SP], #0x10
+	LDP		X8, X9, [SP], #0x10
+	LDP		X6, X7, [SP], #0x10
+	LDP		X4, X5, [SP], #0x10
+	LDP		X2, X3, [SP], #0x10
+	LDP		X0, X1, [SP], #0x10
+	
+	ERET
 end_vector_entry irq_sph
 
 vector_entry fiq_sph
