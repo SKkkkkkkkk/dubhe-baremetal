@@ -1,1 +1,5 @@
+set architecture aarch64
 tar	rem:1234
+set scheduler-locking on
+lay	src
+lay reg

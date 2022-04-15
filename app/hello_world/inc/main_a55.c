@@ -78,20 +78,31 @@ void gic_send_sgi(uint8_t core_id, IRQn_Type irqn)
 
 void irq32_handler(void)
 {
-	printf("this is irq.32.\n");
+	volatile double d0;
+	volatile double pi = 5.55555;
+	(void)(pi*pi/1.234);
+	asm volatile("fmov %0, d0":"=r"(d0));
+	printf("\tin irq d0:%f\n", d0);
 }
 
 int main()
 {
-	printf("hello world,in core.%u\n", get_core_id());
+	// printf("hello world,in core.%u\n", get_core_id());
 
 	IRQ_Initialize();
 	IRQ_SetHandler(32, irq32_handler);
 	// IRQ_SetPriority(32, 0);
 	IRQ_Enable(32);
+
+	double d0 = 3.14;
+	double d1 = 1.11;
+	asm volatile("fmov d0, %0"::"r"(d0));
+	asm volatile("fmov d1, %0"::"r"(d1));
+	asm volatile("fadd d0, d1, d0");
+	asm volatile("fmov %0, d0":"=r"(d0));
 	IRQ_SetPending(32);
 
-	wakeup_core(1, core1_c_entry);
+	// wakeup_core(1, core1_c_entry);
 	// wakeup_core(2, core2_c_entry);
 	// wakeup_core(3, core3_c_entry);
 	while(1);
