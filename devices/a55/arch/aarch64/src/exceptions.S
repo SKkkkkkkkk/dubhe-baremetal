@@ -40,6 +40,63 @@ vector_entry sync_exception_sph
 end_vector_entry sync_exception_sph
 
 vector_entry irq_sph
+	b _irq_sph
+end_vector_entry irq_sph
+
+vector_entry fiq_sph
+	b .
+end_vector_entry fiq_sph
+
+vector_entry serror_sph
+	b .
+end_vector_entry serror_sph
+
+
+
+	/* -----------------------------------------------------
+	 * Lower EL using AArch64 : 0x400 - 0x600
+	 * -----------------------------------------------------
+	 */
+vector_entry sync_exception_aarch64
+	b .
+end_vector_entry sync_exception_aarch64
+
+vector_entry irq_aarch64
+	b .
+end_vector_entry irq_aarch64
+
+vector_entry fiq_aarch64
+	b .
+end_vector_entry fiq_aarch64
+
+vector_entry serror_aarch64
+	b .
+end_vector_entry serror_aarch64
+
+
+	/* -----------------------------------------------------
+	 * Lower EL using AArch32 : 0x600 - 0x800
+	 * -----------------------------------------------------
+	 */
+vector_entry sync_exception_aarch32
+	b .
+end_vector_entry sync_exception_aarch32
+
+vector_entry irq_aarch32
+	b .
+end_vector_entry irq_aarch32
+
+vector_entry fiq_aarch32
+	b .
+end_vector_entry fiq_aarch32
+
+vector_entry serror_aarch32
+	b .
+end_vector_entry serror_aarch32
+
+
+
+_irq_sph:
 	/* Save volatile registers. */
 	STP		X0, X1, [SP, #-0x10]!
 	STP		X2, X3, [SP, #-0x10]!
@@ -112,56 +169,3 @@ vector_entry irq_sph
 	LDP		X0, X1, [SP], #0x10
 
 	ERET
-end_vector_entry irq_sph
-
-vector_entry fiq_sph
-	b .
-end_vector_entry fiq_sph
-
-vector_entry serror_sph
-	b .
-end_vector_entry serror_sph
-
-
-
-	/* -----------------------------------------------------
-	 * Lower EL using AArch64 : 0x400 - 0x600
-	 * -----------------------------------------------------
-	 */
-vector_entry sync_exception_aarch64
-	b .
-end_vector_entry sync_exception_aarch64
-
-vector_entry irq_aarch64
-	b .
-end_vector_entry irq_aarch64
-
-vector_entry fiq_aarch64
-	b .
-end_vector_entry fiq_aarch64
-
-vector_entry serror_aarch64
-	b .
-end_vector_entry serror_aarch64
-
-
-	/* -----------------------------------------------------
-	 * Lower EL using AArch32 : 0x600 - 0x800
-	 * -----------------------------------------------------
-	 */
-vector_entry sync_exception_aarch32
-	b .
-end_vector_entry sync_exception_aarch32
-
-vector_entry irq_aarch32
-	b .
-end_vector_entry irq_aarch32
-
-vector_entry fiq_aarch32
-	b .
-end_vector_entry fiq_aarch32
-
-vector_entry serror_aarch32
-	b .
-end_vector_entry serror_aarch32
-

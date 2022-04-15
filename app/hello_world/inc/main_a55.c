@@ -87,23 +87,16 @@ void irq32_handler(void)
 
 int main()
 {
-	// printf("hello world,in core.%u\n", get_core_id());
+	printf("hello world,in core.%u\n", get_core_id());
 
 	IRQ_Initialize();
 	IRQ_SetHandler(32, irq32_handler);
-	// IRQ_SetPriority(32, 0);
+	IRQ_SetPriority(32, 0);
 	IRQ_Enable(32);
-
-	double d0 = 3.14;
-	double d1 = 1.11;
-	asm volatile("fmov d0, %0"::"r"(d0));
-	asm volatile("fmov d1, %0"::"r"(d1));
-	asm volatile("fadd d0, d1, d0");
-	asm volatile("fmov %0, d0":"=r"(d0));
 	IRQ_SetPending(32);
 
-	// wakeup_core(1, core1_c_entry);
-	// wakeup_core(2, core2_c_entry);
-	// wakeup_core(3, core3_c_entry);
+	wakeup_core(1, core1_c_entry);
+	wakeup_core(2, core2_c_entry);
+	wakeup_core(3, core3_c_entry);
 	while(1);
 }
