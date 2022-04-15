@@ -3,7 +3,105 @@
 
 	.globl entrypoint
 func entrypoint
-	// mrs x0, sctlr_el3 //0x30c50830
+#ifdef RTL
+	// Initialise the register bank
+	mov x0, xzr
+	mov x1, xzr
+	mov x2, xzr
+	mov x3, xzr
+	mov x4, xzr
+	mov x5, xzr
+	mov x6, xzr
+	mov x7, xzr
+	mov x8, xzr
+	mov x9, xzr
+	mov x10, xzr
+	mov x11, xzr
+	mov x12, xzr
+	mov x13, xzr
+	mov x14, xzr
+	mov x15, xzr
+	mov x16, xzr
+	mov x17, xzr
+	mov x18, xzr
+	mov x19, xzr
+	mov x20, xzr
+	mov x21, xzr
+	mov x22, xzr
+	mov x23, xzr
+	mov x24, xzr
+	mov x25, xzr
+	mov x26, xzr
+	mov x27, xzr
+	mov x28, xzr
+	mov x29, xzr
+	mov x30, xzr
+
+	// Zero the stack pointers, link registers and status registers
+	mov     sp,       x0
+	msr     sp_el0,   xzr
+	msr     sp_el1,   xzr
+	msr     sp_el2,   xzr
+	msr     elr_el1,  xzr
+	msr     elr_el2,  xzr
+	msr     elr_el3,  xzr
+	msr 	spsr_el1, xzr
+	msr 	spsr_el2, xzr
+	msr 	spsr_el3, xzr
+
+	msr 	vttbr_el2, xzr
+
+	// Enable NEON and initialize the register bank if this
+	// feature has been implemented
+	mrs     x0, ID_AA64PFR0_EL1
+	sbfx    x5, x0, #16, #4         // Extract the floating-point field
+    cmp     x5, #-1                 // x0 == -1 if FP not present
+	b.eq    rtl_init_end            // Skip FP initialization if not present
+
+	mov     x1, #(0x3 << 20)
+	msr     cpacr_el1, x1
+	mrs     x1, cptr_el3
+
+	bic     x1, x1, #(0x1 << 10)      // Ensure that CPTR_EL3.TFP is clear
+	msr     cptr_el3, x1
+	isb
+
+	fmov    d0,  xzr
+	fmov    d1,  xzr
+	fmov    d2,  xzr
+	fmov    d3,  xzr
+	fmov    d4,  xzr
+	fmov    d5,  xzr
+	fmov    d6,  xzr
+	fmov    d7,  xzr
+	fmov    d8,  xzr
+	fmov    d9,  xzr
+	fmov    d10,  xzr
+	fmov    d11,  xzr
+	fmov    d12,  xzr
+	fmov    d13,  xzr
+	fmov    d14,  xzr
+	fmov    d15,  xzr
+	fmov    d16,  xzr
+	fmov    d17,  xzr
+	fmov    d18,  xzr
+	fmov    d19,  xzr
+	fmov    d20,  xzr
+	fmov    d21,  xzr
+	fmov    d22,  xzr
+	fmov    d23,  xzr
+	fmov    d24,  xzr
+	fmov    d25,  xzr
+	fmov    d26,  xzr
+	fmov    d27,  xzr
+	fmov    d28,  xzr
+	fmov    d29,  xzr
+	fmov    d30,  xzr
+	fmov    d31,  xzr
+rtl_init_end:
+#endif
+
+	mrs x0, sctlr_el3 //0x30c50830
 	ldr x0, =0x30c50830 
 	msr sctlr_el3, x0
 	isb
@@ -12,53 +110,10 @@ func entrypoint
 	msr vbar_el3, x0
 	isb
 
-	// bl init_general_regs
-	mov x0, XZR
-	mov x1, XZR
-	mov x2, XZR
-	mov x3, XZR
-	mov x4, XZR
-	mov x5, XZR
-	mov x6, XZR
-	mov x7, XZR
-	mov x8, XZR
-	mov x9, XZR
-	mov x10, XZR
-	mov x11, XZR
-	mov x12, XZR
-	mov x13, XZR
-	mov x14, XZR
-	mov x15, XZR
-	mov x16, XZR
-	mov x17, XZR
-	mov x18, XZR
-	mov x19, XZR
-	mov x20, XZR
-	mov x21, XZR
-	mov x22, XZR
-	mov x23, XZR
-	mov x24, XZR
-	mov x25, XZR
-	mov x26, XZR
-	mov x27, XZR
-	mov x28, XZR
-	mov x29, XZR
-	mov x30, XZR
-
-	// mov	x1, #0x100a //(SCTLR_I_BIT | SCTLR_A_BIT | SCTLR_SA_BIT)
-	// mrs	x0, sctlr_el3
-	// orr	x0, x0, x1
-	// bfi x0, xzr, #1, #1 // clear bit1
-	// msr	sctlr_el3, x0
-	// isb
-
 	mrs x0, scr_el3
-	mov x0, #0x238                 	// #568
+	mov x0, #0x53e                 	// #568
 	msr scr_el3, x0
 
-	//mrs x0, daif
-	//mrs x1, currentel
-	//mrs x2, spsel
 	msr spsel, 0
 	bl setup_stack
 
@@ -96,25 +151,6 @@ data_init_end:
 	cmp w1, #0
 	msr daifclr, #0xf	//enable syserror,irq,fiq
 	bne secondary_core
-
-#define el2_main main
-	// bl config_mmu
-
-	// Initialize SCTLR_EL2 and HCR_EL2 to save values before entering EL2.
-	//MSR SCTLR_EL2, XZR
-	//MSR HCR_EL2, XZR
-	
-	// Determine the EL2 Execution state.
-	//MRS X0, SCR_EL3
-	//ORR X0, X0, #(1<<10) // RW EL2 Execution state is AArch64.
-	//ORR X0, X0, #(1<<0) // NS EL1 is Non-secure world.
-	//MSR SCR_EL3, x0
-	//MOV X0, #0b01001 // DAIF=0000 
-	//MSR SPSR_EL3, X0 // M[4:0]=01001 EL2h must match SCR_EL3.RW
-	//// Determine EL2 entry.
-	//ADR X0, el2_main // el2_entry points to the first instruction of 
-	//MSR ELR_EL3, X0 // EL2 code.
-
 	bl main
 	b .
 endfunc entrypoint

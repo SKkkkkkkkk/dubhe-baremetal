@@ -32,6 +32,14 @@ uint64_t get_sctlr_el3()
 	return sctlr_el3;
 }
 
+uint64_t get_scr_el3()
+{
+	uint64_t scr_el3;
+	asm volatile("mrs %0, scr_el3":"=r"(scr_el3));
+	return scr_el3;
+}
+
+
 void set_sctlr_el3(uint64_t sctlr_el3)
 {
 	asm volatile("msr sctlr_el3, %0"::"r"(sctlr_el3));
@@ -69,8 +77,9 @@ void gic_send_sgi(uint8_t core_id, IRQn_Type irqn)
 
 int main()
 {
-	// uint64_t allint = get_allint();
-	// (void)allint;
+	double a = 1.1;
+	double b = 1.2;
+	printf("%f\n",(a+b)*1.1/3.1);
 
 	uint64_t sctlr = get_sctlr_el3();
 	sctlr |= (1<<1); //A
