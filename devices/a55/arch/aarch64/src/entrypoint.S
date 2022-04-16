@@ -66,38 +66,38 @@ func entrypoint
 	msr     cptr_el3, x1
 	isb
 
-	fmov    q0,  xzr
-	fmov    q1,  xzr
-	fmov    q2,  xzr
-	fmov    q3,  xzr
-	fmov    q4,  xzr
-	fmov    q5,  xzr
-	fmov    q6,  xzr
-	fmov    q7,  xzr
-	fmov    q8,  xzr
-	fmov    q9,  xzr
-	fmov    q10,  xzr
-	fmov    q11,  xzr
-	fmov    q12,  xzr
-	fmov    q13,  xzr
-	fmov    q14,  xzr
-	fmov    q15,  xzr
-	fmov    q16,  xzr
-	fmov    q17,  xzr
-	fmov    q18,  xzr
-	fmov    q19,  xzr
-	fmov    q20,  xzr
-	fmov    q21,  xzr
-	fmov    q22,  xzr
-	fmov    q23,  xzr
-	fmov    q24,  xzr
-	fmov    q25,  xzr
-	fmov    q26,  xzr
-	fmov    q27,  xzr
-	fmov    q28,  xzr
-	fmov    q29,  xzr
-	fmov    q30,  xzr
-	fmov    q31,  xzr
+	fmov    d0,  xzr
+	fmov    d1,  xzr
+	fmov    d2,  xzr
+	fmov    d3,  xzr
+	fmov    d4,  xzr
+	fmov    d5,  xzr
+	fmov    d6,  xzr
+	fmov    d7,  xzr
+	fmov    d8,  xzr
+	fmov    d9,  xzr
+	fmov    d10,  xzr
+	fmov    d11,  xzr
+	fmov    d12,  xzr
+	fmov    d13,  xzr
+	fmov    d14,  xzr
+	fmov    d15,  xzr
+	fmov    d16,  xzr
+	fmov    d17,  xzr
+	fmov    d18,  xzr
+	fmov    d19,  xzr
+	fmov    d20,  xzr
+	fmov    d21,  xzr
+	fmov    d22,  xzr
+	fmov    d23,  xzr
+	fmov    d24,  xzr
+	fmov    d25,  xzr
+	fmov    d26,  xzr
+	fmov    d27,  xzr
+	fmov    d28,  xzr
+	fmov    d29,  xzr
+	fmov    d30,  xzr
+	fmov    d31,  xzr
 rtl_init_end:
 #endif
 
