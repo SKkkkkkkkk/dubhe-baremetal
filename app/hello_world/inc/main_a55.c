@@ -96,7 +96,5 @@ int main()
 	IRQ_SetPending(32);
 
 	wakeup_core(1, core1_c_entry);
-	wakeup_core(2, core2_c_entry);
-	wakeup_core(3, core3_c_entry);
 	while(1);
 }
