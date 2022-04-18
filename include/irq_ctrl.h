@@ -190,6 +190,11 @@ int32_t IRQ_SetPriorityGroupBits (uint32_t bits);
 ///         optional IRQ_PRIORITY_ERROR bit set.
 uint32_t IRQ_GetPriorityGroupBits (void);
 
+#ifdef RTL
+  int32_t IRQ_Initialize_RTL (void);
+  int32_t IRQ_Enable_RTL (IRQn_ID_t irqn);
+#endif
+
 #endif  // IRQ_CTRL_H_
 
 #endif

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "wakeup_core.h"
 #include "pl001.h"
 #include "gic.h"
@@ -92,9 +93,11 @@ int main()
 	IRQ_Initialize();
 	IRQ_SetHandler(32, irq32_handler);
 	IRQ_SetPriority(32, 0);
-	IRQ_Enable(32);
+	IRQ_Enable((IRQn_ID_t)32);
 	IRQ_SetPending(32);
 
 	wakeup_core(1, core1_c_entry);
 	while(1);
 }
+
+

@@ -58,6 +58,56 @@
 static IRQHandler_t IRQTable[IRQ_GIC_LINE_COUNT] = { 0U };
 static uint32_t     IRQ_ID0;
 
+#ifdef RTL
+  /// Initialize the interrupt distributor for RTL.
+  static inline void GIC_DistInit_For_RTL(void)
+  {
+    //Enable distributor
+    GIC_EnableDistributor();
+  }
+
+  /// Initialize the CPU's interrupt interface for RTL
+  static inline void GIC_CPUInterfaceInit_For_RTL(void)
+  {
+    //Enable interface
+    GIC_EnableInterface();
+    //Set binary point to 0
+    GIC_SetBinaryPoint(7U); //禁止中断嵌套
+    //Set priority mask
+    GIC_SetInterfacePriorityMask(0xFFU);
+  }
+
+  /// Initialize interrupt controller.
+  int32_t IRQ_Initialize_RTL (void)
+  {
+    GIC_DistInit_For_RTL();
+    GIC_CPUInterfaceInit_For_RTL();
+    return 0;
+  }
+
+  /// Enable interrupt.
+  int32_t IRQ_Enable_RTL (IRQn_ID_t irqn)
+  {
+    int32_t status;
+
+    if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT)) {
+      //Disable the SPI interrupt
+      GIC_DisableIRQ((IRQn_Type)irqn);
+      //Set level-sensitive (and N-N model)
+      GIC_SetConfiguration((IRQn_Type)irqn, 0U);
+      //Set target list to CPU0
+      GIC_SetTarget((IRQn_Type)irqn, 1U);
+      GIC_EnableIRQ ((IRQn_Type)irqn);
+      status = 0;
+    } else {
+      status = -1;
+    }
+
+    return (status);
+  }
+
+#endif
+
 /// Initialize interrupt controller.
 __WEAK int32_t IRQ_Initialize (void) {
   uint32_t i;
