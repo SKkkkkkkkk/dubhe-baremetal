@@ -1,34 +1,25 @@
 /*
- * Copyright (c) 2013-2020, ARM Limited and Contributors. All rights reserved.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
-/*
  * The .data section gets copied from ROM to RAM at runtime.
  * Its LMA should be 16-byte aligned to allow efficient copying of 16-bytes
  * aligned regions in it.
  * Its VMA must be page-aligned as it marks the first read/write page.
  */
+#include "memory_layout.h"
 #define DATA_ALIGN	16
-
-#include <common/bl_common.ld.h>
-#include <lib/xlat_tables/xlat_tables_defs.h>
-
 OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
 MEMORY {
-    ROM (rx): ORIGIN = BL1_RO_BASE, LENGTH = BL1_RO_LIMIT - BL1_RO_BASE
-    RAM (rwx): ORIGIN = BL1_RW_BASE, LENGTH = BL1_RW_LIMIT - BL1_RW_BASE
+    ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE
+    RAM (rwx): ORIGIN = __RAM_BASE, LENGTH = __RAM_SIZE
 }
 
 SECTIONS
 {
-    . = BL1_RO_BASE;
+    . = __ROM_BASE;
     ASSERT(. == ALIGN(PAGE_SIZE),
-           "BL1_RO_BASE address is not aligned on a page boundary.")
+           "__ROM_BASE address is not aligned on a page boundary.")
 
 #if SEPARATE_CODE_AND_RODATA
     .text . : {
@@ -73,9 +64,6 @@ SECTIONS
         *entrypoint.o(.text*)
         *(SORT_BY_ALIGNMENT(.text*))
         *(SORT_BY_ALIGNMENT(.rodata*))
-
-	RODATA_COMMON
-
         *(.vectors)
         __RO_END__ = .;
 
@@ -88,12 +76,9 @@ SECTIONS
     } >ROM
 #endif
 
-    ASSERT(__CPU_OPS_END__ > __CPU_OPS_START__,
-           "cpu_ops not defined for this platform.")
-
-    . = BL1_RW_BASE;
-    ASSERT(BL1_RW_BASE == ALIGN(PAGE_SIZE),
-           "BL1_RW_BASE address is not aligned on a page boundary.")
+    . = __RAM_BASE;
+    ASSERT(. == ALIGN(PAGE_SIZE),
+           "__RAM_BASE address is not aligned on a page boundary.")
 
     DATA_SECTION >RAM AT>ROM
     __DATA_RAM_START__ = __DATA_START__;

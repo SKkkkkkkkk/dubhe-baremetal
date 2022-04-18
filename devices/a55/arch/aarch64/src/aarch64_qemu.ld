@@ -48,26 +48,25 @@ SECTIONS
     {
         __DATA_START__ = .; 
         *(SORT_BY_ALIGNMENT(.data*))
-        . = ALIGN(8);
+        . = ALIGN(16);
         __DATA_END__ = .; 
     } >RAM AT>ROM
     __DATA_RAM_START__ = __DATA_START__;
     __DATA_RAM_END__ = __DATA_END__;
-    ASSERT(__DATA_RAM_END__ == ALIGN(8), "__DATA_RAM_END__ address is not aligned on 8B.")
+    ASSERT(__DATA_RAM_END__ == ALIGN(16), "__DATA_RAM_END__ address is not aligned on 16B.")
 
     .bss (NOLOAD) : ALIGN(16) 
-    { 
+    {
         __BSS_START__ = .;
         *(SORT_BY_ALIGNMENT(.bss*)) 
         *(COMMON)
-        . = ALIGN(8);
+        . = ALIGN(16);
         __BSS_END__ = .; 
     } >RAM
-    ASSERT(__BSS_END__ == ALIGN(8), "__BSS_END__ address is not aligned on 8B.")
+    ASSERT(__BSS_END__ == ALIGN(16), "__BSS_END__ address is not aligned on 16B.")
 
-    .heap (NOLOAD):
+    .heap (NOLOAD): ALIGN(16)
     {
-        . = ALIGN(8);
         __HEAP_START__ = .;
         end = __HEAP_START__;
         . = . + _heap_size ;
@@ -91,9 +90,7 @@ SECTIONS
     __DATA_SIZE__ = SIZEOF(.data);
     __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     __BSS_SIZE__ = SIZEOF(.bss);
-    ASSERT(__ROM_END__ <= (0x00000000 + 0x04000000), "BL1's ROM content has exceeded its limit.")
-    /* ASSERT(__ROM_END__ <= (0x00400000 + 0x00010000), "BL1's ROM content has exceeded its limit.") */
     
-    ASSERT(. <= (0x0e000000 + 0x01000000), "BL1's RW section has exceeded its limit.")
-    /* ASSERT(__RAM_END__ <= (0x00a00000 + 0x00020000), "BL1's RW section has exceeded its limit.") */
+    ASSERT(__ROM_END__ <= (0x00000000 + 0x04000000), "ROM content has exceeded its limit.")
+    ASSERT(. <= (0x0e000000 + 0x01000000), "RW section has exceeded its limit.")
 }
