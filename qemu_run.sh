@@ -6,5 +6,4 @@ qemu-system-aarch64 \
 -serial stdio \
 -d unimp \
 -semihosting-config enable=on,target=native \
--bios build/a55_qemu/hello.bin \
--S -s
+-bios build/a55_qemu/hello.bin

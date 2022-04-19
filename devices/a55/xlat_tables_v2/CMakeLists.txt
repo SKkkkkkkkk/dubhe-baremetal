@@ -1,20 +1,24 @@
-set(LIB_OBJS_NAME a55)
+set(LIB_OBJS_NAME xlat_tables_v2)
 
 add_library(${LIB_OBJS_NAME} OBJECT)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE
-		arch/aarch64/src/entrypoint.S
-		arch/aarch64/src/exceptions.S
-		newlib/newlib_port.c
-		# src/mmu_test.S
+		aarch64/enable_mmu.S
+		aarch64/xlat_tables_arch.c
+		xlat_tables_context.c
+		xlat_tables_core.c
+		xlat_tables_utils.c
 )
 
+# set(SDK_DIR ../../..)
 target_include_directories(${LIB_OBJS_NAME}
 	PUBLIC
-		arch/aarch64/inc
-	PRIVATE
+		include
+		${SDK_DIR}/devices/a55/arch/aarch64/inc
 		${SDK_DIR}/include
+	PRIVATE
+		.
 )
 
 target_compile_options(${LIB_OBJS_NAME}
@@ -24,10 +28,4 @@ target_compile_options(${LIB_OBJS_NAME}
 		${compile_options_warning}
 		${compile_options_opt}
 		-mstrict-align
-)
-
-add_subdirectory(xlat_tables_v2)
-target_link_libraries(${LIB_OBJS_NAME}
-	PUBLIC
-		xlat_tables_v2
 )
