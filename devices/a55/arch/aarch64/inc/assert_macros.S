@@ -23,7 +23,7 @@
 	b._cc	300f ;\
 	adr	x0, .L_assert_filename ;\
 	mov	x1, __LINE__ ;\
-	b	asm_assert ;\
+	b	. ;\
 300:
 
 #endif /* ASSERT_MACROS_S */

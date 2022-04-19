@@ -61,9 +61,13 @@ SECTIONS
         *(SORT_BY_ALIGNMENT(.bss*)) 
         *(COMMON)
         . = ALIGN(16);
+        *(base_xlat_table)
+        . = ALIGN(16);
         __BSS_END__ = .; 
     } >RAM
     ASSERT(__BSS_END__ == ALIGN(16), "__BSS_END__ address is not aligned on 16B.")
+
+    .xlat_table (NOLOAD) : { *(xlat_table) } >RAM
 
     .heap (NOLOAD): ALIGN(16)
     {

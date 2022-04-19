@@ -6,6 +6,7 @@ target_sources(${LIB_OBJS_NAME}
 	PRIVATE
 		arch/aarch64/src/entrypoint.S
 		arch/aarch64/src/exceptions.S
+		arch/aarch64/inc/cache_helpers.S
 		newlib/newlib_port.c
 		# src/mmu_test.S
 )

@@ -201,6 +201,7 @@ target_link_libraries(${PROJECT_NAME}.elf
 	PRIVATE 
 		${device_lib}
 		${extra_libs}
+		xlat_tables_v2
 )
 
 # link libs dirs
