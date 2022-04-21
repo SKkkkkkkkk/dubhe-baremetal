@@ -1,14 +1,14 @@
-set(LIB_OBJS_NAME seehi_printf)
+set(LIB_NAME seehi_printf)
 
-add_library( ${LIB_OBJS_NAME} STATIC )
+add_library( ${LIB_NAME} STATIC )
 
-target_sources( ${LIB_OBJS_NAME} 
+target_sources( ${LIB_NAME} 
 	PRIVATE
 		seehi_print.c
 		snprintf.c
 )
 
-target_include_directories( ${LIB_OBJS_NAME}
+target_include_directories( ${LIB_NAME}
 	PUBLIC
 		.
 	PRIVATE
@@ -16,7 +16,7 @@ target_include_directories( ${LIB_OBJS_NAME}
 )
 
 
-target_compile_options( ${LIB_OBJS_NAME} 
+target_compile_options( ${LIB_NAME} 
 	PUBLIC
 		-mlittle-endian -march=armv8-a
 	PRIVATE

@@ -1,8 +1,8 @@
-set(LIB_OBJS_NAME a55)
+set(LIB_NAME a55)
 
-add_library(${LIB_OBJS_NAME} OBJECT)
+add_library(${LIB_NAME} OBJECT)
 
-target_sources(${LIB_OBJS_NAME} 
+target_sources(${LIB_NAME} 
 	PRIVATE
 		arch/aarch64/src/entrypoint.S
 		arch/aarch64/src/exceptions.S
@@ -11,14 +11,14 @@ target_sources(${LIB_OBJS_NAME}
 		# src/mmu_test.S
 )
 
-target_include_directories(${LIB_OBJS_NAME}
+target_include_directories(${LIB_NAME}
 	PUBLIC
 		arch/aarch64/inc
 	PRIVATE
 		${SDK_DIR}/include
 )
 
-target_compile_options(${LIB_OBJS_NAME}
+target_compile_options(${LIB_NAME}
 	PRIVATE
 		${compile_options_arch}
 		${compile_options_board}
@@ -28,7 +28,7 @@ target_compile_options(${LIB_OBJS_NAME}
 )
 
 add_subdirectory(xlat_tables_v2)
-target_link_libraries(${LIB_OBJS_NAME}
+target_link_libraries(${LIB_NAME}
 	PUBLIC
 		xlat_tables_v2
 )

@@ -1,20 +1,20 @@
-set(LIB_OBJS_NAME ri5cy)
+set(LIB_NAME ri5cy)
 
-add_library(${LIB_OBJS_NAME} OBJECT)
+add_library(${LIB_NAME} OBJECT)
 
-target_sources(${LIB_OBJS_NAME} 
+target_sources(${LIB_NAME} 
 	PRIVATE
 		crt0.S
 		spi_start.S
 		system_ri5cy.c
 )
 
-target_include_directories(${LIB_OBJS_NAME}
+target_include_directories(${LIB_NAME}
 	PUBLIC
 		inc
 )
 
-target_compile_options(${LIB_OBJS_NAME}
+target_compile_options(${LIB_NAME}
 	# PUBLIC
 	# 	-m32 -march=IMXpulpv2 -Wa,-march=IMXpulpv2
 	# PRIVATE
