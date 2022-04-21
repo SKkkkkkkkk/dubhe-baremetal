@@ -17,8 +17,6 @@ target_include_directories(${LIB_OBJS_NAME}
 		include
 		${SDK_DIR}/devices/a55/arch/aarch64/inc
 		${SDK_DIR}/include
-	PRIVATE
-		.
 )
 
 target_compile_options(${LIB_OBJS_NAME}
