@@ -1,1 +1,0 @@
-gdb-multiarch build/a55_qemu/hello.elf -x gdb_config
