@@ -42,7 +42,6 @@ if($CACHE{CORE} STREQUAL "A55")
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
 	set(compile_options_arch -mlittle-endian -march=armv8-a -DA55)
 	set(link_options ${link_options} -nostartfiles --specs=nosys.specs)
-	set(link_options ${link_options} -T ${SDK_DIR}/hw/cores/arm/armv8/a/cortex-a55/aarch64/src/aarch64_qemu.ld)
 ### M3
 elseif($CACHE{CORE} STREQUAL "M3")
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/armgcc.cmake)
@@ -218,7 +217,7 @@ target_link_options($CACHE{PROJECT_NAME}.elf
 
 ### link libs
 target_link_libraries($CACHE{PROJECT_NAME}.elf
-	PRIVATE -Wl,--start-group ${link_libs} -Wl,--end-group
+	PRIVATE -Wl,--start-group ${link_libs} -Wl,--end-group linkerscript
 )
 
 # Cumtom targets

@@ -25,10 +25,48 @@ target_compile_options(${LIB_NAME}
 		-mstrict-align
 )
 
+### link script
+add_custom_command(
+	OUTPUT 
+		${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld
+	DEPENDS 
+		${CMAKE_CURRENT_SOURCE_DIR}/aarch64/src/aarch64.ld.S
+	COMMAND 
+		aarch64-none-elf-cpp -P -x assembler-with-cpp -D__LINKER__
+		${compile_options_board}
+		${CMAKE_CURRENT_SOURCE_DIR}/aarch64/src/aarch64.ld.S
+		-o ${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld
+	VERBATIM
+)
+add_custom_target(_linkerscript
+	DEPENDS 
+		${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld
+	VERBATIM
+)
+
+add_library(linkerscript INTERFACE)
+add_dependencies(linkerscript _linkerscript)
+target_link_options(linkerscript
+	INTERFACE
+		-T ${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld
+)
+set_target_properties(linkerscript
+	PROPERTIES INTERFACE_LINK_DEPENDS
+		${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld
+)
+
+
+cmake_print_properties(
+	TARGETS
+		linkerscript _linkerscript
+	PROPERTIES
+		INTERFACE_LINK_DEPENDS
+)
+
 add_subdirectory(${SDK_DIR}/hw/gic/v2 gic_v2)
 add_subdirectory(${SDK_DIR}/libs/wakeup_core wakeup_core)
 target_link_libraries(${LIB_NAME}
-	PUBLIC
+	INTERFACE
 		gic_v2
 		wakeup_core
 )

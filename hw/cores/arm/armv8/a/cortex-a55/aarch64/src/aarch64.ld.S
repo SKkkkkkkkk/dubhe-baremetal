@@ -4,131 +4,117 @@
  * aligned regions in it.
  * Its VMA must be page-aligned as it marks the first read/write page.
  */
-#include "memory_layout.h"
-#define DATA_ALIGN	16
 OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
+
+#ifndef QEMU
+	#define __ROM_BASE 0x00000000
+	#define __ROM_SIZE 0x00010000 //64KB
+
+	#define __RAM_BASE 0x00A00000
+	#define __RAM_SIZE 0x00020000 //128KB
+#else
+	#define __ROM_BASE 0x00000000
+	#define __ROM_SIZE 0x04000000 //64MB
+
+	#define __RAM_BASE 0x0e000000
+	#define __RAM_SIZE 0x01000000 //16MB
+#endif
+
+#define __STACK_SIZE 0x4000 //16KB
+#define __HEAP_SIZE  0x4000 //16KB
+#define PAGE_SIZE	4096
+
 MEMORY {
-    ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE
-    RAM (rwx): ORIGIN = __RAM_BASE, LENGTH = __RAM_SIZE
+    ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE /*16384*32bit 64KB*/
+    RAM (rwx): ORIGIN = __RAM_BASE, LENGTH = __RAM_SIZE /*8192*128bit  128KB*/
 }
 
 SECTIONS
 {
-    . = __ROM_BASE;
-    ASSERT(. == ALIGN(PAGE_SIZE),
-           "__ROM_BASE address is not aligned on a page boundary.")
-
-#if SEPARATE_CODE_AND_RODATA
-    .text . : {
+    . = ORIGIN(ROM);
+    ASSERT(. == ALIGN(((1) << (12))), "BL1_RO_BASE address is not aligned on a page boundary.")
+    .text . :
+    {
         __TEXT_START__ = .;
-        *entrypoint.o(.text*)
+        *entrypoint*(.text*)
         *(SORT_BY_ALIGNMENT(.text*))
         *(.vectors)
-        . = ALIGN(PAGE_SIZE);
+        . = ALIGN(((1) << (12)));
         __TEXT_END__ = .;
-     } >ROM
-
-     /* .ARM.extab and .ARM.exidx are only added because Clang need them */
-     .ARM.extab . : {
-        *(.ARM.extab* .gnu.linkonce.armextab.*)
-     } >ROM
-
-     .ARM.exidx . : {
-        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-     } >ROM
-
-    .rodata . : {
+    } >ROM
+    .ARM.extab . : 
+    {
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+    } >ROM
+    .ARM.exidx . : 
+    {
+    *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    } >ROM
+    .rodata . : 
+    {
         __RODATA_START__ = .;
         *(SORT_BY_ALIGNMENT(.rodata*))
-
-	RODATA_COMMON
-
-        /*
-         * No need to pad out the .rodata section to a page boundary. Next is
-         * the .data section, which can mapped in ROM with the same memory
-         * attributes as the .rodata section.
-         *
-         * Pad out to 16 bytes though as .data section needs to be 16 byte
-         * aligned and lld does not align the LMA to the aligment specified
-         * on the .data section.
-         */
         __RODATA_END__ = .;
-         . = ALIGN(16);
+        . = ALIGN(16);
     } >ROM
-#else
-    ro . : {
-        __RO_START__ = .;
-        *entrypoint.o(.text*)
-        *(SORT_BY_ALIGNMENT(.text*))
-        *(SORT_BY_ALIGNMENT(.rodata*))
-        *(.vectors)
-        __RO_END__ = .;
 
-        /*
-         * Pad out to 16 bytes as .data section needs to be 16 byte aligned and
-         * lld does not align the LMA to the aligment specified on the .data
-         * section.
-         */
-         . = ALIGN(16);
-    } >ROM
-#endif
 
-    . = __RAM_BASE;
-    ASSERT(. == ALIGN(PAGE_SIZE),
-           "__RAM_BASE address is not aligned on a page boundary.")
-
-    DATA_SECTION >RAM AT>ROM
+    . = ORIGIN(RAM);
+    ASSERT(. == ALIGN(((1) << (12))), "BL1_RW_BASE address is not aligned on a page boundary.")
+    .data . : ALIGN(16) 
+    {
+        __DATA_START__ = .; 
+        *(SORT_BY_ALIGNMENT(.data*))
+        . = ALIGN(16);
+        __DATA_END__ = .; 
+    } >RAM AT>ROM
     __DATA_RAM_START__ = __DATA_START__;
     __DATA_RAM_END__ = __DATA_END__;
+    ASSERT(__DATA_RAM_END__ == ALIGN(16), "__DATA_RAM_END__ address is not aligned on 16B.")
 
-    STACK_SECTION >RAM
-    BSS_SECTION >RAM
-    XLAT_TABLE_SECTION >RAM
-
-#if USE_COHERENT_MEM
-    /*
-     * The base address of the coherent memory section must be page-aligned (4K)
-     * to guarantee that the coherent data are stored on their own pages and
-     * are not mixed with normal data.  This is required to set up the correct
-     * memory attributes for the coherent data page tables.
-     */
-    coherent_ram (NOLOAD) : ALIGN(PAGE_SIZE) {
-        __COHERENT_RAM_START__ = .;
-        *(tzfw_coherent_mem)
-        __COHERENT_RAM_END_UNALIGNED__ = .;
-        /*
-         * Memory page(s) mapped to this section will be marked
-         * as device memory.  No other unexpected data must creep in.
-         * Ensure the rest of the current memory page is unused.
-         */
-        . = ALIGN(PAGE_SIZE);
-        __COHERENT_RAM_END__ = .;
+    .bss (NOLOAD) : ALIGN(16) 
+    {
+        __BSS_START__ = .;
+        *(SORT_BY_ALIGNMENT(.bss*)) 
+        *(COMMON)
+        . = ALIGN(16);
+        *(base_xlat_table)
+        . = ALIGN(16);
+        __BSS_END__ = .; 
     } >RAM
-#endif
+    ASSERT(__BSS_END__ == ALIGN(16), "__BSS_END__ address is not aligned on 16B.")
 
-    __BL1_RAM_START__ = ADDR(.data);
-    __BL1_RAM_END__ = .;
+    .xlat_table (NOLOAD) : { *(xlat_table) } >RAM
 
+    .heap (NOLOAD): ALIGN(16)
+    {
+        __HEAP_START__ = .;
+        end = __HEAP_START__;
+        . = . + __HEAP_SIZE;
+        __HEAP_END__ = .;
+        __HEAPLIMIT = __HEAP_END__;
+    } >RAM
+
+    .stack (NOLOAD): ALIGN(16)
+    {
+        __STACKS_START__ = .;
+        . = . + __STACK_SIZE;
+        . = ALIGN(16);
+        __STACKS_END__ = .;
+        __STACK_TOP__ = __STACKS_END__;
+    } >RAM
+    ASSERT(__STACK_TOP__ == ALIGN(16), "__STACK_TOP__ address is not aligned on 16B.")
+
+    __RAM_START__ = ADDR(.data);
+    __RAM_END__ = .;
     __DATA_ROM_START__ = LOADADDR(.data);
     __DATA_SIZE__ = SIZEOF(.data);
-
-    /*
-     * The .data section is the last PROGBITS section so its end marks the end
-     * of BL1's actual content in Trusted ROM.
-     */
-    __BL1_ROM_END__ =  __DATA_ROM_START__ + __DATA_SIZE__;
-    ASSERT(__BL1_ROM_END__ <= BL1_RO_LIMIT,
-           "BL1's ROM content has exceeded its limit.")
-
+    __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     __BSS_SIZE__ = SIZEOF(.bss);
-
-#if USE_COHERENT_MEM
-    __COHERENT_RAM_UNALIGNED_SIZE__ =
-        __COHERENT_RAM_END_UNALIGNED__ - __COHERENT_RAM_START__;
-#endif
-
-    ASSERT(. <= BL1_RW_LIMIT, "BL1's RW section has exceeded its limit.")
+    
+    ASSERT(__ROM_END__ <= (0x00000000 + 0x04000000), "ROM content has exceeded its limit.")
+    ASSERT(. <= (0x0e000000 + 0x01000000), "RW section has exceeded its limit.")
 }
