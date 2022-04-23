@@ -21,3 +21,6 @@ target_compile_options(${LIB_NAME}
 		${compile_options_warning}
 		${compile_options_opt}
 )
+
+### link script(do nothing)
+add_library(linkerscript INTERFACE)

@@ -9,7 +9,6 @@ target_sources(${LIB_NAME}
 		aarch64/src/cache_helpers.S
 )
 
-
 target_include_directories(${LIB_NAME}
 	PUBLIC
 		aarch64/inc
@@ -23,6 +22,14 @@ target_compile_options(${LIB_NAME}
 		${compile_options_common}
 		${compile_options_opt}
 		-mstrict-align
+)
+
+add_subdirectory(${SDK_DIR}/hw/gic/v2 gic_v2)
+add_subdirectory(${SDK_DIR}/libs/wakeup_core wakeup_core)
+target_link_libraries(${LIB_NAME}
+	INTERFACE
+		gic_v2
+		wakeup_core
 )
 
 ### link script
@@ -53,20 +60,4 @@ target_link_options(linkerscript
 set_target_properties(linkerscript
 	PROPERTIES INTERFACE_LINK_DEPENDS
 		${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld
-)
-
-
-cmake_print_properties(
-	TARGETS
-		linkerscript _linkerscript
-	PROPERTIES
-		INTERFACE_LINK_DEPENDS
-)
-
-add_subdirectory(${SDK_DIR}/hw/gic/v2 gic_v2)
-add_subdirectory(${SDK_DIR}/libs/wakeup_core wakeup_core)
-target_link_libraries(${LIB_NAME}
-	INTERFACE
-		gic_v2
-		wakeup_core
 )

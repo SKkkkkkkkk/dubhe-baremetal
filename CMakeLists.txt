@@ -47,12 +47,11 @@ elseif($CACHE{CORE} STREQUAL "M3")
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/armgcc.cmake)
 	set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
 	set(link_options ${link_options} -nostartfiles --specs=nosys.specs --specs=nano.specs)
-	set(link_options ${link_options} -T ${SDK_DIR}/hw/cores/arm/armv7/m/coretex-m3/src/m3.ld)
 ### CV32E40P
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/riscv_gcc.cmake)
 	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
-	set(link_options ${link_options} -nostartfiles -T ${SDK_DIR}/hw/cores/riscv/cv32e40p/link.ld)
+	set(link_options ${link_options} -nostartfiles)
 ### RI5CY
 elseif($CACHE{CORE} STREQUAL "RI5CY") 
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/ri5cy_gcc.cmake)
