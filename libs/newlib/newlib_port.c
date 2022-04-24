@@ -1,3 +1,4 @@
+#if defined A55
 #include <errno.h>
 #include <sys/stat.h>
 #if defined QEMU
@@ -186,3 +187,4 @@ int wait(int *status) {
 	errno = ECHILD;
 	return -1;
 }
+#endif

@@ -5,7 +5,7 @@ set(app_src
 
 # 添加app include dirs
 set(app_inc
-	${CMAKE_CURRENT_LIST_DIR}//inc
+	${CMAKE_CURRENT_LIST_DIR}/inc
 )
 
 # 添加模块

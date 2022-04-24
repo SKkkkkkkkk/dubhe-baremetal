@@ -5,11 +5,15 @@ set(SDK_DIR ${CMAKE_SOURCE_DIR})
 
 # 选择project
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
-set(PROJECT_PATH "app/a55/hello" CACHE STRING "Project path.")
-if(IS_ABSOLUTE $CACHE{PROJECT_PATH})
-	set(PROJECT_PATH "${PROJECT_PATH}")
-else()
+set(PROJECT_PATH "" CACHE STRING "Project path.")
+if(NOT IS_ABSOLUTE $CACHE{PROJECT_PATH})
 	set(PROJECT_PATH "$ENV{PWD}/${PROJECT_PATH}")
+endif()
+
+# EXTRA_SRC
+set(EXTRA_SRC "" CACHE STRING "a extra src.") # For Vertify
+if(NOT IS_ABSOLUTE ${EXTRA_SRC})
+	set(EXTRA_SRC "$ENV{PWD}/${EXTRA_SRC}")
 endif()
 
 # 选择core
@@ -26,7 +30,16 @@ message(STATUS "Project     : $CACHE{PROJECT_NAME}")
 message(STATUS "Core        : $CACHE{CORE}")
 message(STATUS "Board       : $CACHE{BOARD}")
 message(STATUS "Build Type  : $CACHE{BUILD_TYPE}")
-message(STATUS "Proj Path   : ${PROJECT_PATH}")
+if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
+	message(STATUS "Proj Path   : ${PROJECT_PATH}")
+else()
+	message(STATUS "No PROJECT_PATH.")
+endif()
+if(NOT $CACHE{EXTRA_SRC} STREQUAL "")
+	message(STATUS "EXTRA_SRC   : ${EXTRA_SRC}")
+else()
+	message(STATUS "No EXTRA_SRC.")
+endif()
 
 # 编译选项
 ## 通用的编译选项
@@ -113,7 +126,14 @@ project($CACHE{PROJECT_NAME}
 )
 
 ## 获取工程配置信息(由app.cmake提供)
-include (${PROJECT_PATH}/app.cmake)
+set(ENABLE_USE_PL001 OFF)
+set(ENABLE_USE_DW_UART OFF)
+if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
+	include (${PROJECT_PATH}/app.cmake)
+else()
+	set(ENABLE_USE_PL001 ON)
+	set(ENABLE_USE_DW_UART ON)
+endif()
 
 add_executable($CACHE{PROJECT_NAME}.elf)
 
@@ -189,6 +209,7 @@ endif()
 target_sources($CACHE{PROJECT_NAME}.elf
 	PRIVATE
 		${app_src}
+		${EXTRA_SRC}
 )
 
 ### app include dirs

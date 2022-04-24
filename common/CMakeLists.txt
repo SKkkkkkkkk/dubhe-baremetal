@@ -1,21 +1,21 @@
-set(LIB_OBJS_NAME common)
+set(LIB_NAME common)
 
-add_library(${LIB_OBJS_NAME} OBJECT)
+add_library(${LIB_NAME} OBJECT)
 
 file(GLOB_RECURSE C_SRCS src/*.c)
 file(GLOB_RECURSE S_SRCS src/*.S)
-target_sources(${LIB_OBJS_NAME} 
+target_sources(${LIB_NAME} 
 	PRIVATE
 		${S_SRCS}
 		${C_SRCS}
 )
 
-target_include_directories(${LIB_OBJS_NAME}
+target_include_directories(${LIB_NAME}
 	PUBLIC
 		inc
 )
 
-target_compile_options(${LIB_OBJS_NAME}
+target_compile_options(${LIB_NAME}
 	PRIVATE
 		${compile_options_arch}
 		${compile_options_board}

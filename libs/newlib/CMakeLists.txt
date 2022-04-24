@@ -1,13 +1,18 @@
-set(LIB_OBJS_NAME newlib_port)
+set(LIB_NAME newlib_port)
 
-add_library(${LIB_OBJS_NAME} OBJECT)
+add_library(${LIB_NAME} OBJECT)
 
-target_sources(${LIB_OBJS_NAME} 
+target_sources(${LIB_NAME} 
 	PRIVATE
 		newlib_port.c
 )
 
-target_compile_options(${LIB_OBJS_NAME}
+target_include_directories(${LIB_NAME}
+	PRIVATE
+		${SDK_DIR}/hw/uart/pl001/inc
+)
+
+target_compile_options(${LIB_NAME}
 	PRIVATE
 		${compile_options_arch}
 		${compile_options_board}
@@ -16,7 +21,7 @@ target_compile_options(${LIB_OBJS_NAME}
 		# -mstrict-align
 )
 
-target_link_libraries(${LIB_OBJS_NAME}
-	PRIVATE
-		pl001
-)
+# target_link_libraries(${LIB_NAME}
+# 	PRIVATE
+# 		pl001
+# )
