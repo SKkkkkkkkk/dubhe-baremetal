@@ -135,6 +135,8 @@ clear_loop_end:
 	ldr x0, =__DATA_RAM_START__
 	ldr x1, =__DATA_ROM_START__
 	ldr x2, =__DATA_SIZE__
+	cmp x0, x1
+	b.eq data_init_end
 data_init_start:
 	cbz x2, data_init_end
 	ldr x3, [x1], #8

@@ -8,6 +8,7 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
+//#define ALL_IN_RAM
 
 #ifndef QEMU
 	#define __ROM_BASE 0x00000000
@@ -28,14 +29,18 @@ ENTRY(entrypoint)
 #define PAGE_SIZE	4096
 
 MEMORY {
-    ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE /*16384*32bit 64KB*/
-    RAM (rwx): ORIGIN = __RAM_BASE, LENGTH = __RAM_SIZE /*8192*128bit  128KB*/
+    ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE
+    RAM (rwx): ORIGIN = __RAM_BASE, LENGTH = __RAM_SIZE
 }
 
 SECTIONS
 {
+#ifdef ALL_IN_RAM
+    . = ORIGIN(RAM);
+#else // ROM & RAM
     . = ORIGIN(ROM);
-    ASSERT(. == ALIGN(((1) << (12))), "BL1_RO_BASE address is not aligned on a page boundary.")
+#endif
+    ASSERT(. == ALIGN(PAGE_SIZE), "RO_BASE address is not aligned on a page boundary.")
     .text . :
     {
         __TEXT_START__ = .;
@@ -44,33 +49,64 @@ SECTIONS
         *(.vectors)
         . = ALIGN(((1) << (12)));
         __TEXT_END__ = .;
-    } >ROM
+#ifdef ALL_IN_RAM
+    }>RAM
+#else // ROM & RAM
+    }>ROM
+#endif
+
     .ARM.extab . : 
     {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-    } >ROM
+#ifdef ALL_IN_RAM
+    }>RAM
+#else // ROM & RAM
+    }>ROM
+#endif
+
     .ARM.exidx . : 
     {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } >ROM
+#ifdef ALL_IN_RAM
+    }>RAM
+#else // ROM & RAM
+    }>ROM
+#endif
+
     .rodata . : 
     {
         __RODATA_START__ = .;
         *(SORT_BY_ALIGNMENT(.rodata*))
         __RODATA_END__ = .;
-        . = ALIGN(16);
-    } >ROM
+        . = ALIGN(16); //.data LMA should be 16-byte aligned.
+#ifdef ALL_IN_RAM
+    }>RAM
+#else // ROM & RAM
+    }>ROM
+#endif
 
-
+#ifdef ALL_IN_RAM
+    . = ALIGN(PAGE_SIZE);
+#else // ROM & RAM
     . = ORIGIN(RAM);
-    ASSERT(. == ALIGN(((1) << (12))), "BL1_RW_BASE address is not aligned on a page boundary.")
-    .data . : ALIGN(16) 
+    . = ALIGN(PAGE_SIZE);
+#endif
+    ASSERT(. == ALIGN(PAGE_SIZE), "RW_BASE address is not aligned on a page boundary.")
+    .data . :
+#ifndef ALL_IN_RAM
+    AT(ADDR(.rodata) + SIZEOF(.rodata))
+#endif
     {
         __DATA_START__ = .; 
         *(SORT_BY_ALIGNMENT(.data*))
         . = ALIGN(16);
         __DATA_END__ = .; 
-    } >RAM AT>ROM
+#ifdef ALL_IN_RAM
+    } >RAM
+#else // ROM & RAM
+    } >RAM
+#endif
+
     __DATA_RAM_START__ = __DATA_START__;
     __DATA_RAM_END__ = __DATA_END__;
     ASSERT(__DATA_RAM_END__ == ALIGN(16), "__DATA_RAM_END__ address is not aligned on 16B.")
@@ -87,7 +123,7 @@ SECTIONS
     } >RAM
     ASSERT(__BSS_END__ == ALIGN(16), "__BSS_END__ address is not aligned on 16B.")
 
-    .xlat_table (NOLOAD) : { *(xlat_table) } >RAM
+    .xlat_table (NOLOAD) : { __XLAT_TABLE_START__ = .; *(xlat_table) __XLAT_TABLE_END__ = .; } >RAM
 
     .heap (NOLOAD): ALIGN(16)
     {
@@ -112,9 +148,12 @@ SECTIONS
     __RAM_END__ = .;
     __DATA_ROM_START__ = LOADADDR(.data);
     __DATA_SIZE__ = SIZEOF(.data);
-    __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     __BSS_SIZE__ = SIZEOF(.bss);
-    
-    ASSERT(__ROM_END__ <= (0x00000000 + 0x04000000), "ROM content has exceeded its limit.")
-    ASSERT(. <= (0x0e000000 + 0x01000000), "RW section has exceeded its limit.")
+
+#ifdef ALL_IN_RAM
+#else // ROM & RAM
+    __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
+    ASSERT(__ROM_END__ <= (__ROM_BASE + __ROM_SIZE), "ROM content has exceeded its limit.")
+#endif
+    ASSERT(__RAM_END__ <= (__RAM_BASE + __RAM_SIZE), "RW section has exceeded its limit.")
 }

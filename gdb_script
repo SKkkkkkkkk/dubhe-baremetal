@@ -1,0 +1,2 @@
+set architecture aarch64
+tar remote :1234

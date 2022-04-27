@@ -95,7 +95,7 @@ vector_entry serror_aarch32
 end_vector_entry serror_aarch32
 
 
-
+	func _irq_sph
 _irq_sph:
 	/* Save volatile registers. */
 	STP		X0, X1, [SP, #-0x10]!
@@ -169,3 +169,4 @@ _irq_sph:
 	LDP		X0, X1, [SP], #0x10
 
 	ERET
+endfunc _irq_sph
