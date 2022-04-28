@@ -1,13 +1,11 @@
 #include <errno.h>
 #include <sys/stat.h>
-#if defined QEMU
-	#include "pl001.h"
-#endif
-
+#include <stdbool.h>
 #undef errno
 extern int errno;
 
 #if defined QEMU
+	#include "pl001.h"
 	static bool uart_init = false;
 	int _write (int fd, char *ptr, int len)
 	{
@@ -61,20 +59,48 @@ extern int errno;
 		return i;
 	}
 #else
+	#include "dw_apb_uart.h"
+	static bool uart_init = false;
 	int _write (int fd, char *ptr, int len)
 	{
+		if(!uart_init)
+		{
+			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1)!=0)
+			{
+				uart_init = false;
+				return 0;
+			}
+			uart_init = true;
+		}
+		int i;
+		for(i=0;i<len;i++)
+		{
+			uart_sendchar(SEEHI_UART1 ,ptr[i]);
+			if(ptr[i] == '\n')
+				uart_sendchar(SEEHI_UART1,'\r');
+		}
 		(void)fd;
-		(void)ptr;
-		(void)len;
-		return 0;
+		return i;
 	}
 
 	int _read(int fd, char* ptr, int len)
 	{
+		if(!uart_init)
+		{
+			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1)!=0)
+			{
+				uart_init = false;
+				return 0;
+			}
+			uart_init = true;
+		}
+		int i;
+		for(i=0;i<len;i++)
+		{
+			ptr[i] = uart_getchar(SEEHI_UART1);
+		}
 		(void)fd;
-		(void)ptr;
-		(void)len;
-		return 0;
+		return i;
 	}
 #endif
 

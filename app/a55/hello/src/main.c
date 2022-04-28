@@ -1,3 +1,4 @@
+#ifdef QEMU
 #include "pl001.h"
 #include "irq_ctrl.h"
 #include "xlat_tables_v2.h"
@@ -68,3 +69,37 @@ int main()
 	while(1);
 	return 0;
 }
+#else
+#include "dw_apb_uart.h"
+#include <stdio.h>
+#include "seehi_print.h"
+int main()
+{
+	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
+	// uart_sendchar(SEEHI_UART1, '?');
+	// // char* c = "hello world\n";
+	// uart_sendchar(SEEHI_UART1, 'h');
+	// uart_sendchar(SEEHI_UART1, 'e');
+	// uart_sendchar(SEEHI_UART1, 'l');
+	// uart_sendchar(SEEHI_UART1, 'l');
+	// uart_sendchar(SEEHI_UART1, 'o');
+	while(1)
+	{
+		// for(volatile uint32_t i = 0xffff;i!=0;i--)
+		// {
+			uart_sendchar(SEEHI_UART1, 't');
+			uart_sendchar(SEEHI_UART1, 'i');
+			uart_sendchar(SEEHI_UART1, 'c');
+			uart_sendchar(SEEHI_UART1, 'k');
+			uart_sendchar(SEEHI_UART1, '\n');
+			uart_sendchar(SEEHI_UART1, '\r');
+		// }
+	}
+	// seehi_printf("\nhello world\n");
+	// printf("\nhello world\n");
+	// while(*c!='\0')
+	// 	uart_sendchar(SEEHI_UART1, *(c++));
+	while(1);
+	return 0;
+}
+#endif

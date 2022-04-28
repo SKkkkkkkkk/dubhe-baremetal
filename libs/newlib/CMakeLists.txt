@@ -13,10 +13,18 @@ target_compile_options(${LIB_OBJS_NAME}
 		${compile_options_board}
 		${compile_options_common}
 		${compile_options_opt}
-		# -mstrict-align
+		-mstrict-align
 )
 
-target_link_libraries(${LIB_OBJS_NAME}
-	PRIVATE
-		pl001
-)
+
+if($CACHE{BOARD} STREQUAL "QEMU")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PRIVATE
+			pl001
+	)
+else()
+	target_link_libraries(${LIB_OBJS_NAME}
+		PRIVATE
+			dw_apb_uart
+	)
+endif()

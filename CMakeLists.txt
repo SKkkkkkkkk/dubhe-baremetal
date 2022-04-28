@@ -166,12 +166,12 @@ endif()
 
 ### USE_DW_UART (BOARD!=QEMU)
 cmake_dependent_option(
-    USE_DW_UART "Use dw uart" ON
-    "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_UART}" OFF
+    USE_DW_UART "Use dw_apb_uart" ON
+    "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_UART}" OFF
 )
 if(USE_DW_UART)
-	# add_subdirectory(${SDK_DIR}/hw/uart/pl001)
-	# set(link_libs ${link_libs} pl001)
+	add_subdirectory(${SDK_DIR}/hw/uart/dw_apb_uart)
+	set(link_libs ${link_libs} dw_apb_uart)
 endif()
 
 ### USE_NEWLIB (USE_PL001 or USE_DW_UART)
@@ -182,6 +182,16 @@ cmake_dependent_option(
 if(USE_NEWLIB)
 	add_subdirectory(${SDK_DIR}/libs/newlib)
 	set(link_libs ${link_libs} newlib_port)
+endif()
+
+### USE_SEEHI_PRINTF (USE_PL001 or USE_DW_UART)
+cmake_dependent_option(
+	USE_SEEHI_PRINT "Use seehi_printf" ON
+	"USE_PL001 OR USE_DW_UART" OFF
+)
+if(USE_SEEHI_PRINT)
+	add_subdirectory(${SDK_DIR}/libs/seehi_printf)
+	set(link_libs ${link_libs} seehi_printf)
 endif()
 
 ## 构建app
