@@ -73,6 +73,18 @@ int main()
 #include "dw_apb_uart.h"
 #include <stdio.h>
 #include "seehi_print.h"
+#include "gic.h"
+#include "irq_ctrl.h"
+
+void test_irq_handler(void)
+{
+	uart_sendchar(SEEHI_UART1, '?');
+	uart_sendchar(SEEHI_UART1, '?');
+	uart_sendchar(SEEHI_UART1, '?');
+	uart_sendchar(SEEHI_UART1, '?');
+	uart_sendchar(SEEHI_UART1, '\n');
+	uart_sendchar(SEEHI_UART1, '\r');
+}
 int main()
 {
 	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
@@ -83,17 +95,30 @@ int main()
 	// uart_sendchar(SEEHI_UART1, 'l');
 	// uart_sendchar(SEEHI_UART1, 'l');
 	// uart_sendchar(SEEHI_UART1, 'o');
+	// timer_init_config_t timer_init_config = {
+	// 	.int_mask = true, .loadcount = TIMER_FREQ, .timer_id = Timerx2_T1, .timer_mode = Mode_User_Defined
+	// };
+	// timer_init(&timer_init_config);
+	// GIC_SetTarget(32, 1 << 0); //设置core0为目标core
+	// IRQ_SetHandler(32, test_irq_handler); //设置中断处理函数
+	// IRQ_SetPriority(32, 0 << 3); //设置优先级
+	// IRQ_Enable(32); //使能该中断
+	// IRQ_SetPending(32);
+	// uart_sendchar(SEEHI_UART1, 't');
+	// uart_sendchar(SEEHI_UART1, 'i');
+	// uart_sendchar(SEEHI_UART1, 'c');
+	// uart_sendchar(SEEHI_UART1, 'k');
+	// uart_sendchar(SEEHI_UART1, '\n');
+	// uart_sendchar(SEEHI_UART1, '\r');
 	while(1)
 	{
-		// for(volatile uint32_t i = 0xffff;i!=0;i--)
-		// {
-			uart_sendchar(SEEHI_UART1, 't');
-			uart_sendchar(SEEHI_UART1, 'i');
-			uart_sendchar(SEEHI_UART1, 'c');
-			uart_sendchar(SEEHI_UART1, 'k');
-			uart_sendchar(SEEHI_UART1, '\n');
-			uart_sendchar(SEEHI_UART1, '\r');
-		// }
+		for(volatile uint32_t i = 0xffff;i!=0;i--);
+		uart_sendchar(SEEHI_UART1, 't');
+		uart_sendchar(SEEHI_UART1, 'i');
+		uart_sendchar(SEEHI_UART1, 'c');
+		uart_sendchar(SEEHI_UART1, 'k');
+		uart_sendchar(SEEHI_UART1, '\n');
+		uart_sendchar(SEEHI_UART1, '\r');
 	}
 	// seehi_printf("\nhello world\n");
 	// printf("\nhello world\n");

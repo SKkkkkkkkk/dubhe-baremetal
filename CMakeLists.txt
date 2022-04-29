@@ -174,6 +174,16 @@ if(USE_DW_UART)
 	set(link_libs ${link_libs} dw_apb_uart)
 endif()
 
+### USE_DW_APB_TIMERS (BOARD!=QEMU)
+cmake_dependent_option(
+    USE_DW_APB_TIMERS "Use dw_apb_timers" ON
+    "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_TIMERS}" OFF
+)
+if(USE_DW_APB_TIMERS)
+	add_subdirectory(${SDK_DIR}/hw/timer/dw_apb_timers)
+	set(link_libs ${link_libs} dw_apb_timers)
+endif()
+
 ### USE_NEWLIB (USE_PL001 or USE_DW_UART)
 cmake_dependent_option(
 	USE_NEWLIB "Use newlib port" ON 
