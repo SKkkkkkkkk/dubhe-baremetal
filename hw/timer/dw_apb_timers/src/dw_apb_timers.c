@@ -1,11 +1,4 @@
-#include "dw_apb_timers_regs.h"
 #include "dw_apb_timers.h"
-
-#define TIMERX2_BASE (0x04060000UL) /*!< (Timerx2   ) Base Address */
-#define TIMERX6_BASE (0xF8051000UL) /*!< (Timerx6   ) Base Address */
-#define TIMERX2 ((APE1210_Timerx2_TypeDef *)TIMERX2_BASE)
-#define TIMERX6 ((APE1210_Timerx6_TypeDef *)TIMERX6_BASE)
-
 
 bool timer_enable(timer_id_t timer_id)
 {

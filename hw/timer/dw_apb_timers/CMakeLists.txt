@@ -10,8 +10,8 @@ target_sources(${LIB_NAME}
 target_include_directories(${LIB_NAME}
 	PUBLIC
 		inc
+		${SDK_DIR}/common/inc
 	PRIVATE
-		${SDK_DIR}/hw/common/inc
 )
 
 target_compile_options(${LIB_NAME}
@@ -21,9 +21,4 @@ target_compile_options(${LIB_NAME}
 		${compile_options_common}
 		${compile_options_opt}
 		-mstrict-align
-)
-
-target_link_libraries(${LIB_NAME}
-	PUBLIC
-		gic_v2
 )

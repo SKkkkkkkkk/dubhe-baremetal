@@ -1,8 +1,10 @@
 #ifndef __APE1210_TIMER_REGS_H__
 #define __APE1210_TIMER_REGS_H__
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
 #include "regs_type.h"
-
 typedef struct {
 	__IOM uint32_t Timer1LoadCount;
 	__IOM uint32_t Timer1CurrentValue;
@@ -113,5 +115,10 @@ typedef struct {
 
 #define TIMER_INTERRUPT_MASK_Pos 2UL
 #define TIMER_INTERRUPT_MASK_Msk (1UL << TIMER_INTERRUPT_MASK_Pos)
+
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif

@@ -184,6 +184,16 @@ if(USE_DW_APB_TIMERS)
 	set(link_libs ${link_libs} dw_apb_timers)
 endif()
 
+### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
+cmake_dependent_option(
+    USE_SYSTIMER "Use systimer" ON
+    "USE_ARCH_TIMER OR USE_DW_APB_TIMERS" OFF
+)
+if(USE_DW_APB_TIMERS)
+	add_subdirectory(${SDK_DIR}/libs/systimer)
+	set(link_libs ${link_libs} systimer)
+endif()
+
 ### USE_NEWLIB (USE_PL001 or USE_DW_UART)
 cmake_dependent_option(
 	USE_NEWLIB "Use newlib port" ON 

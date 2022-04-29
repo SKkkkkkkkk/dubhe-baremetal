@@ -47,6 +47,8 @@
 		SecurePhyTimer_IRQn  = 29,        /*!< Physical Timer Interrupt                      */
 
 	/******  Platform Exceptions Numbers ***************************************************/
+		Timer1_1_IRQn	= 32,
+		Timer1_2_IRQn	= 32,
 	} IRQn_Type;
 #else
 	typedef enum IRQn
