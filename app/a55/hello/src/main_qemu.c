@@ -2,6 +2,7 @@
 #include "irq_ctrl.h"
 #include "xlat_tables_v2.h"
 #include "wakeup_core.h"
+#include <stdio.h>
 
 #define MAP_ROM MAP_REGION_FLAT( \
 0x00000000, \
@@ -43,6 +44,13 @@ u_register_t get_sctlr_el3(void)
 	return v;						
 }
 
+
+int putchar(int c)
+{
+	uart_putchar(c);
+	return 0;
+}
+
 volatile int a = 0x1234;
 volatile int b = 0xa5a5;
 volatile int c __attribute__((__aligned__(4096*2))) = 0xa5a5;
@@ -63,6 +71,12 @@ int main()
 	// init_xlat_tables();
 	// (void)get_sctlr_el3();
 	// enable_mmu_el3(0);
+	printf("hello\n");
+	printf("sizeof(short): %lu\n", sizeof(short));
+	printf("sizeof(int): %lu\n", sizeof(int));
+	printf("sizeof(long): %lu\n", sizeof(long));
+	printf("sizeof(long long): %lu\n", sizeof(long long));
+	printf("sizeof(void*): %lu\n", sizeof(void*));
 	uart_write("hello world.\n");
 	uart_write("hello world????.\n");
 	while(1);

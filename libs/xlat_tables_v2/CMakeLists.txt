@@ -27,3 +27,10 @@ target_compile_options(${LIB_OBJS_NAME}
 		-mstrict-align
 		-DENABLE_ASSERTIONS
 )
+
+if($CACHE{CORE} STREQUAL "A55")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PUBLIC
+			aarch64_libc
+	)
+endif()

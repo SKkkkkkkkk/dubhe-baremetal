@@ -40,7 +40,7 @@ set(link_libs)
 ### A55
 if($CACHE{CORE} STREQUAL "A55")
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
-	set(compile_options_arch -mlittle-endian -march=armv8-a -DA55)
+	set(compile_options_arch -mlittle-endian -march=armv8-a -DA55 -nostdlib)
 	set(link_options ${link_options} -nostartfiles --specs=nosys.specs)
 ### M3
 elseif($CACHE{CORE} STREQUAL "M3")

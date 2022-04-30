@@ -55,14 +55,14 @@ extern char __RODATA_END__[];
 
 
 #define MAP_ROM MAP_REGION_FLAT( \
-__ROM_BASE, \
-__ROM_SIZE, \
-MT_CODE|MT_SECURE )
+ __ROM_BASE, \
+ __ROM_SIZE, \
+ MT_CODE|MT_SECURE )
 
 #define MAP_RAM MAP_REGION_FLAT( \
-__RAM_BASE, \
-__RAM_SIZE, \
-MT_RW_DATA|MT_SECURE )
+ __RAM_BASE, \
+ __RAM_SIZE, \
+ MT_RW_DATA|MT_SECURE )
 
 int main()
 {

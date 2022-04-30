@@ -33,3 +33,10 @@ else()
 			dw_apb_uart
 	)
 endif()
+
+if($CACHE{CORE} STREQUAL "A55")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PUBLIC
+			aarch64_libc
+	)
+endif()
