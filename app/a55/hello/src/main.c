@@ -1,12 +1,11 @@
 #ifndef QEMU
 #include "dw_apb_uart.h"
-#include <stdio.h>
 #include "seehi_print.h"
 #include "gic.h"
 #include "irq_ctrl.h"
 #include "dw_apb_timers.h"
 #include "systimer.h"
-
+#include "xlat_tables_v2.h"
 
 uint32_t arch_timer_get_cntfrq_el0(void)
 {
@@ -42,8 +41,42 @@ void test_irq_handler(void)
 	seehi_printf("%d in irq\n",i++);
 	(void)TIMERX2->Timer2EOI;
 }
+
+#define __ROM_BASE 0x00000000
+#define __ROM_SIZE 0x00010000 //64KB
+
+#define __RAM_BASE 0x00A00000
+#define __RAM_SIZE 0x00020000 //128KB
+
+extern char __TEXT_START__[];
+extern char __TEXT_END__[];
+extern char __RODATA_START__[];
+extern char __RODATA_END__[];
+
+
+#define MAP_ROM MAP_REGION_FLAT( \
+__ROM_BASE, \
+__ROM_SIZE, \
+MT_CODE|MT_SECURE )
+
+#define MAP_RAM MAP_REGION_FLAT( \
+__RAM_BASE, \
+__RAM_SIZE, \
+MT_RW_DATA|MT_SECURE )
+
 int main()
 {
+	const mmap_region_t mmap_region_list[] = {
+		MAP_ROM,
+		MAP_RAM,
+		// MAP_DEVICE0,
+		// MAP_DEVICE1,
+		{0}
+	};
+	mmap_add(mmap_region_list);
+	init_xlat_tables();
+	enable_mmu_el3(0);
+
 	GIC_Enable();
 	systimer_init();
 	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);

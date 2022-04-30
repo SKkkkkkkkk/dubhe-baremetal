@@ -147,7 +147,7 @@ endif()
 ### USE_XLAT_TABLES_V2 (CORE==A55)
 cmake_dependent_option(
     USE_XLAT_TABLES_V2 "Use xlat_tables_v2" ON
-    "$CACHE{CORE} STREQUAL A55;$CACHE{BOARD} STREQUAL QEMU" OFF
+    "$CACHE{CORE} STREQUAL A55" OFF
 )
 if(USE_XLAT_TABLES_V2)
 	add_subdirectory(${SDK_DIR}/libs/xlat_tables_v2)

@@ -8,7 +8,7 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
-#define ALL_IN_RAM
+#define ALL_IN_RAM 0
 
 #ifndef QEMU
 	#define __ROM_BASE 0x00000000
@@ -35,7 +35,7 @@ MEMORY {
 
 SECTIONS
 {
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     . = ORIGIN(RAM);
 #else // ROM & RAM
     . = ORIGIN(ROM);
@@ -47,9 +47,9 @@ SECTIONS
         *entrypoint*(.text*)
         *(SORT_BY_ALIGNMENT(.text*))
         *(.vectors)
-        . = ALIGN(((1) << (12)));
+        // . = ALIGN(((1) << (12)));
         __TEXT_END__ = .;
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     }>RAM
 #else // ROM & RAM
     }>ROM
@@ -58,7 +58,7 @@ SECTIONS
     .ARM.extab . : 
     {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     }>RAM
 #else // ROM & RAM
     }>ROM
@@ -67,7 +67,7 @@ SECTIONS
     .ARM.exidx . : 
     {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     }>RAM
 #else // ROM & RAM
     }>ROM
@@ -79,13 +79,13 @@ SECTIONS
         *(SORT_BY_ALIGNMENT(.rodata*))
         __RODATA_END__ = .;
         . = ALIGN(16); //.data LMA should be 16-byte aligned.
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     }>RAM
 #else // ROM & RAM
     }>ROM
 #endif
 
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     . = ALIGN(PAGE_SIZE);
 #else // ROM & RAM
     . = ORIGIN(RAM);
@@ -93,15 +93,16 @@ SECTIONS
 #endif
     ASSERT(. == ALIGN(PAGE_SIZE), "RW_BASE address is not aligned on a page boundary.")
     .data . :
-#ifndef ALL_IN_RAM
+#if !ALL_IN_RAM
     AT(ADDR(.rodata) + SIZEOF(.rodata))
-#endif
+ #endif 
+    ALIGN(16)
     {
         __DATA_START__ = .; 
         *(SORT_BY_ALIGNMENT(.data*))
         . = ALIGN(16);
         __DATA_END__ = .; 
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
     } >RAM
 #else // ROM & RAM
     } >RAM
@@ -119,7 +120,7 @@ SECTIONS
         . = ALIGN(16);
         *(base_xlat_table)
         . = ALIGN(16);
-        __BSS_END__ = .; 
+        __BSS_END__ = .;
     } >RAM
     ASSERT(__BSS_END__ == ALIGN(16), "__BSS_END__ address is not aligned on 16B.")
 
@@ -150,7 +151,7 @@ SECTIONS
     __DATA_SIZE__ = SIZEOF(.data);
     __BSS_SIZE__ = SIZEOF(.bss);
 
-#ifdef ALL_IN_RAM
+#if ALL_IN_RAM
 #else // ROM & RAM
     __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     ASSERT(__ROM_END__ <= (__ROM_BASE + __ROM_SIZE), "ROM content has exceeded its limit.")
