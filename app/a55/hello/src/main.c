@@ -7,6 +7,35 @@
 #include "dw_apb_timers.h"
 #include "systimer.h"
 
+
+uint32_t arch_timer_get_cntfrq_el0(void)
+{
+	uint32_t cntfrq_el0;
+	asm volatile("mrs %0, cntfrq_el0": "=r"(cntfrq_el0));
+  	return cntfrq_el0;
+}
+
+void arch_timer_set_cntfrq_el0(uint32_t cntfrq_el0)
+{
+	asm volatile("msr cntfrq_el0, %0": "=r"(cntfrq_el0));
+	return;
+}
+
+
+uint64_t arch_timer_get_cntpct_el0(void)
+{
+	uint64_t cntpct;
+	asm volatile("mrs %0, cntpct_el0": "=r"(cntpct));
+	return cntpct;
+}
+
+void arch_timer_test()
+{
+
+
+
+}
+
 void test_irq_handler(void)
 {
 	static int i = 0;
@@ -19,23 +48,29 @@ int main()
 	systimer_init();
 	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
 	seehi_printf("hello world\n");
-	timer_init_config_t timer_init_config = {
-		.int_mask = false, .loadcount = 20000000, .timer_id = Timerx2_T2, .timer_mode = Mode_User_Defined
-	};
-	timer_init(&timer_init_config);
-	IRQ_SetHandler(Timer1_2_IRQn, test_irq_handler); //设置中断处理函数
-	IRQ_SetPriority(Timer1_2_IRQn, 0 << 3); //设置优先级
-	IRQ_Enable(Timer1_2_IRQn); //使能该中断
-	timer_enable(timer_init_config.timer_id);
+	// timer_init_config_t timer_init_config = {
+	// 	.int_mask = false, .loadcount = 20000000, .timer_id = Timerx2_T2, .timer_mode = Mode_User_Defined
+	// };
+	// timer_init(&timer_init_config);
+	// IRQ_SetHandler(Timer1_2_IRQn, test_irq_handler); //设置中断处理函数
+	// IRQ_SetPriority(Timer1_2_IRQn, 0 << 3); //设置优先级
+	// IRQ_Enable(Timer1_2_IRQn); //使能该中断
+	// timer_enable(timer_init_config.timer_id);
+
+	seehi_printf("cntfrq: %d\n",arch_timer_get_cntfrq_el0());
+	arch_timer_set_cntfrq_el0(1875000);
+	seehi_printf("cntfrq: %d\n",arch_timer_get_cntfrq_el0());
 
 	while(1)
 	{
 		static int i = 0;
 		seehi_printf("%ds\n",i++);
+		seehi_printf("0x%x\n", (int)arch_timer_get_cntpct_el0());
 		systimer_delay(1, IN_S);
 	}
 	return 0;
 }
+
 
 
 #else
