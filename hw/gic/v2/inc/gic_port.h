@@ -48,7 +48,7 @@
 
 	/******  Platform Exceptions Numbers ***************************************************/
 		Timer1_1_IRQn	= 32,
-		Timer1_2_IRQn	= 32,
+		Timer1_2_IRQn	= 33,
 	} IRQn_Type;
 #else
 	typedef enum IRQn
