@@ -8,7 +8,7 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
-#define ALL_IN_RAM 0
+#define ALL_IN_RAM 1
 
 #ifndef QEMU
 	#define __ROM_BASE 0x00000000

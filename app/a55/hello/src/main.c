@@ -6,6 +6,7 @@
 #include "dw_apb_timers.h"
 #include "systimer.h"
 #include "xlat_tables_v2.h"
+#include <stdio.h>
 
 uint32_t arch_timer_get_cntfrq_el0(void)
 {
@@ -64,23 +65,31 @@ extern char __RODATA_END__[];
  __RAM_SIZE, \
  MT_RW_DATA|MT_SECURE )
 
+
+int putchar(int c)
+{
+	// uart_putchar(c);
+	return uart_sendchar(SEEHI_UART1, c);
+}
+
 int main()
 {
-	const mmap_region_t mmap_region_list[] = {
-		MAP_ROM,
-		MAP_RAM,
-		// MAP_DEVICE0,
-		// MAP_DEVICE1,
-		{0}
-	};
-	mmap_add(mmap_region_list);
-	init_xlat_tables();
-	enable_mmu_el3(0);
+	// const mmap_region_t mmap_region_list[] = {
+	// 	MAP_ROM,
+	// 	MAP_RAM,
+	// 	// MAP_DEVICE0,
+	// 	// MAP_DEVICE1,
+	// 	{0}
+	// };
+	// mmap_add(mmap_region_list);
+	// init_xlat_tables();
+	// enable_mmu_el3(0);
 
 	GIC_Enable();
 	systimer_init();
 	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
 	seehi_printf("hello world\n");
+	printf("hello world.\n");
 	// timer_init_config_t timer_init_config = {
 	// 	.int_mask = false, .loadcount = 20000000, .timer_id = Timerx2_T2, .timer_mode = Mode_User_Defined
 	// };

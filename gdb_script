@@ -1,2 +1,3 @@
 set architecture aarch64
-tar remote :1234
+tar ext 10.10.224.34:2332
+set remotetimeout unlimited
