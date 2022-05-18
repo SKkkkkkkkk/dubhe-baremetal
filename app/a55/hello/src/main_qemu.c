@@ -51,34 +51,43 @@ int putchar(int c)
 	return 0;
 }
 
-volatile int a = 0x1234;
-volatile int b = 0xa5a5;
-volatile int c __attribute__((__aligned__(4096*2))) = 0xa5a5;
+#define __DDR_BASE 0x0e000000
+#define __DDR_SIZE 0x01000000
+
+extern char __TEXT_START__[];
+extern char __TEXT_END__[];
+extern char __RODATA_START__[];
+extern char __RODATA_END__[];
+
+#define MAP_DDR MAP_REGION_FLAT( \
+__DDR_BASE, \
+__DDR_SIZE, \
+MT_RW_DATA|MT_SECURE )
+
+#define MAP_CODE MAP_REGION_FLAT( \
+(unsigned long)&__TEXT_START__, \
+((unsigned long)&__TEXT_END__ - (unsigned long)&__TEXT_START__), \
+MT_CODE|MT_SECURE )
+
+#define MAP_DEVICE MAP_REGION_FLAT( \
+0x04000000,			\
+0x0a001000,			\
+MT_DEVICE|MT_RW|MT_SECURE)
+
 int main()
 {
-	(void)a;
-	(void)b;
-	(void)c;
-	// const mmap_region_t plat_bl1_region[] = {
-	// 	MAP_ROM,
-	// 	MAP_RAM,
-	// 	MAP_DEVICE0,
-	// 	MAP_DEVICE1,
-	// 	{0}
-	// };
-	// (void)plat_bl1_region;
-	// mmap_add(plat_bl1_region);
-	// init_xlat_tables();
-	// (void)get_sctlr_el3();
-	// enable_mmu_el3(0);
-	printf("hello\n");
-	printf("sizeof(short): %lu\n", sizeof(short));
-	printf("sizeof(int): %lu\n", sizeof(int));
-	printf("sizeof(long): %lu\n", sizeof(long));
-	printf("sizeof(long long): %lu\n", sizeof(long long));
-	printf("sizeof(void*): %lu\n", sizeof(void*));
-	uart_write("hello world.\n");
-	uart_write("hello world????.\n");
+	printf("hello world\n\r");
+	const mmap_region_t mmap_region_list[] = {
+		MAP_DDR,
+		MAP_CODE,
+		MAP_DEVICE0,
+		MAP_DEVICE1,
+		{0}
+	};
+	mmap_add(mmap_region_list);
+	init_xlat_tables();
+	enable_mmu_el3(0);
+	printf("hello world\n\r");
 	while(1);
 	return 0;
 }

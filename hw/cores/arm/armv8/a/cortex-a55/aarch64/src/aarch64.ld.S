@@ -14,8 +14,11 @@ ENTRY(entrypoint)
 	#define __ROM_BASE 0x00000000
 	#define __ROM_SIZE 0x00010000 //64KB
 
-	#define __RAM_BASE 0x00A00000
-	#define __RAM_SIZE 0x00020000 //128KB
+
+	#define __RAM_BASE 0x80000000
+	#define __RAM_SIZE 0x01000000 //128KB
+	// #define __RAM_BASE 0x00A00000
+	// #define __RAM_SIZE 0x00020000 //128KB
 #else
 	#define __ROM_BASE 0x00000000
 	#define __ROM_SIZE 0x04000000 //64MB
@@ -47,7 +50,7 @@ SECTIONS
         *entrypoint*(.text*)
         *(SORT_BY_ALIGNMENT(.text*))
         *(.vectors)
-        // . = ALIGN(((1) << (12)));
+        . = ALIGN(((1) << (12)));
         __TEXT_END__ = .;
 #if ALL_IN_RAM
     }>RAM

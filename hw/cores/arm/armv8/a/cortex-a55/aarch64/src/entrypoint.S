@@ -153,6 +153,7 @@ data_init_end:
 	cmp w1, #0
 	msr daifclr, #0xf	//enable syserror,irq,fiq
 	bne secondary_core
+	// bl config_mmu
 	bl main
 	b .
 endfunc entrypoint
