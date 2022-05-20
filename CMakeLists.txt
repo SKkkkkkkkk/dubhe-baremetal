@@ -21,12 +21,17 @@ set(BOARD "QEMU" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 # 选择build type
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
 
+# Where to load & run
+set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR")
+
+
 # 打印工程配置信息
 message(STATUS "Project     : $CACHE{PROJECT_NAME}")
 message(STATUS "Core        : $CACHE{CORE}")
 message(STATUS "Board       : $CACHE{BOARD}")
 message(STATUS "Build Type  : $CACHE{BUILD_TYPE}")
 message(STATUS "Proj Path   : ${PROJECT_PATH}")
+message(STATUS "Where to load & run: ${WHERE_TO_LOAD}")
 
 # 编译选项
 ## 通用的编译选项
@@ -60,16 +65,16 @@ endif()
 ## 添加编译选项depends on BOARD.
 ### RTL
 if($CACHE{BOARD} STREQUAL "RTL")
-	set(compile_options_board -DRTL)
+	set(compile_options_board -DRTL -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
 ### QEMU
 elseif($CACHE{BOARD} STREQUAL "QEMU")
-	set(compile_options_board -DQEMU)
+	set(compile_options_board -DQEMU -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
 ### FPGA
 elseif($CACHE{BOARD} STREQUAL "FPGA")
-	set(compile_options_board -DFPGA)
+	set(compile_options_board -DFPGA -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
 ### EVB
 elseif($CACHE{BOARD} STREQUAL "EVB")
-	set(compile_options_board -DEVB)
+	set(compile_options_board -DEVB -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
 ### unsupport
 else()
 	message(FATAL_ERROR "unsupport board!")
