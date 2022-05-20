@@ -7,13 +7,17 @@ target_sources(${LIB_OBJS_NAME}
 		newlib_port.c
 )
 
+
+if(NOT $CACHE{CORE} STREQUAL "M3")
+	set(compile_options_align -mstrict-align)
+endif()
 target_compile_options(${LIB_OBJS_NAME}
 	PRIVATE
 		${compile_options_arch}
 		${compile_options_board}
 		${compile_options_common}
 		${compile_options_opt}
-		-mstrict-align
+		${compile_options_align}
 )
 
 
