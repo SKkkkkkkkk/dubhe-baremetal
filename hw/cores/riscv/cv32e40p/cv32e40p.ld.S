@@ -1,15 +1,3 @@
-/* Script for -z combreloc */
-/* Copyright (C) 2014-2020 Free Software Foundation, Inc.
-   Copyright (C) 2019 ETH Zürich and University of Bologna
-   Copyright (C) 2020 OpenHW Group
-   Copying and distribution of this script, with or without modification,
-   are permitted in any medium without royalty provided the copyright
-   notice and this notice are preserved.  */
-
-/* This linker script is adapted from the default linker script for upstream
-   RISC-V GCC.  It has been modified for use in verification of CORE-V cores.
-*/
-
 OUTPUT_FORMAT("elf32-littleriscv", "elf32-littleriscv",
 	      "elf32-littleriscv")
 OUTPUT_ARCH(riscv)
@@ -18,9 +6,6 @@ ENTRY(_start)
 /* CORE-V */
 MEMORY
 {
-	/* Our testbench is a bit weird in that we initialize the RAM (thus
-	   allowing initialized sections to be placed there). Infact we dump all
-	   sections to external_ram. */
   external_ram (rwx) : ORIGIN = 0x00000000, LENGTH = 512M
   dram (rw) :          ORIGIN = 0xf0000000, LENGTH = 64K
 }
