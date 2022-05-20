@@ -59,27 +59,27 @@ SECTIONS
   PROVIDE (_etext = .);
   PROVIDE (etext = .);
 
-  . = ORIGIN(dram);
   .rodata         : 
   {
     *(.rodata .rodata.* .gnu.linkonce.r.*) 
-  } >dram
+  } >external_ram
 
   .data           :
   {
     __DATA_BEGIN__ = .;
     *(.data .data.* .gnu.linkonce.d.*)
     SORT(CONSTRUCTORS)
-  } >dram
+  } >external_ram
   .sdata          :
   {
     __SDATA_BEGIN__ = .;
     *(.srodata.cst16) *(.srodata.cst8) *(.srodata.cst4) *(.srodata.cst2) *(.srodata .srodata.*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
-  } >dram
+  } >external_ram
 
   _edata = .; PROVIDE (edata = .);
-  . = .;
+
+  . = ORIGIN(dram);
   __bss_start = .;
   .sbss           :
   {
