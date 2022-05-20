@@ -6,8 +6,13 @@ ENTRY(_start)
 /* CORE-V */
 MEMORY
 {
+#ifndef QEMU
   external_ram (rwx) : ORIGIN = 0x00000000, LENGTH = 512M
-  dram (rw) :          ORIGIN = 0xf0000000, LENGTH = 64K
+  dram (rw) :          ORIGIN = 0xf0000000, LENGTH = 32K
+#else
+  external_ram (rwx) : ORIGIN = 0x80000000, LENGTH = 512M
+  dram (rw) :          ORIGIN = 0xa0000000, LENGTH = 32K
+#endif
 }
 
 SECTIONS

@@ -33,8 +33,8 @@ _start:
 	csrw mtvec, a0
 
 /* clear the bss segment */
-	la a0, _edata
-	la a2, _end
+	la a0, __bss_start
+	la a2, __bss_end
 	sub a2, a2, a0
 	li a1, 0
 	call memset
