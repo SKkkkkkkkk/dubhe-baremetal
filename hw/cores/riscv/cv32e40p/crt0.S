@@ -18,11 +18,11 @@
 
 _start:
 /* initialize global pointer */
-.option push
-.option norelax
-1:	auipc gp, %pcrel_hi(__global_pointer$)
-	addi  gp, gp, %pcrel_lo(1b)
-.option pop
+// option push
+// option norelax
+// :	auipc gp, %pcrel_hi(__global_pointer$)
+// 	addi  gp, gp, %pcrel_lo(1b)
+// option pop
 
 /* initialize stack pointer */
 	la sp, __stack_end
@@ -40,9 +40,9 @@ _start:
 	call memset
 
 /* new-style constructors and destructors */
-	la a0, __libc_fini_array
-	call atexit
-	call __libc_init_array
+	// la a0, __libc_fini_array
+	// call atexit
+	// call __libc_init_array
 
 /* call main */
 //	lw a0, 0(sp)                    /* a0 = argc */
@@ -55,18 +55,19 @@ _start:
 	li a2, 0
 
 	call main
-	tail exit
+	j .
+	//tail exit
 
 .size  _start, .-_start
 
-.global _init
-.type   _init, @function
-.global _fini
-.type   _fini, @function
-_init:
-_fini:
- /* These don't have to do anything since we use init_array/fini_array. Prevent
-    missing symbol error */
-	ret
-.size  _init, .-_init
-.size _fini, .-_fini
+//.global _init
+//.type   _init, @function
+//.global _fini
+//.type   _fini, @function
+//_init:
+//_fini:
+// /* These don't have to do anything since we use init_array/fini_array. Prevent
+//    missing symbol error */
+//	ret
+//.size  _init, .-_init
+//.size _fini, .-_fini

@@ -6,7 +6,7 @@ target_sources(${LIB_NAME}
 	PRIVATE
 		crt0.S
 		handlers.S
-		syscalls.c
+		# syscalls.c
 		vectors.S
 )
 
