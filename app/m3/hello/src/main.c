@@ -11,7 +11,6 @@ void print_uart0(const char *s) {
 
 int main()
 {
-	SystemInit();
 	print_uart0("hello world.\n");
 	print_uart0("???.\n");
 	return 0;
