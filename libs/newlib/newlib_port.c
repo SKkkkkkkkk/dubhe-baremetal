@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <assert.h>
 #undef errno
 extern int errno;
 
@@ -140,30 +141,17 @@ int _lseek(int file, int ptr, int dir) {
 }
 
 void *_sbrk(int incr) {
-	// while(1);
 	extern char __HEAP_START__;
 	extern char __HEAP_END__;
 	static unsigned char *heap = (unsigned char *)(uintptr_t)(&__HEAP_START__);
 	unsigned char *prev_heap;
-
-	// if (heap == NULL) {
-		// uint32_t tmp = ((uint32_t)&__HEAP_START__)&7;
-		// if(tmp)
-		// 	heap = (unsigned char *)(8 - tmp + (uint32_t)(&__HEAP_START__));
-		// else
-			// heap = (unsigned char *)(uint32_t)(&__HEAP_START__);
-	// }
 	prev_heap = heap;
-
-	// if(incr&7)
-	// {
-	// 	incr += (8 - (incr&7));
-	// }
-
-	if((uintptr_t)(heap += incr) > (uintptr_t)&__HEAP_END__)
+	if((uintptr_t)(heap + incr) > (uintptr_t)&__HEAP_END__)
 	{
+		assert(0);
 		while(1);
 	}
+	heap += incr;
 	return prev_heap;
 }
 

@@ -219,10 +219,12 @@ SECTIONS
   {
     . = ALIGN(8);
     __end__ = .;
+    __HEAP_START__ = .;
     PROVIDE(end = .);
     . = . + __HEAP_SIZE;
     . = ALIGN(8);
     __HeapLimit = .;
+    __HEAP_END__ = .;
   } > SRAM
 
   .stack (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) (COPY) :

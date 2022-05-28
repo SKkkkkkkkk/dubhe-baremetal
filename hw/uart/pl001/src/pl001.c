@@ -2,7 +2,11 @@
 #include <math.h>
 #include "pl001.h"
 
-static uart_registers* uart0 = (uart_registers*)0x09000000U;
+#ifndef M3
+    static uart_registers* uart0 = (uart_registers*)0x09000000U;
+#else
+    static uart_registers* uart0 = (uart_registers*)0x4000C000U;
+#endif
 static const uint32_t refclock = 24000000u; /* 24 MHz */
 
 uart_error uart_init(void) {
