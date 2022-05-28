@@ -3,12 +3,12 @@
 
 MEMORY
 {
-  FLASH (rx)  : ORIGIN = __CODE_BASE, LENGTH = __CODE_SIZE
-  RAM   (rwx) : ORIGIN = __SRAM_BASE, LENGTH = __SRAM_SIZE
+  CODE (rx)  : ORIGIN = __CODE_BASE, LENGTH = __CODE_SIZE
+  SRAM   (rwx) : ORIGIN = __SRAM_BASE, LENGTH = __SRAM_SIZE
 }
 
 /* Linker script to place sections and symbol values. Should be used together
- * with other linker script that defines memory regions FLASH and RAM.
+ * with other linker script that defines memory regions CODE and SRAM.
  * It references following symbols, which must be defined in code:
  *   Reset_Handler : Entry of reset handler
  *
@@ -66,7 +66,7 @@ SECTIONS
     *(.rodata*)
 
     KEEP(*(.eh_frame*))
-  } > FLASH
+  } > CODE
 
   /*
    * SG veneers:
@@ -78,18 +78,18 @@ SECTIONS
   .gnu.sgstubs :
   {
     . = ALIGN(32);
-  } > FLASH
+  } > CODE
 */
   .ARM.extab :
   {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-  } > FLASH
+  } > CODE
 
   __exidx_start = .;
   .ARM.exidx :
   {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-  } > FLASH
+  } > CODE
   __exidx_end = .;
 
   .copy.table :
@@ -108,7 +108,7 @@ SECTIONS
     LONG ((__data2_end__ - __data2_start__) / 4)
 */
     __copy_table_end__ = .;
-  } > FLASH
+  } > CODE
 
   .zero.table :
   {
@@ -120,11 +120,11 @@ SECTIONS
     LONG ((__bss2_end__ - __bss2_start__) / 4)
 */
     __zero_table_end__ = .;
-  } > FLASH
+  } > CODE
 
   /**
    * Location counter can end up 2byte aligned with narrow Thumb code but
-   * __etext is assumed by startup code to be the LMA of a section in RAM
+   * __etext is assumed by startup code to be the LMA of a section in SRAM
    * which must be 4byte aligned 
    */
   __etext = ALIGN (4);
@@ -161,7 +161,7 @@ SECTIONS
     /* All data end */
     __data_end__ = .;
 
-  } > RAM
+  } > SRAM
 
   /*
    * Secondary data section, optional
@@ -194,7 +194,7 @@ SECTIONS
     *(COMMON)
     . = ALIGN(4);
     __bss_end__ = .;
-  } > RAM AT > RAM
+  } > SRAM AT > SRAM
 
   /*
    * Secondary bss section, optional
@@ -223,18 +223,18 @@ SECTIONS
     . = . + __HEAP_SIZE;
     . = ALIGN(8);
     __HeapLimit = .;
-  } > RAM
+  } > SRAM
 
-  .stack (ORIGIN(RAM) + LENGTH(RAM) - __STACK_SIZE) (COPY) :
+  .stack (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) (COPY) :
   {
     . = ALIGN(8);
     __StackLimit = .;
     . = . + __STACK_SIZE;
     . = ALIGN(8);
     __StackTop = .;
-  } > RAM
+  } > SRAM
   PROVIDE(__stack = __StackTop);
 
-  /* Check if data + heap + stack exceeds RAM limit */
-  ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack")
+  /* Check if data + heap + stack exceeds SRAM limit */
+  ASSERT(__StackLimit >= __HeapLimit, "region SRAM overflowed with stack")
 }
