@@ -46,7 +46,9 @@ if(NOT $CACHE{EXTRA_SRC} STREQUAL "")
 else()
 	message(STATUS "Extra SRC   : No Extra SRC.")
 endif()
-message(STATUS "Where to load & run: ${WHERE_TO_LOAD}")
+if($CACHE{CORE} STREQUAL "A55")
+	message(STATUS "Where to load & run: ${WHERE_TO_LOAD}")
+endif()
 
 # 编译选项
 ## 通用的编译选项
