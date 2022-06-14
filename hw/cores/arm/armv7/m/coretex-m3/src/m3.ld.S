@@ -114,6 +114,8 @@ SECTIONS
   {
     . = ALIGN(4);
     __zero_table_start__ = .;
+    LONG (__bss_start__)
+    LONG ((__bss_end__ - __bss_start__) / 4)
     /* Add each additional bss section here */
 /*
     LONG (__bss2_start__)
@@ -160,8 +162,11 @@ SECTIONS
     . = ALIGN(4);
     /* All data end */
     __data_end__ = .;
-
-  } > SRAM
+#ifdef QEMU
+  } >SRAM
+#else
+  } >CODE
+#endif
 
   /*
    * Secondary data section, optional
@@ -194,7 +199,11 @@ SECTIONS
     *(COMMON)
     . = ALIGN(4);
     __bss_end__ = .;
+#ifdef QEMU
   } > SRAM AT > SRAM
+#else
+  } > CODE AT > CODE
+#endif
 
   /*
    * Secondary bss section, optional
@@ -225,16 +234,32 @@ SECTIONS
     . = ALIGN(8);
     __HeapLimit = .;
     __HEAP_END__ = .;
-  } > SRAM
+#ifdef QEMU
+  } >SRAM
+#else
+  } >CODE
+#endif
 
-  .stack (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) (COPY) :
+
+  .stack 
+#ifdef QEMU
+  (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
+#else
+  (ORIGIN(CODE) + LENGTH(CODE) - __STACK_SIZE) 
+#endif
+  (COPY) :
   {
     . = ALIGN(8);
     __StackLimit = .;
     . = . + __STACK_SIZE;
     . = ALIGN(8);
     __StackTop = .;
-  } > SRAM
+#ifdef QEMU
+  } >SRAM
+#else
+  } >CODE
+#endif
+
   PROVIDE(__stack = __StackTop);
 
   /* Check if data + heap + stack exceeds SRAM limit */

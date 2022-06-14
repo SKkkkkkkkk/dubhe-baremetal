@@ -21,6 +21,6 @@ target_compile_options(${LIB_OBJS_NAME}
 		${compile_options_board}
 		${compile_options_common}
 		${compile_options_opt}
-		# -mstrict-align
+		${compile_options_align}
 		-DENABLE_ASSERTIONS
 )

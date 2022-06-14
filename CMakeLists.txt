@@ -77,6 +77,12 @@ else()
 	message(FATAL_ERROR "unsupport core!")
 endif()
 
+if(NOT $CACHE{CORE} STREQUAL "M3")
+	set(compile_options_align -mstrict-align)
+else()
+	set(compile_options_align -mno-unaligned-access)
+endif()
+
 ## 添加编译选项depends on BOARD.
 ### RTL
 if($CACHE{BOARD} STREQUAL "RTL")
@@ -291,30 +297,3 @@ set_property(TARGET $CACHE{PROJECT_NAME}.elf
 				$CACHE{PROJECT_NAME}.dump
 				$CACHE{PROJECT_NAME}.verilog.hex
 )
-
-## bin
-# if(${CORE} STREQUAL "A55")
-# 	add_custom_target( ${PROJECT_NAME}.bin ALL
-# 		COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
-# 		COMMAND ${CMAKE_OBJCOPY} -O binary -j .text -j .ARM.extab -j .ARM.exidx -j .rodata ${PROJECT_NAME}.elf ${PROJECT_NAME}.ro.bin
-# 		COMMAND ${CMAKE_OBJCOPY} -O binary -j .data ${PROJECT_NAME}.elf ${PROJECT_NAME}.rw.bin
-# 		DEPENDS ${PROJECT_NAME}.elf
-# 	)
-# 	add_custom_target( ${PROJECT_NAME}.hex ALL
-# 		COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
-# 		COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.ro.bin > ${PROJECT_NAME}.ro.hex
-# 		COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.rw.bin > ${PROJECT_NAME}.rw.hex
-# 		DEPENDS ${PROJECT_NAME}.bin
-# 	)
-# 	set_property(TARGET ${PROJECT_NAME}.elf
-# 		APPEND
-# 		PROPERTY 
-# 			ADDITIONAL_CLEAN_FILES
-# 					${PROJECT_NAME}.bin
-# 					${PROJECT_NAME}.ro.bin
-# 					${PROJECT_NAME}.rw.bin
-# 					${PROJECT_NAME}.hex
-# 					${PROJECT_NAME}.ro.hex
-# 					${PROJECT_NAME}.rw.hex
-# 	)
-# endif()

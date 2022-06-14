@@ -87,7 +87,8 @@ Reset_Handler:
                 ldr      r2, [r4, #4]            /* destination address */
                 ldr      r3, [r4, #8]            /* word count */
                 lsls     r3, r3, #2              /* byte count */
-
+                cmp      r1, r2
+                beq      .L_loop0_done
 .L_loop0_0:
                 subs     r3, #4                  /* decrement byte count */
                 ittt     ge
