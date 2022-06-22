@@ -1,12 +1,12 @@
 set(LIB_NAME cv32e40p)
 
-add_library(${LIB_NAME} STATIC)
+add_library(${LIB_NAME} OBJECT) # must be OBJECT lib, because of syscalls.c.
 
 target_sources(${LIB_NAME} 
 	PRIVATE
 		crt0.S
 		handlers.S
-		# syscalls.c
+		syscalls.c
 		vectors.S
 )
 

@@ -60,9 +60,9 @@ __syscall_error(long a0)
 
 void unimplemented_syscall()
 {
-  const char *p = "BSP: Unimplemented system call called!\n";
-  while (*p)
-    *(volatile int *)STDOUT_REG = *(p++);
+  // const char *p = "BSP: Unimplemented system call called!\n";
+  // while (*p)
+  //   *(volatile int *)STDOUT_REG = *(p++);
 }
 
 int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
@@ -108,7 +108,7 @@ int _execve(const char *name, char *const argv[], char *const env[])
 
 void _exit(int exit_status)
 {
-  *(volatile int *)EXIT_REG = exit_status;
+  // *(volatile int *)EXIT_REG = exit_status;
   asm volatile("wfi");
   /* _exit should not return */
   while (1) {};
@@ -246,17 +246,19 @@ int _wait(int *status)
 
 ssize_t _write(int file, const void *ptr, size_t len)
 {
-  const char *cptr = (char *)ptr;
-  if (file != STDOUT_FILENO)
-    {
-      errno = ENOSYS;
-      return -1;
-    }
+  // const char *cptr = (char *)ptr;
+  // if (file != STDOUT_FILENO)
+  //   {
+  //     errno = ENOSYS;
+  //     return -1;
+  //   }
 
-  const void *eptr = cptr + len;
-  while (cptr != eptr)
-    *(volatile int *)STDOUT_REG = *cptr++;
-  return len;
+  // const void *eptr = cptr + len;
+  // while (cptr != eptr)
+  //   *(volatile int *)STDOUT_REG = *cptr++;
+  (void)file;
+  (void)ptr;
+  return 0;
 }
 
 extern char __heap_start[];
