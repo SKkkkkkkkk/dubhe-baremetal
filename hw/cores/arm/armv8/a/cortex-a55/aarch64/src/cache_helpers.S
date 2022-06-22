@@ -16,6 +16,8 @@
 	.globl	dcsw_op_level2
 	.globl	dcsw_op_level3
 
+	.globl 	invalidate_icache_all
+
 /*
  * This macro can be used for implementing various data cache operations `op`
  */
@@ -222,3 +224,13 @@ endfunc dcsw_op_level2
 func dcsw_op_level3
 	dcsw_op_level #(3 << LEVEL_SHIFT)
 endfunc dcsw_op_level3
+
+	/* -----------------------------------------------------
+	 * Invalidate all I-Cache, to Point of Unification, Inner Shareable.
+	 * -----------------------------------------------------
+	 */
+func invalidate_icache_all
+	ic	iallu
+	isb	sy
+	ret
+endfunc invalidate_icache_all
