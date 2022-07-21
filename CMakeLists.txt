@@ -229,14 +229,14 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	endif()
 
 	### USE_SEEHI_PRINTF (USE_PL001 or USE_DW_UART)
-	cmake_dependent_option(
-		USE_SEEHI_PRINT "Use seehi_printf" ON
-		"USE_PL001 OR USE_DW_UART" OFF
-	)
-	if(USE_SEEHI_PRINT)
-		add_subdirectory(${SDK_DIR}/libs/seehi_printf)
-		set(link_libs ${link_libs} seehi_printf)
-	endif()
+	# cmake_dependent_option(
+	# 	USE_SEEHI_PRINT "Use seehi_printf" ON
+	# 	"USE_PL001 OR USE_DW_UART" OFF
+	# )
+	# if(USE_SEEHI_PRINT)
+	# 	add_subdirectory(${SDK_DIR}/libs/seehi_printf)
+	# 	set(link_libs ${link_libs} seehi_printf)
+	# endif()
 endif()
 
 ## 构建app
