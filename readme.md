@@ -26,6 +26,8 @@ build_cv32e40p.sh
 
 - **PROJECT_PATH**:设置app.cmake文件路径，该文件设置工程的需要编译的源文件&模块。
 
+- **CROSS_COMPILER_PATH**:设置编译器路径，注意需要以'/'结尾。
+
 - **EXTRA_SRC**:可以添加一个额外的源文件。
 
 - **CORE**:A55, M3, CV32E40P.
@@ -35,5 +37,3 @@ build_cv32e40p.sh
 - **BUILD_TYPE**:Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo.
 
 - **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR(目前只在A55中有效)。
-
-- 
