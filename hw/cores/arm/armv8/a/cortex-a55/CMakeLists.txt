@@ -41,7 +41,7 @@ add_custom_command(
 	DEPENDS 
 		${CMAKE_CURRENT_SOURCE_DIR}/aarch64/src/aarch64.ld.S
 	COMMAND 
-		aarch64-none-elf-cpp -P -x assembler-with-cpp -D__LINKER__
+		${CMAKE_CPP} -P -x assembler-with-cpp -D__LINKER__
 		${compile_options_board}
 		${CMAKE_CURRENT_SOURCE_DIR}/aarch64/src/aarch64.ld.S
 		-o ${CMAKE_CURRENT_BINARY_DIR}/aarch64.ld

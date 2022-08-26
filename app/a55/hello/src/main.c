@@ -39,8 +39,8 @@ void arch_timer_test()
 void test_irq_handler(void)
 {
 	static int i = 0;
-	seehi_printf("%d in irq\n",i++);
-	(void)TIMERX2->Timer2EOI;
+	printf("%d in irq\n",i++);
+	(void)TIMERX6->Timer2EOI;
 }
 
 #define round_up(value, boundary)		\
@@ -97,45 +97,112 @@ int putchar(int c)
 	return uart_sendchar(SEEHI_UART1, c);
 }
 
+// int main()
+// {
+// 	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
+// 	printf("hi\n\r");
+// 	*(uint32_t*)(uintptr_t)(0x2E020000) = 0x1;
+// 	dsb();
+// 	// const mmap_region_t mmap_region_list[] = {
+// 	// 	MAP_DDR,
+// 	// 	MAP_CODE,
+// 	// 	MAP_DEVICE,
+// 	// 	{0}
+// 	// };
+// 	// mmap_add(mmap_region_list);
+// 	// init_xlat_tables();
+// 	// enable_mmu_el3(0);
+
+// 	GIC_Enable();
+// 	systimer_init();
+// 	timer_init_config_t timer_init_config = {
+// 		.int_mask = false, .loadcount = 20000000, .timer_id = Timerx6_T2, .timer_mode = Mode_User_Defined
+// 	};
+// 	timer_init(&timer_init_config);
+// 	IRQ_SetHandler(Timerx6_2_IRQn, test_irq_handler); //设置中断处理函数
+// 	IRQ_SetPriority(Timerx6_2_IRQn, 0 << 3); //设置优先级
+// 	IRQ_Enable(Timerx6_2_IRQn); //使能该中断
+// 	timer_enable(timer_init_config.timer_id);
+
+// 	// printf("cntfrq: %d\n",arch_timer_get_cntfrq_el0());
+// 	// arch_timer_set_cntfrq_el0(1875000);
+// 	// printf("cntfrq: %d\n",arch_timer_get_cntfrq_el0());
+
+// 	while(1)
+// 	{
+// 		printf("0x%lx\n\r", read_cntpct_el0());
+// 		systimer_delay(1, IN_S);
+// 	}
+// 	return 0;
+// }
+
+
 int main()
 {
 	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
-	printf("\nhi\n");
-	// const mmap_region_t mmap_region_list[] = {
-	// 	MAP_DDR,
-	// 	MAP_CODE,
-	// 	MAP_DEVICE,
-	// 	{0}
-	// };
-	// mmap_add(mmap_region_list);
-	// init_xlat_tables();
-	// enable_mmu_el3(0);
+	printf("in main:\n\r");
+	GIC_Enable();
+	*(uint32_t*)(uintptr_t)(0x2E020000) = 0x1;
+	dsb();
 
-	// GIC_Enable();
-	// systimer_init();
 	// timer_init_config_t timer_init_config = {
-	// 	.int_mask = false, .loadcount = 20000000, .timer_id = Timerx2_T2, .timer_mode = Mode_User_Defined
+	// 	.int_mask = false, .loadcount = 20000000, .timer_id = Timerx6_T2, .timer_mode = Mode_User_Defined
 	// };
 	// timer_init(&timer_init_config);
-	// IRQ_SetHandler(Timer1_2_IRQn, test_irq_handler); //设置中断处理函数
-	// IRQ_SetPriority(Timer1_2_IRQn, 0 << 3); //设置优先级
-	// IRQ_Enable(Timer1_2_IRQn); //使能该中断
+	// IRQ_SetHandler(Timerx6_2_IRQn, test_irq_handler); //设置中断处理函数
+	// IRQ_SetPriority(Timerx6_2_IRQn, 0 << 3); //设置优先级
+	// IRQ_Enable(Timerx6_2_IRQn); //使能该中断
 	// timer_enable(timer_init_config.timer_id);
+	// IRQ_SetPending(Timerx6_2_IRQn);
+	// while(1);
 
-	// seehi_printf("cntfrq: %d\n",arch_timer_get_cntfrq_el0());
-	// arch_timer_set_cntfrq_el0(1875000);
-	// seehi_printf("cntfrq: %d\n",arch_timer_get_cntfrq_el0());
+	printf("Generic Timer Test:\n\r");
+	void EL3_physical_timer_delay1(void);
+	void EL3_physical_timer_delay2(void);
+	void EL3_physical_timer_delay3(void);
+	void EL3_physical_timer_delay4(void);
+	void Non_secure_EL2_physical_timer_delay1(void);
+	void Non_secure_EL2_physical_timer_delay2(void);
+	void Non_secure_EL2_physical_timer_delay3(void);
+	void Non_secure_EL2_physical_timer_delay4(void);
+	void EL1_physical_timer_delay1(void);
+	void EL1_physical_timer_delay2(void);
+	void EL1_physical_timer_delay3(void);
+	void EL1_physical_timer_delay4(void);
+	void EL1_virtual_timer_delay1(void);
+	void EL1_virtual_timer_delay2(void);
+	void EL1_virtual_timer_delay3(void);
+	void EL1_virtual_timer_delay4(void);
+	void Non_secure_EL2_virtual_timer_delay1(void);
+	void Non_secure_EL2_virtual_timer_delay2(void);
+	void Non_secure_EL2_virtual_timer_delay3(void);
+	void Non_secure_EL2_virtual_timer_delay4(void);
+	EL3_physical_timer_delay1();
+	EL3_physical_timer_delay2();
+	EL3_physical_timer_delay3();
+	EL3_physical_timer_delay4();
+	Non_secure_EL2_physical_timer_delay1();
+	Non_secure_EL2_physical_timer_delay2();
+	Non_secure_EL2_physical_timer_delay3();
+	Non_secure_EL2_physical_timer_delay4();
+	EL1_physical_timer_delay1();
+	EL1_physical_timer_delay2();
+	EL1_physical_timer_delay3();
+	EL1_physical_timer_delay4();
+	EL1_virtual_timer_delay1();
+	EL1_virtual_timer_delay2();
+	EL1_virtual_timer_delay3();
+	EL1_virtual_timer_delay4();
+	Non_secure_EL2_virtual_timer_delay1();
+	Non_secure_EL2_virtual_timer_delay2();
+	// Non_secure_EL2_virtual_timer_delay3();
+	// Non_secure_EL2_virtual_timer_delay4();
+	printf("Generic Timer Test Pass.\n\r");
 
-	// while(1)
-	// {
-	// 	static int i = 0;
-	// 	seehi_printf("%ds\n",i++);
-	// 	// seehi_printf("0x%x\n", (int)arch_timer_get_cntpct_el0());
-	// 	systimer_delay(1, IN_S);
-	// }
+	void cntvoff_el2_test();
+	cntvoff_el2_test();
 	return 0;
 }
-
 
 
 #else

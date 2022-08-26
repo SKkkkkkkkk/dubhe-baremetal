@@ -1,8 +1,18 @@
 #include "pl001.h"
+#include "gic.h"
 #include "irq_ctrl.h"
 #include "xlat_tables_v2.h"
 #include "wakeup_core.h"
 #include <stdio.h>
+
+#ifdef __GNUC__
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-label"
+	#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+	#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
+
 
 #define MAP_ROM MAP_REGION_FLAT( \
 0x00000000, \
@@ -74,20 +84,62 @@ MT_CODE|MT_SECURE )
 0x0a001000,			\
 MT_DEVICE|MT_RW|MT_SECURE)
 
+
+void test_irq_handler(void)
+{
+	printf("hello world in irq.\n\r");
+	return;
+}
+
 int main()
 {
-	printf("hello world\n\r");
-	const mmap_region_t mmap_region_list[] = {
-		MAP_DDR,
-		MAP_CODE,
-		MAP_DEVICE0,
-		MAP_DEVICE1,
-		{0}
-	};
-	mmap_add(mmap_region_list);
-	init_xlat_tables();
-	enable_mmu_el3(0);
-	printf("hello world\n\r");
-	while(1);
+	GIC_Enable();
+	printf("Generic Timer Test:\n\r");
+	void EL3_physical_timer_delay1(void);
+	void EL3_physical_timer_delay2(void);
+	void EL3_physical_timer_delay3(void);
+	void EL3_physical_timer_delay4(void);
+	void Non_secure_EL2_physical_timer_delay1(void);
+	void Non_secure_EL2_physical_timer_delay2(void);
+	void Non_secure_EL2_physical_timer_delay3(void);
+	void Non_secure_EL2_physical_timer_delay4(void);
+	void EL1_physical_timer_delay1(void);
+	void EL1_physical_timer_delay2(void);
+	void EL1_physical_timer_delay3(void);
+	void EL1_physical_timer_delay4(void);
+	void EL1_virtual_timer_delay1(void);
+	void EL1_virtual_timer_delay2(void);
+	void EL1_virtual_timer_delay3(void);
+	void EL1_virtual_timer_delay4(void);
+	void Non_secure_EL2_virtual_timer_delay1(void);
+	void Non_secure_EL2_virtual_timer_delay2(void);
+	void Non_secure_EL2_virtual_timer_delay3(void);
+	void Non_secure_EL2_virtual_timer_delay4(void);
+	EL3_physical_timer_delay1();
+	EL3_physical_timer_delay2();
+	EL3_physical_timer_delay3();
+	EL3_physical_timer_delay4();
+	Non_secure_EL2_physical_timer_delay1();
+	Non_secure_EL2_physical_timer_delay2();
+	Non_secure_EL2_physical_timer_delay3();
+	Non_secure_EL2_physical_timer_delay4();
+	EL1_physical_timer_delay1();
+	EL1_physical_timer_delay2();
+	EL1_physical_timer_delay3();
+	EL1_physical_timer_delay4();
+	EL1_virtual_timer_delay1();
+	EL1_virtual_timer_delay2();
+	EL1_virtual_timer_delay3();
+	EL1_virtual_timer_delay4();
+	Non_secure_EL2_virtual_timer_delay1();
+	Non_secure_EL2_virtual_timer_delay2();
+	Non_secure_EL2_virtual_timer_delay3();
+	Non_secure_EL2_virtual_timer_delay4();
+	printf("Generic Timer Test Pass.\n\r");
+
 	return 0;
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

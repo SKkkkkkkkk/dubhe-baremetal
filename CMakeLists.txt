@@ -54,7 +54,7 @@ endif()
 ## 通用的编译选项
 set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
-set(compile_options_opt)  # depends on build type
+set(compile_options_opt)  # depends on build type --specs=nosys.specs
 set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections )
 set(link_options -static -nostartfiles --specs=nosys.specs -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
@@ -62,7 +62,7 @@ set(link_libs)
 ### A55
 if($CACHE{CORE} STREQUAL "A55")
 	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
-	set(compile_options_arch -mlittle-endian -march=armv8-a -mcmodel=large -DA55 -nostdlib)
+	set(compile_options_arch -mlittle-endian -march=armv8.1-a -mcmodel=large -DA55 -nostdlib)
 	set(link_options ${link_options})
 ### M3
 elseif($CACHE{CORE} STREQUAL "M3")
