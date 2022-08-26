@@ -20,11 +20,11 @@ ENTRY(entrypoint)
 	#define __ROM_BASE 0x00000000
 	#define __ROM_SIZE 64K
 
-	#define __RAM_BASE 0x3F0A00000
+	#define __RAM_BASE 0x00200000
 	#define __RAM_SIZE 128K
 
-	#define __DDR_BASE 0x80000000
-	#define __DDR_SIZE 0x80000000 //2G
+	#define __DDR_BASE 0x40000000
+	#define __DDR_SIZE 0xC0000000
 #else
 	#define __ROM_BASE 0x00000000
 	#define __ROM_SIZE 64M

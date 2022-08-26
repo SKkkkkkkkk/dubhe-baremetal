@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include "dw_apb_uart_regs.h"
 
-#define UART0_BASE (0xF8040000UL) /*!< (UART0     ) Base Address */
-#define UART1_BASE (0x07030000UL) /*!< (UART1     ) Base Address */
-#define UART2_BASE (0xF8042000UL) /*!< (UART2     ) Base Address */
-#define UART3_BASE (0xF8043000UL) /*!< (UART3     ) Base Address */
+#define UART0_BASE (0x21090000UL) /*!< (UART0     ) Base Address */
+#define UART1_BASE (0x270A0000UL) /*!< (UART1     ) Base Address */
+#define UART2_BASE (0x270B0000UL) /*!< (UART2     ) Base Address */
+#define UART3_BASE (0x270C0000UL) /*!< (UART3     ) Base Address */
 #define UART0 ((APE1210_UART_TypeDef *)(uintptr_t)UART0_BASE)
 #define UART1 ((APE1210_UART_TypeDef *)(uintptr_t)UART1_BASE)
 #define UART2 ((APE1210_UART_TypeDef *)(uintptr_t)UART2_BASE)

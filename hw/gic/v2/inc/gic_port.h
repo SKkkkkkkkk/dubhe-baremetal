@@ -8,8 +8,9 @@
 		#define __GIC_PRIO_BITS 	 5U
 		#define IRQ_GIC_LINE_COUNT   128U
 	#else
-		#define GIC_DISTRIBUTOR_BASE (0x04011000UL)
-		#define GIC_INTERFACE_BASE   (0x04012000UL)
+		#define GIC400_BASE			 (0x24010000UL)
+		#define GIC_DISTRIBUTOR_BASE (GIC400_BASE + 0x1000UL)
+		#define GIC_INTERFACE_BASE   (GIC400_BASE + 0x2000UL)
 		#define __GIC_PRIO_BITS 	 5U
 		#define IRQ_GIC_LINE_COUNT   128U
 	#endif
@@ -44,11 +45,23 @@
 		SGI15_IRQn           = 15,        /*!< Software Generated Interrupt 15 */
 
 	/******  Cortex-A7 Processor Exceptions Numbers ****************************************/
-		SecurePhyTimer_IRQn  = 29,        /*!< Physical Timer Interrupt                      */
+		Virtual_maintenance_IRQn  				= 25,
+		Hypervisor_timer_IRQn 					= 26,
+		Virtual_timer_IRQn		 				= 27,
+		Legacy_FIQ_signal_IRQn 					= 28,
+		Secure_physical_timer_IRQn  			= 29,
+		Non_secure_physical_timer_IRQn			= 30,
+		Legacy_IRQ_signal_IRQn					= 31,
 
 	/******  Platform Exceptions Numbers ***************************************************/
-		Timer1_1_IRQn	= 32,
-		Timer1_2_IRQn	= 33,
+		// Timer1_1_IRQn	= 32,
+		// Timer1_2_IRQn	= 33,
+		Timerx6_1_IRQn		= (0+OFFSET_SPIs),
+		Timerx6_2_IRQn		= (1+OFFSET_SPIs),
+		Timerx6_3_IRQn		= (2+OFFSET_SPIs),
+		Timerx6_4_IRQn		= (3+OFFSET_SPIs),
+		Timerx6_5_IRQn		= (4+OFFSET_SPIs),
+		Timerx6_6_IRQn		= (5+OFFSET_SPIs),
 	} IRQn_Type;
 #else
 	typedef enum IRQn
