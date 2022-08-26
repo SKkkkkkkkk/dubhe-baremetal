@@ -27,10 +27,13 @@ target_compile_options(${LIB_NAME}
 
 add_subdirectory(${SDK_DIR}/libs/aarch64_libc aarch64_libc)
 add_subdirectory(${SDK_DIR}/hw/gic/v2 gic_v2)
+add_subdirectory(${SDK_DIR}/hw/system_counter system_counter)
 add_subdirectory(${SDK_DIR}/libs/wakeup_core wakeup_core)
 target_link_libraries(${LIB_NAME}
 	INTERFACE
+		aarch64_libc
 		gic_v2
+		system_counter
 		wakeup_core
 )
 
