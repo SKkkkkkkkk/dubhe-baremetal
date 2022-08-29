@@ -1,18 +1,8 @@
 #ifndef QEMU
-#include "dw_apb_uart.h"
 #include "gic.h"
 #include "arch_features.h"
 #include "system_counter.h"
 #include <stdio.h>
-
-int putchar(int c)
-{
-	if(c == '\n')
-		if(uart_sendchar(SEEHI_UART1, '\r') < 0)
-			return -1;
-	return uart_sendchar(SEEHI_UART1, c);
-}
-
 
 struct memory_mapped_timer_module
 {
@@ -28,17 +18,10 @@ extern struct memory_mapped_timer_module * const counter_module;
 DEFINE_SYSREG_RW_FUNCS(cntvct_el0)
 int main()
 {
-	seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1);
 	printf("in main:\n\r");
 	GIC_Enable();
-	initSystemCounter(0, 1);
+	initSystemCounter(0, 0);
 	printf("CNTCR: 0x%x\n\r", counter_module->CNTCR);
-
-	while(1)
-	{
-		printf("P: 0x%lx\n\r", read_cntpct_el0());
-		printf("V: 0x%lx\n\r", read_cntvct_el0());
-	}
 
 	printf("Generic Timer Test:\n\r");
 	void EL3_physical_timer_delay1(void);

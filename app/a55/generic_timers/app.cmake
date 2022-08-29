@@ -10,6 +10,4 @@ set(app_inc
 )
 
 # 添加模块
-set(ENABLE_USE_PL001 ON)
-set(ENABLE_USE_DW_APB_UART ON)
 set(ENABLE_USE_DW_APB_TIMERS ON)

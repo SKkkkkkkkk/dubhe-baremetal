@@ -134,6 +134,7 @@ project($CACHE{PROJECT_NAME}
   LANGUAGES C ASM
 )
 set(ENABLE_USE_PL001 OFF)
+set(ENABLE_USE_UART_16550 ON)
 set(ENABLE_USE_DW_APB_UART OFF)
 set(ENABLE_USE_DW_APB_TIMERS OFF)
 
@@ -186,6 +187,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	if(USE_PL001)
 		add_subdirectory(${SDK_DIR}/hw/uart/pl001)
 		set(link_libs ${link_libs} pl001)
+	endif()
+
+	### USE_UART_16550 (BOARD!=QEMU)
+	cmake_dependent_option(
+		USE_UART_16550 "Use 16550" ON
+		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_UART_16550}" OFF
+	)
+	if(USE_UART_16550)
+		add_subdirectory(${SDK_DIR}/hw/uart/uart_16550)
+		set(link_libs ${link_libs} uart_16550)
 	endif()
 
 	### USE_DW_UART (BOARD!=QEMU)

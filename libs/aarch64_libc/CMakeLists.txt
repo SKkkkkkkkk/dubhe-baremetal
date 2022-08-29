@@ -54,6 +54,7 @@ target_compile_options( ${LIB_OBJS_NAME}
 target_link_libraries( ${LIB_OBJS_NAME}
 	PUBLIC
 		a55
+		uart_16550
 )
 
 # if($CACHE{BOARD} STREQUAL "QEMU")
