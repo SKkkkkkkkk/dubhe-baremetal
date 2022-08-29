@@ -22,6 +22,10 @@
  * limitations under the License.
  */
 
+#define ROM_AND_RAM 0
+#define ALL_IN_RAM	1
+#define ALL_IN_DDR	2
+
                 .syntax  unified
                 .arch    armv7-m
 
@@ -75,6 +79,9 @@ __Vectors_End:
                 .globl   Reset_Handler
                 @ .fnstart
 Reset_Handler:
+            #if (WHERE_TO_LOAD != ROM_AND_RAM)
+                ldr      sp, =__StackTop
+            #endif
                 bl       SystemInit_Without_CEnv
 
                 ldr      r4, =__copy_table_start__

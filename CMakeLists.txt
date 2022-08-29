@@ -46,7 +46,7 @@ if(NOT $CACHE{EXTRA_SRC} STREQUAL "")
 else()
 	message(STATUS "Extra SRC   : No Extra SRC.")
 endif()
-if($CACHE{CORE} STREQUAL "A55")
+if($CACHE{CORE} STREQUAL "A55" OR $CACHE{CORE} STREQUAL "M3")
 	message(STATUS "Where to load & run: ${WHERE_TO_LOAD}")
 endif()
 
@@ -157,7 +157,8 @@ if($CACHE{CORE} STREQUAL "A55")
 ### M3必须的模块
 elseif($CACHE{CORE} STREQUAL "M3")
 	add_subdirectory(${SDK_DIR}/hw/cores/arm/armv7/m/coretex-m3)
-	set(link_libs ${link_libs} m3)
+	add_subdirectory(${SDK_DIR}/libs/newlib newlib_port)
+	set(link_libs ${link_libs} m3 newlib_port)
 ### CV32E40P必须的模块
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
 	add_subdirectory(${SDK_DIR}/hw/cores/riscv/cv32e40p)
@@ -192,7 +193,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	### USE_UART_16550 (BOARD!=QEMU)
 	cmake_dependent_option(
 		USE_UART_16550 "Use 16550" ON
-		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_UART_16550}" OFF
+		"$CACHE{CORE} STREQUAL A55;NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_UART_16550}" OFF
 	)
 	if(USE_UART_16550)
 		add_subdirectory(${SDK_DIR}/hw/uart/uart_16550)
@@ -230,14 +231,14 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	endif()
 
 	### USE_NEWLIB (USE_PL001 or USE_DW_UART)
-	cmake_dependent_option(
-		USE_NEWLIB "Use newlib port" ON 
-		"NOT $CACHE{CORE} STREQUAL A55;USE_PL001 OR USE_DW_UART" OFF
-	)
-	if(USE_NEWLIB)
-		add_subdirectory(${SDK_DIR}/libs/newlib)
-		set(link_libs ${link_libs} newlib_port)
-	endif()
+	# cmake_dependent_option(
+	# 	USE_NEWLIB "Use newlib port" ON 
+	# 	"NOT $CACHE{CORE} STREQUAL A55;USE_PL001 OR USE_DW_UART" OFF
+	# )
+	# if(USE_NEWLIB)
+	# 	add_subdirectory(${SDK_DIR}/libs/newlib)
+	# 	set(link_libs ${link_libs} newlib_port)
+	# endif()
 
 	### USE_SEEHI_PRINTF (USE_PL001 or USE_DW_UART)
 	# cmake_dependent_option(

@@ -1,6 +1,24 @@
 
 #include "mem_and_clock.h"
 
+#define ROM_AND_RAM 0
+#define ALL_IN_RAM	1
+#define ALL_IN_DDR	2
+
+#ifndef WHERE_TO_LOAD
+	#define WHERE_TO_LOAD ROM_AND_RAM
+#else
+    #if (WHERE_TO_LOAD == ROM_AND_RAM)
+    #elif (WHERE_TO_LOAD == ALL_IN_RAM)
+    #elif (WHERE_TO_LOAD == ALL_IN_DDR)
+      #warning "ALL_IN_DDR not support now, turn into ALL_IN_RAM."
+      #undef  WHERE_TO_LOAD
+      #define WHERE_TO_LOAD ALL_IN_RAM
+    #else
+      #error "unspport WHERE_TO_LOAD."
+    #endif
+#endif
+
 MEMORY
 {
   CODE (rx)  : ORIGIN = __CODE_BASE, LENGTH = __CODE_SIZE
@@ -66,7 +84,13 @@ SECTIONS
     *(.rodata*)
 
     KEEP(*(.eh_frame*))
-  } > CODE
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
+  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
+#endif
 
   /*
    * SG veneers:
@@ -83,13 +107,25 @@ SECTIONS
   .ARM.extab :
   {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-  } > CODE
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
+  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
+#endif
 
   __exidx_start = .;
   .ARM.exidx :
   {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-  } > CODE
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
+  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
+#endif
   __exidx_end = .;
 
   .copy.table :
@@ -108,7 +144,13 @@ SECTIONS
     LONG ((__data2_end__ - __data2_start__) / 4)
 */
     __copy_table_end__ = .;
-  } > CODE
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
+  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
+#endif
 
   .zero.table :
   {
@@ -122,7 +164,13 @@ SECTIONS
     LONG ((__bss2_end__ - __bss2_start__) / 4)
 */
     __zero_table_end__ = .;
-  } > CODE
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
+  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
+#endif
 
   /**
    * Location counter can end up 2byte aligned with narrow Thumb code but
@@ -162,10 +210,12 @@ SECTIONS
     . = ALIGN(4);
     /* All data end */
     __data_end__ = .;
-#ifdef QEMU
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#else
-  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
 #endif
 
   /*
@@ -199,10 +249,12 @@ SECTIONS
     *(COMMON)
     . = ALIGN(4);
     __bss_end__ = .;
-#ifdef QEMU
-  } > SRAM AT > SRAM
-#else
-  } > CODE AT > CODE
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
+  } >SRAM
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
 #endif
 
   /*
@@ -234,18 +286,20 @@ SECTIONS
     . = ALIGN(8);
     __HeapLimit = .;
     __HEAP_END__ = .;
-#ifdef QEMU
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#else
-  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
 #endif
 
 
-  .stack 
-#ifdef QEMU
-  (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
+  .stack
+#if (WHERE_TO_LOAD == ALL_IN_DDR)
+  (ORIGIN(DDR) + LENGTH(DDR) - __STACK_SIZE) 
 #else
-  (ORIGIN(CODE) + LENGTH(CODE) - __STACK_SIZE) 
+	(ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
 #endif
   (COPY) :
   {
@@ -254,10 +308,12 @@ SECTIONS
     . = . + __STACK_SIZE;
     . = ALIGN(8);
     __StackTop = .;
-#ifdef QEMU
+#if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#else
-  } >CODE
+#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+	} >SRAM
+#else // DDR
+	} >DDR
 #endif
 
   PROVIDE(__stack = __StackTop);

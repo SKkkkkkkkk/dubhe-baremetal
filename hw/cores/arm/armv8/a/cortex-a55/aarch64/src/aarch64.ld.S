@@ -8,9 +8,9 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
-#define ROM_AND_RAM 0
-#define ALL_IN_RAM	1
-#define ALL_IN_DDR	2
+ #define ROM_AND_RAM 0
+ #define ALL_IN_RAM	 1
+ #define ALL_IN_DDR	 2
 
 #ifndef WHERE_TO_LOAD
 	#define WHERE_TO_LOAD ROM_AND_RAM

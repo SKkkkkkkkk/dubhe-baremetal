@@ -70,7 +70,7 @@ extern int errno;
 	{
 		if(!uart_init)
 		{
-			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1)!=0)
+			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART0)!=0)
 			{
 				uart_init = false;
 				return 0;
@@ -80,9 +80,9 @@ extern int errno;
 		int i;
 		for(i=0;i<len;i++)
 		{
-			uart_sendchar(SEEHI_UART1 ,ptr[i]);
+			uart_sendchar(SEEHI_UART0 ,ptr[i]);
 			if(ptr[i] == '\n')
-				uart_sendchar(SEEHI_UART1,'\r');
+				uart_sendchar(SEEHI_UART0,'\r');
 		}
 		(void)fd;
 		return i;
@@ -92,7 +92,7 @@ extern int errno;
 	{
 		if(!uart_init)
 		{
-			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART1)!=0)
+			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART0)!=0)
 			{
 				uart_init = false;
 				return 0;
@@ -102,7 +102,7 @@ extern int errno;
 		int i;
 		for(i=0;i<len;i++)
 		{
-			ptr[i] = uart_getchar(SEEHI_UART1);
+			ptr[i] = uart_getchar(SEEHI_UART0);
 		}
 		(void)fd;
 		return i;
