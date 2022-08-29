@@ -54,17 +54,16 @@ target_compile_options( ${LIB_OBJS_NAME}
 target_link_libraries( ${LIB_OBJS_NAME}
 	PUBLIC
 		a55
-		uart_16550
 )
 
-# if($CACHE{BOARD} STREQUAL "QEMU")
-# 	target_link_libraries(${LIB_OBJS_NAME}
-# 		PRIVATE
-# 			pl001
-# 	)
-# else()
-# 	target_link_libraries(${LIB_OBJS_NAME}
-# 		PRIVATE
-# 			dw_apb_uart
-# 	)
-# endif()
+if($CACHE{BOARD} STREQUAL "QEMU")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PRIVATE
+			pl001
+	)
+else()
+	target_link_libraries(${LIB_OBJS_NAME}
+		PRIVATE
+			uart_16550
+	)
+endif()

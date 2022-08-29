@@ -232,7 +232,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	### USE_NEWLIB (USE_PL001 or USE_DW_UART)
 	cmake_dependent_option(
 		USE_NEWLIB "Use newlib port" ON 
-		"USE_PL001 OR USE_DW_UART" OFF
+		"NOT $CACHE{CORE} STREQUAL A55;USE_PL001 OR USE_DW_UART" OFF
 	)
 	if(USE_NEWLIB)
 		add_subdirectory(${SDK_DIR}/libs/newlib)

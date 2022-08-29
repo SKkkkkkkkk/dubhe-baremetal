@@ -5,6 +5,10 @@
 #undef errno
 extern int errno;
 
+#ifdef A55
+	#error "A55 has the aarch64_libc, don't use newlib."
+#endif
+
 #if defined QEMU
 	#include "pl001.h"
 	static bool uart_init = false;
