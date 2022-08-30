@@ -137,6 +137,7 @@ set(ENABLE_USE_PL001 OFF)
 set(ENABLE_USE_UART_16550 ON)
 set(ENABLE_USE_DW_APB_UART OFF)
 set(ENABLE_USE_DW_APB_TIMERS OFF)
+set(ENABLE_USE_FREERTOS OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
@@ -229,26 +230,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 		add_subdirectory(${SDK_DIR}/libs/systimer)
 		set(link_libs ${link_libs} systimer)
 	endif()
-
-	### USE_NEWLIB (USE_PL001 or USE_DW_UART)
-	# cmake_dependent_option(
-	# 	USE_NEWLIB "Use newlib port" ON 
-	# 	"NOT $CACHE{CORE} STREQUAL A55;USE_PL001 OR USE_DW_UART" OFF
-	# )
-	# if(USE_NEWLIB)
-	# 	add_subdirectory(${SDK_DIR}/libs/newlib)
-	# 	set(link_libs ${link_libs} newlib_port)
-	# endif()
-
-	### USE_SEEHI_PRINTF (USE_PL001 or USE_DW_UART)
-	# cmake_dependent_option(
-	# 	USE_SEEHI_PRINT "Use seehi_printf" ON
-	# 	"USE_PL001 OR USE_DW_UART" OFF
-	# )
-	# if(USE_SEEHI_PRINT)
-	# 	add_subdirectory(${SDK_DIR}/libs/seehi_printf)
-	# 	set(link_libs ${link_libs} seehi_printf)
-	# endif()
+	
+	### USE_FREERTOS
+	cmake_dependent_option(
+		USE_FREERTOS "Use FreeRTOS" ON
+		"ENABLE_USE_FREERTOS;$CACHE{CORE} STREQUAL M3" OFF
+	)
+	if(USE_FREERTOS)
+		add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel_10_4_6)
+		set(link_libs ${link_libs} freertos_kernel)
+	endif()
 endif()
 
 ## 构建app

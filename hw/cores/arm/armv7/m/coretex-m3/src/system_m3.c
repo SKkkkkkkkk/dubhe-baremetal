@@ -30,7 +30,7 @@
  *----------------------------------------------------------------------------*/
 #define  XTAL            (50000000UL)     /* Oscillator frequency */
 
-#define  SYSTEM_CLOCK    (XTAL / 2U)
+#define  SYSTEM_CLOCK    (60000000UL)
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Vector table
@@ -66,5 +66,6 @@ void SystemInit_Without_CEnv()
 void SystemInit (void)
 {
   SystemCoreClock = SYSTEM_CLOCK;
+  __NVIC_SetPriorityGrouping(0);
   return;
 }

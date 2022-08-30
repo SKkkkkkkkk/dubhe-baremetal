@@ -92,7 +92,11 @@ typedef enum IRQn
 #define __CM3_REV                 0x0201U   /* Core revision r2p1 */
 #define __MPU_PRESENT             1U        /* MPU present */
 #define __VTOR_PRESENT            1U        /* VTOR present */
-#define __NVIC_PRIO_BITS          3U        /* Number of Bits used for Priority Levels */
+#ifdef QEMU
+  #define __NVIC_PRIO_BITS          8U
+#else
+  #define __NVIC_PRIO_BITS          3U        /* Number of Bits used for Priority Levels */
+#endif
 #define __Vendor_SysTickConfig    0U        /* Set to 1 if different SysTick Config is used */
 
 #include "core_cm3.h"                       /* Processor and core peripherals */
