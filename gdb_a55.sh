@@ -1,1 +1,0 @@
-gdb-multiarch build/a55/hello.elf -x gdb_script

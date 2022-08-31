@@ -1,0 +1,3 @@
+set remotetimeout unlimited
+set architecture aarch64
+tar ext 10.10.224.34:2332

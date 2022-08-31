@@ -1,0 +1,1 @@
+gdb-multiarch build/dw_apb_timer.elf -x gdb_script

@@ -37,9 +37,9 @@ static inline void systimer_init(void)
                                             };
     timer_init(&timer_init_config);
     void SysTimer_IRQHandler(void);
-    IRQ_SetHandler(Timerx6_1_IRQn, SysTimer_IRQHandler);
-    IRQ_SetPriority(Timerx6_1_IRQn, 0<<3);
-    IRQ_Enable(Timerx6_1_IRQn);
+    IRQ_SetHandler(Timerx6_T1_IRQn, SysTimer_IRQHandler);
+    IRQ_SetPriority(Timerx6_T1_IRQn, 0<<3);
+    IRQ_Enable(Timerx6_T1_IRQn);
     timer_enable(Timerx6_T1);
 }
 

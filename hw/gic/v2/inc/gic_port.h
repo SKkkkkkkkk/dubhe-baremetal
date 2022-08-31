@@ -54,14 +54,14 @@
 		Legacy_IRQ_signal_IRQn					= 31,
 
 	/******  Platform Exceptions Numbers ***************************************************/
-		// Timer1_1_IRQn	= 32,
-		// Timer1_2_IRQn	= 33,
-		Timerx6_1_IRQn		= (0+OFFSET_SPIs),
-		Timerx6_2_IRQn		= (1+OFFSET_SPIs),
-		Timerx6_3_IRQn		= (2+OFFSET_SPIs),
-		Timerx6_4_IRQn		= (3+OFFSET_SPIs),
-		Timerx6_5_IRQn		= (4+OFFSET_SPIs),
-		Timerx6_6_IRQn		= (5+OFFSET_SPIs),
+		Timerx6_T1_IRQn		= (0+OFFSET_SPIs),
+		Timerx6_T2_IRQn		= (1+OFFSET_SPIs),
+		Timerx6_T3_IRQn		= (2+OFFSET_SPIs),
+		Timerx6_T4_IRQn		= (3+OFFSET_SPIs),
+		Timerx6_T5_IRQn		= (4+OFFSET_SPIs),
+		Timerx6_T6_IRQn		= (5+OFFSET_SPIs),
+		Timerx2_T1_IRQn		= (6+OFFSET_SPIs),
+		Timerx2_T2_IRQn		= (7+OFFSET_SPIs),
 	} IRQn_Type;
 #else
 	typedef enum IRQn
