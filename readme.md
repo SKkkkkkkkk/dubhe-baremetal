@@ -36,4 +36,4 @@ build_cv32e40p.sh
 
 - **BUILD_TYPE**:Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo.
 
-- **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR(目前只在A55中有效)。
+- **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR。
