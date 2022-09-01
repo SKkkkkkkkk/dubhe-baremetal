@@ -1,1 +1,0 @@
-gdb-multiarch build/hello.elf -x gdb_script

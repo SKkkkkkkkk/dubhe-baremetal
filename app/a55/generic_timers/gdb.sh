@@ -1,1 +1,0 @@
-gdb-multiarch build/generic_timers.elf -x gdb_script
