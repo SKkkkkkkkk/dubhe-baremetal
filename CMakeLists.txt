@@ -137,6 +137,7 @@ set(ENABLE_USE_PL001 OFF)
 set(ENABLE_USE_UART_16550 ON)
 set(ENABLE_USE_DW_APB_UART OFF)
 set(ENABLE_USE_DW_APB_TIMERS OFF)
+set(ENABLE_USE_DW_APB_SSI OFF)
 set(ENABLE_USE_FREERTOS OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
@@ -221,6 +222,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 		set(link_libs ${link_libs} dw_apb_timers)
 	endif()
 
+	### USE_DW_APB_SSI (BOARD!=QEMU)
+	cmake_dependent_option(
+		USE_DW_APB_SSI "Use dw_apb_ssi" ON
+		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_SSI}" OFF
+	)
+	if(USE_DW_APB_SSI)
+		add_subdirectory(${SDK_DIR}/hw/spi/dw_apb_ssi)
+		set(link_libs ${link_libs} dw_apb_ssi)
+	endif()
+
 	### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
 	cmake_dependent_option(
 		USE_SYSTIMER "Use systimer" ON
@@ -264,6 +275,7 @@ target_compile_options($CACHE{PROJECT_NAME}.elf
 		${compile_options_board}
 		${compile_options_common}
 		${compile_options_opt}
+		${compile_options_align}
 )
 
 ### link options
@@ -290,6 +302,8 @@ add_custom_target($CACHE{PROJECT_NAME}.dump ALL
 add_custom_target( $CACHE{PROJECT_NAME}.bin ALL
 	COMMAND ${CMAKE_OBJCOPY} -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
 	COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
+	COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+	COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
 	DEPENDS $CACHE{PROJECT_NAME}.elf
 	WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
 )

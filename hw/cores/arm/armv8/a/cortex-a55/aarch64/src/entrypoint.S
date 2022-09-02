@@ -102,7 +102,7 @@ rtl_init_end:
 // #endif
 
 	mrs x0, sctlr_el3 //0x30c50830
-	ldr x0, =0x30c50830 
+	ldr x0, =0x30c5083A
 	msr sctlr_el3, x0
 	isb
 

@@ -9,8 +9,22 @@
 
 
 // #define SIMPALE_TEST
-#define TIMER_FREQ (20000000)
+#define TIMER_FREQ (20000000/100)
 
+
+static  volatile bool flag = false;
+static volatile uint32_t timerx6_t1_i = 0;
+static volatile uint32_t timerx6_t2_i = 0;
+static volatile uint32_t timerx6_t3_i = 0;
+static volatile uint32_t timerx6_t4_i = 0;
+static volatile uint32_t timerx6_t5_i = 0;
+static volatile uint32_t timerx6_t6_i = 0;
+static volatile uint32_t timerx6_t1_i_copy = 0;
+static volatile uint32_t timerx6_t2_i_copy = 0;
+static volatile uint32_t timerx6_t3_i_copy = 0;
+static volatile uint32_t timerx6_t4_i_copy = 0;
+static volatile uint32_t timerx6_t5_i_copy = 0;
+static volatile uint32_t timerx6_t6_i_copy = 0;
 void dw_apb_timer_test(bool sample)
 {
 	GIC_Enable();
@@ -39,7 +53,7 @@ void dw_apb_timer_test(bool sample)
 	timer_init(&timer_init_config);
 
 	timer_init_config.timer_id = Timerx6_T2; //err  //err
-	timer_init_config.loadcount = (3-2) * TIMER_FREQ;
+	timer_init_config.loadcount = (4-2) * TIMER_FREQ;
 	timer_init(&timer_init_config);
 
 	timer_init_config.timer_id = Timerx6_T3; //ok  //err
@@ -115,7 +129,15 @@ void dw_apb_timer_test(bool sample)
 	// timer_enable(Timerx2_T2);
 	// timer_enable(Timerx2_T1);
 
-	while(1);
+	while(1)
+	{
+		if(flag)
+		{
+			printf("%u, %u, %u, %u, %u, %u\n", timerx6_t1_i_copy, timerx6_t2_i_copy, \
+						timerx6_t3_i_copy, timerx6_t4_i_copy, timerx6_t5_i_copy, timerx6_t6_i_copy);
+			flag = false;
+		}
+	}
 #endif
 }
 
@@ -124,7 +146,6 @@ void timerx2_t1_irqhandler(void)
 {
 	(void)TIMERX2->Timer1EOI;
 	++timerx2_t1_i;
-	// printf("timerx2_t1_i = %u\n",++timerx2_t1_i);
 }
 
 
@@ -134,46 +155,44 @@ void timerx2_t2_irqhandler(void)
 	(void)TIMERX2->Timer2EOI;
 	printf("in core%d: timerx2_t2_i = %d ,%d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx2_t2_i), (int)(timerx2_t1_i));
 }
-static uint32_t timerx6_t1_i = 0U;
 void timerx6_t1_irqhandler(void)
 {
 	(void)TIMERX6->Timer1EOI;
-	timerx6_t1_i++;
-	printf("in core%d: timerx6_t1_i = %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(timerx6_t1_i));
-	// printf("in core%d: timerx6_t1_i = %d, %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx6_t1_i), (int)(timerx2_t1_i));
+	++timerx6_t1_i;
 }
 
-static uint32_t timerx6_t2_i = 0U;
 void timerx6_t2_irqhandler(void)
 {
 	(void)TIMERX6->Timer2EOI;
-	printf("in core%d: timerx6_t2_i = %d, %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx6_t2_i), (int)(timerx6_t1_i));
+	(++timerx6_t2_i);
 }
-
-static uint32_t timerx6_t3_i = 0U;
 void timerx6_t3_irqhandler(void)
 {
 	(void)TIMERX6->Timer3EOI;
-	printf("in core%d: timerx6_t3_i = %d, %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx6_t3_i), (int)(timerx6_t1_i));
+	(++timerx6_t3_i);
 }
 
-static uint32_t timerx6_t4_i = 0U;
 void timerx6_t4_irqhandler(void)
 {
 	(void)TIMERX6->Timer4EOI;
-	printf("in core%d: timerx6_t4_i = %d, %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx6_t4_i), (int)(timerx6_t1_i));
+	(++timerx6_t4_i);
 }
 
-static uint32_t timerx6_t5_i = 0U;
 void timerx6_t5_irqhandler(void)
 {
 	(void)TIMERX6->Timer5EOI;
-	printf("in core%d: timerx6_t5_i = %d, %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx6_t5_i), (int)(timerx6_t1_i));
+	(++timerx6_t5_i);
 }
 
-static uint32_t timerx6_t6_i = 0U;
 void timerx6_t6_irqhandler(void)
 {
 	(void)TIMERX6->Timer6EOI;
-	printf("in core%d: timerx6_t6_i = %d, %d\n", (int)((read_mpidr_el1()&0xffff)>>8), (int)(++timerx6_t6_i), (int)(timerx6_t1_i));
+	(++timerx6_t6_i);
+	timerx6_t1_i_copy = timerx6_t1_i;
+	timerx6_t2_i_copy = timerx6_t2_i;
+	timerx6_t3_i_copy = timerx6_t3_i;
+	timerx6_t4_i_copy = timerx6_t4_i;
+	timerx6_t5_i_copy = timerx6_t5_i;
+	timerx6_t6_i_copy = timerx6_t6_i;
+	flag = true;
 }
