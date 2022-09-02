@@ -3,7 +3,7 @@
 
 	.globl entrypoint
 func entrypoint
-#ifdef RTL
+// #ifdef RTL
 	// Initialise the register bank
 	mov x0, xzr
 	mov x1, xzr
@@ -99,7 +99,7 @@ func entrypoint
 	fmov    d30,  xzr
 	fmov    d31,  xzr
 rtl_init_end:
-#endif
+// #endif
 
 	mrs x0, sctlr_el3 //0x30c50830
 	ldr x0, =0x30c50830 

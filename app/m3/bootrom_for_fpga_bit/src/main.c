@@ -1,4 +1,4 @@
-#ifndef QEMU
+#include "m3.h"
 #include <stdio.h>
 
 int main()
@@ -7,7 +7,3 @@ int main()
 	printf("hello world.\n\r");
 	return 0;
 }
-
-#else
-#include "main_qemu.c"
-#endif
