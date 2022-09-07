@@ -31,6 +31,7 @@ SECTIONS
   {
     KEEP (*(SORT_NONE(.init)))
     KEEP (*(.text.start))
+    KEEP (*(.text.handlers))
   } >external_ram
 
   .text           :

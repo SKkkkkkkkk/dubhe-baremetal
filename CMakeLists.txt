@@ -30,6 +30,13 @@ set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebI
 # Where to load & run
 set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR")
 
+# GIT_HASH
+execute_process(
+	COMMAND git rev-parse --short HEAD
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE git_hash
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # 打印工程配置信息
 message(STATUS "Project     : $CACHE{PROJECT_NAME}")
@@ -55,7 +62,7 @@ endif()
 set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
-set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections )
+set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}")
 set(link_options -static -nostartfiles --specs=nosys.specs -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
 ## 添加编译选项depends on CORE.
