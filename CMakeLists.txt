@@ -139,6 +139,7 @@ set(ENABLE_USE_DW_APB_UART OFF)
 set(ENABLE_USE_DW_APB_TIMERS OFF)
 set(ENABLE_USE_DW_APB_SSI OFF)
 set(ENABLE_USE_FREERTOS OFF)
+set(ENABLE_USE_PM OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
@@ -250,6 +251,17 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	if(USE_FREERTOS)
 		add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel_10_4_6)
 		set(link_libs ${link_libs} freertos_kernel)
+	endif()
+
+	### USE_PM
+	cmake_dependent_option(
+		USE_PM "Use Power Management" ON 
+		"ENABLE_USE_PM;$CACHE{CORE} STREQUAL M3" OFF
+	)
+	if(USE_PM)
+		add_subdirectory(${SDK_DIR}/hw/pm)
+		set(link_libs ${link_libs} pm)
+		set(compile_options_board ${compile_options_board} -DCONFIG_PM)
 	endif()
 endif()
 
