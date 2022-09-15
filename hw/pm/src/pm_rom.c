@@ -27,12 +27,19 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
+#include "errno.h"
 #include "list.h"
 #include "pm.h"
 #include "_pm_define.h"
 #include "pm_i.h"
 #include "port.h"
+
 
 #ifdef CONFIG_PM
 
@@ -130,7 +137,6 @@ int suspend_test(int level)
 	}
 	return 0;
 }
-#endif
 
 /**
  * @brief Set suspend test level.
@@ -141,6 +147,7 @@ void pm_set_test_level(enum suspend_test_level_t level)
 {
 	pm_test_level = level;
 }
+#endif
 
 static void dpm_show_time(ktime_t starttime, enum suspend_state_t state, char *info)
 {
@@ -450,13 +457,8 @@ Resume_noirq_devices:
 	suspend_test_finish("resume noirq devices");
 
 Platform_finish:
-	if (error == PM_WAKEUP_SRC_WLAN) {
-		HAL_Wakeup_SetEvent(PM_WAKEUP_SRC_WLAN);
-	} else if (wakeup || error) {
-		if (!wakeup)
-			wakeup = check_wakeup_irqs();
-		HAL_Wakeup_SetEvent(wakeup);
-	}
+	/* 设置唤醒事件 */
+
 	arch_suspend_enable_irqs();
 
 	if (suspend_ops.finish)

@@ -16,6 +16,7 @@ target_include_directories(${LIB_NAME}
 		inc
 		${SDK_DIR}/common/inc
 		${SDK_DIR}/libs/CMSIS/Core/Include
+		${SDK_DIR}/hw/cores/arm/armv7/m/coretex-m3/inc
 	PRIVATE
 )
 

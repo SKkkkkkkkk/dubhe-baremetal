@@ -31,6 +31,7 @@
 #define __PM_PORT_H
 
 #include "cmsis_gcc.h"
+#include "interrupt.h"
 
 #define ktime_t uint64_t
 #define ktime_get()  0 //(HAL_RTC_GetFreeRunTime() / 1000) TODO
@@ -57,12 +58,12 @@
 #define PM_SystemDeinit() //SystemDeInit(SYSTEM_DEINIT_FLAG_RESET_CLK)
 #define pm_udelay(us) //HAL_UDelay(us)
 #define PM_REBOOT() while(1){} //HAL_WDG_ResetCpu(WDG_RESET_CPU_PORESET)
-#define PM_IRQ_SAVE //arch_irq_save
-#define PM_IRQ_RESTORE //arch_irq_restore
-#define PM_IRQ_GET_FLAGS 0 //arch_irq_get_flags  //TODO
+#define PM_IRQ_SAVE arch_irq_save
+#define PM_IRQ_RESTORE arch_irq_restore
+#define PM_IRQ_GET_FLAGS arch_irq_get_flags
 
 #define __set_last_record_step(s) //HAL_PRCM_SetCPUAPrivateData(0, s)
-#define __get_last_record_step() //HAL_PRCM_GetCPUAPrivateData(0)
+#define __get_last_record_step() 0 //HAL_PRCM_GetCPUAPrivateData(0)  //TODO
 
 extern struct platform_suspend_ops suspend_ops;
 

@@ -34,6 +34,7 @@
 
 // #define CONFIG_PM_DEBUG
 #define CONFIG_PM_DEBUG_LEVEL 5
+#define ROM_SYSLOG      printf
 
 #define ROM_DUMP_MASK   (1 << 0)
 #define ROM_DBG_MASK    (1 << 1)
@@ -59,6 +60,13 @@
 		if (flags)                          \
 			printf("PMA: "fmt, ##arg);      \
 	} while (0)
+
+#define ROM_LOG(level, mask, expand, fmt, arg...)       \
+	do {                                            \
+		if (level & mask)                       \
+		ROM_SYSLOG(expand fmt, ##arg);  \
+	} while (0)
+
 
 #define PM_DUMP(format, args...) ROM_LOG(pm_debug_mask, ROM_DUMP_MASK, "", format, ##args)
 #define PM_LOGD(format, args...) PM_DEBUG(PM_LOGD_ON, format, ##args)

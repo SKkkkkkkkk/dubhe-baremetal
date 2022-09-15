@@ -125,8 +125,8 @@ struct platform_suspend_ops {
 
 #define to_device(ptr_module, idx)            \
 	__containerof(ptr_module, struct soc_device, node[idx])
-#define get_device(d) (d->ref++;)
-#define put_device(d) (d->ref--;)
+#define get_device(d) (d->ref++)
+#define put_device(d) (d->ref--)
 
 #define PM_DEBUG_DUMP_NUM 2
 extern uint32_t pm_debug_dump_addr[PM_DEBUG_DUMP_NUM][2];

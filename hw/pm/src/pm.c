@@ -33,6 +33,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "m3.h"
+#include "core_cm3.h"
+
 #include "list.h"
 #include "pm.h"
 #include "_pm_define.h"
@@ -41,7 +44,9 @@
 
 #ifdef CONFIG_PM
 
+#ifdef CONFIG_PM_DEBUG
 static struct arm_CMX_core_regs vault_arm_registers;
+#endif
 
 #define PM_TIMEOFDAY_SAVE() //timeofday_save()
 
@@ -122,7 +127,9 @@ static void __suspend_enter(enum suspend_state_t state)
 	/* 打印时钟信息 */
 	PM_LOGD("device info: rst clk \n"); /* debug info. */
 
+#ifdef CONFIG_PM_DEBUG
 	/* PM_SetCPUBootArg((uint32_t)&vault_arm_registers); */
+#endif
 
 	if (state == PM_MODE_HIBERNATION) {
 		PM_LOGD("PM_MODE_HIBERNATION \n"); /* debug info. */
@@ -214,8 +221,6 @@ void pm_set_test_level(enum suspend_test_level_t level) { ; }
  */
 int pm_init(void)
 {
-	uint32_t mode;
-
 	/* 配置打印级别 */
 
 	/* 获取当前的启动方式 */

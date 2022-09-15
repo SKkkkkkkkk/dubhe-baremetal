@@ -266,9 +266,9 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 		"ENABLE_USE_PM;$CACHE{CORE} STREQUAL M3" OFF
 	)
 	if(USE_PM)
+		set(compile_options_board ${compile_options_board} -DCONFIG_PM)
 		add_subdirectory(${SDK_DIR}/hw/pm)
 		set(link_libs ${link_libs} pm)
-		set(compile_options_board ${compile_options_board} -DCONFIG_PM)
 	endif()
 endif()
 
