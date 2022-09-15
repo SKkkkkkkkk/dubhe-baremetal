@@ -113,7 +113,6 @@ void pm_set_dump_addr(uint32_t addr, uint32_t len, uint32_t idx)
 	pm_debug_dump_addr[idx][1] = addr;
 }
 
-#ifdef CONFIG_PM_DEBUG
 static int pm_test_level = TEST_NONE;
 
 static unsigned long suspend_test_start_time;
@@ -150,7 +149,6 @@ void pm_set_test_level(enum suspend_test_level_t level)
 {
 	pm_test_level = level;
 }
-#endif
 
 static void dpm_show_time(ktime_t starttime, enum suspend_state_t state, char *info)
 {

@@ -206,12 +206,6 @@ void pm_dump_regs(unsigned int flag)
 	}
 }
 
-#else
-#define suspend_test_start()
-#define suspend_test_finish(x...)
-#define suspend_test(l)         0
-void pm_set_test_level(enum suspend_test_level_t level) { ; }
-#define pm_dump_regs(flag)
 #endif
 
 /**
@@ -243,7 +237,6 @@ int pm_init(void)
 	return 0;
 }
 
-#ifdef CONFIG_ARCH_APP_CORE
 /**
  * @brief Set a magin to synchronize with net.
  */
@@ -251,7 +244,6 @@ void pm_set_sync_magic(void)
 {
 	PM_SetCPUBootArg(PM_SYNC_MAGIC); /* set flag to notify net to run */
 }
-#endif
 
 /**
  * @brief Set system to a lowpower mode.
