@@ -33,8 +33,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "errno.h"
-#include "list.h"
+#include "sys/list.h"
 #include "pm.h"
 #include "_pm_define.h"
 #include "pm_i.h"
@@ -505,11 +508,11 @@ int suspend_devices_and_enter(enum suspend_state_t state)
 		goto Resume_devices;
 
 	/* 挂起os的线程 */
-	/* OS_ThreadSuspendScheduler(); */
+	vTaskSuspendAll();
 	__record_dbg_status(PM_SUSPEND_ENTER);
 	error = suspend_enter(state);
 	/* 恢复os的线程 */
-	/* OS_ThreadResumeScheduler(); */
+	xTaskResumeAll();
 
 Resume_devices:
 	__record_dbg_status(PM_RESUME_DEVICES);

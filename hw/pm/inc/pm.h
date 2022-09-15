@@ -32,7 +32,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "list.h"
+#include "sys/list.h"
 
 #ifdef __cplusplus
 extern "C" {

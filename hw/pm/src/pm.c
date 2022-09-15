@@ -36,7 +36,7 @@
 #include "m3.h"
 #include "core_cm3.h"
 
-#include "list.h"
+#include "sys/list.h"
 #include "pm.h"
 #include "_pm_define.h"
 #include "pm_i.h"

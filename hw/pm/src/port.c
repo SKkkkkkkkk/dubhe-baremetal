@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "list.h"
+#include "sys/list.h"
 #include "pm.h"
 #include "pm_i.h"
 #include "port.h"
