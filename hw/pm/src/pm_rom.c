@@ -28,6 +28,7 @@
  */
 
 
+#include "list.h"
 #include "pm.h"
 #include "_pm_define.h"
 #include "pm_i.h"

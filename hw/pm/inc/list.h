@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "compiler.h"
+#include "defs.h"
 /*
  * Simple doubly linked list implementation.
  *

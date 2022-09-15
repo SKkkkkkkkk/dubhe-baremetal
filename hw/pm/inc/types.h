@@ -27,45 +27,10 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _TYPES_H_
+#define _TYPES_H_
+
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
-#include "list.h"
-#include "pm.h"
-#include "pm_i.h"
-#include "port.h"
-
-
-#ifdef CONFIG_PM
-
-int platform_prepare(enum suspend_state_t state)
-{
-
-	return 0;
-}
-
-int platform_prepare_late(enum suspend_state_t state)
-{
-
-	return 0;
-}
-
-void platform_wake(enum suspend_state_t state)
-{
-}
-
-void platform_finish(enum suspend_state_t state)
-{
-}
-
-void cpu_suspend_cb(void)
-{
-}
-
-void cpu_tz_hibernation(void)
-{
-}
-
-#endif
+#endif /* _TYPES_H_ */

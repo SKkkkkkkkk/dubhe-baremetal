@@ -1,4 +1,4 @@
-set(LIB_NAME dw_apb_timers)
+set(LIB_NAME pm)
 
 add_library(${LIB_NAME} STATIC)
 
@@ -15,6 +15,7 @@ target_include_directories(${LIB_NAME}
 	PUBLIC
 		inc
 		${SDK_DIR}/common/inc
+		${SDK_DIR}/libs/CMSIS/Core/Include
 	PRIVATE
 )
 

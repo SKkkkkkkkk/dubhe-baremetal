@@ -32,14 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-/* #include <sys/time.h> [> for timeofday <] */
 
-/* #include "kernel/os/os_thread.h" */
-/* #include "kernel/os/os_semaphore.h" */
-/* #include "kernel/os/os_time.h" */
-/* #include "FreeRTOS.h" */
-
-
+#include "list.h"
 #include "pm.h"
 #include "_pm_define.h"
 #include "pm_i.h"

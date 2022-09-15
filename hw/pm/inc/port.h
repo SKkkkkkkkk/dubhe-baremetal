@@ -30,6 +30,7 @@
 #ifndef __PM_PORT_H
 #define __PM_PORT_H
 
+#include "cmsis_gcc.h"
 
 #define ktime_t uint64_t
 #define ktime_get()  0 //(HAL_RTC_GetFreeRunTime() / 1000) TODO

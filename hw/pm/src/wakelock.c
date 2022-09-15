@@ -29,11 +29,7 @@
 
 #include <string.h>
 
-#include "kernel/os/os.h"
-#include "driver/chip/hal_wakeup.h"
-#include "driver/chip/hal_ccm.h"
-
-#include "pm/pm.h"
+#include "pm.h"
 #include "_pm_define.h"
 #include "pm_i.h"
 #include "port.h"
