@@ -64,6 +64,6 @@ if($CACHE{BOARD} STREQUAL "QEMU")
 else()
 	target_link_libraries(${LIB_OBJS_NAME}
 		PRIVATE
-			uart_16550
+			dw_apb_uart
 	)
 endif()

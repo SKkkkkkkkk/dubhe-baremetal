@@ -9,7 +9,7 @@
 #ifdef QEMU
 	#include "pl001.h"
 #else
-	#include "uart_16550.h"
+	#include "dw_apb_uart.h"
 #endif
 static bool putchar_init_flag = false;
 
@@ -35,12 +35,13 @@ __attribute__((weak)) int putchar(int c)
 #else
 	if(!putchar_init_flag)
 	{
-		console_16550_core_init(UART1_BASE, 20000000, 115200);
+		if(seehi_uart_config_baudrate(115200, 20000000, SEEHI_UART1)!=0)
+			while(1);
 		putchar_init_flag = true;
 	}
 	if(c == '\n')
-		if(console_16550_core_putc('\r', UART1_BASE) < 0)
+		if(uart_sendchar(SEEHI_UART1, '\r') < 0)
 			return EOF;
-	return console_16550_core_putc(c, UART1_BASE);
+	return uart_sendchar(SEEHI_UART1, c);
 #endif
 }
