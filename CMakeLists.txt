@@ -141,10 +141,11 @@ project($CACHE{PROJECT_NAME}
   LANGUAGES C ASM
 )
 set(ENABLE_USE_PL001 OFF)
-set(ENABLE_USE_UART_16550 ON)
-set(ENABLE_USE_DW_APB_UART OFF)
-set(ENABLE_USE_DW_APB_TIMERS OFF)
+set(ENABLE_USE_UART_16550 OFF)
+set(ENABLE_USE_DW_APB_UART ON)
+set(ENABLE_USE_DW_APB_TIMERS ON)
 set(ENABLE_USE_DW_APB_SSI OFF)
+set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
@@ -248,7 +249,17 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 		add_subdirectory(${SDK_DIR}/libs/systimer)
 		set(link_libs ${link_libs} systimer)
 	endif()
-	
+
+	### USE_NOR_FLASH (USE_DW_APB_SSI && ENABLE_USE_NOR_FLASH)
+	cmake_dependent_option(
+		USE_NOR_FLASH "Use nor flash" ON
+		"USE_DW_APB_SSI;ENABLE_USE_NOR_FLASH" OFF
+	)
+	if(USE_NOR_FLASH)
+		add_subdirectory(${SDK_DIR}/libs/flash/nor)
+		set(link_libs ${link_libs} nor_flash)
+	endif()
+
 	### USE_FREERTOS
 	cmake_dependent_option(
 		USE_FREERTOS "Use FreeRTOS" ON

@@ -29,7 +29,7 @@ if($CACHE{BOARD} STREQUAL "QEMU")
 	# )
 else()
 	target_link_libraries(${LIB_OBJS_NAME}
-		PRIVATE
+		PUBLIC
 			dw_apb_timers
 			gic_v2
 	)
