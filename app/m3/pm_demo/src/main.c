@@ -6,7 +6,7 @@
 
 #define TEST_SLEEP          1
 #define TEST_STANDBY        1
-#define TEST_HIBERNATION    1  
+#define TEST_HIBERNATION    1
 
 void hardware_init_hook(void)
 {
@@ -27,7 +27,7 @@ static int pm_resume(struct soc_device *dev, enum suspend_state_t state)
 {
 	printf("%s.\n\r", __func__);
 	return 0;
-}   
+}
 
 static const struct soc_device_driver pm_drv = {
 	.name = "pm_drv",
@@ -35,7 +35,7 @@ static const struct soc_device_driver pm_drv = {
 	.resume = pm_resume,
 };
 
-static struct soc_device pm_dev = { 
+static struct soc_device pm_dev = {
 	.name = "pm_dev",
 	.driver = &pm_drv,
 	.platform_data = NULL,
@@ -53,7 +53,7 @@ static int pm_resume_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
 	printf("%s.\n\r", __func__);
 	return 0;
-}   
+}
 
 static const struct soc_device_driver pm_noirq_drv = {
 	.name = "pm_noirq_drv",
@@ -61,7 +61,7 @@ static const struct soc_device_driver pm_noirq_drv = {
 	.resume_noirq = pm_resume_noirq,
 };
 
-static struct soc_device pm_noirq_dev = { 
+static struct soc_device pm_noirq_dev = {
 	.name = "pm_noirq_dev",
 	.driver = &pm_noirq_drv,
 	.platform_data = NULL,
@@ -73,33 +73,16 @@ static struct soc_device pm_noirq_dev = {
 int main()
 {
 	pm_register_ops(PM_DEV);
-
 	pm_register_ops(PM_NOIRQ_DEV);
-
-	pm_set_test_level(TEST_DEVICES);
-	printf("\n\nPM example start!\n");
-	printf("Support 3 low power modes: sleep/standby/hibernation\n");
-
-#if TEST_SLEEP
-	/*enetr sleep test*/
-	printf("\n\nEnter sleep mode, setup wakeup source irq&timer&button\n\n");
-	/* 唤醒源配置初始化 */
-
-	pm_enter_mode(PM_MODE_SLEEP);
-	printf("Exit sleep mode\n\n");
-	/* 唤醒源配置关闭 */
-
-#endif
-
 
 	void task1(void* arg);
 	void task2(void* arg);
-	if (xTaskCreate(task1, "task1", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
+	if (xTaskCreate(task1, "task1", 1024, NULL, 1, NULL) != pdPASS)
 		while (1)
 			;
-	// if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
-	// 	while (1)
-	// 		;
+	if (xTaskCreate(task2, "task2", 1024, NULL, 1, NULL) != pdPASS)
+		while (1)
+			;
 	vTaskStartScheduler();
 	return 0;
 }
