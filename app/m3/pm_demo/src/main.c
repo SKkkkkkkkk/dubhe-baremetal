@@ -19,13 +19,13 @@ void hardware_init_hook(void)
 
 static int pm_suspend(struct soc_device *dev, enum suspend_state_t state)
 {
-	printf("%s.\n\r", __func__);
+	printf("--> %s.\n", __func__);
 	return 0;
 }
 
 static int pm_resume(struct soc_device *dev, enum suspend_state_t state)
 {
-	printf("%s.\n\r", __func__);
+	printf("--> %s.\n", __func__);
 	return 0;
 }
 
@@ -45,13 +45,13 @@ static struct soc_device pm_dev = {
 
 static int pm_suspend_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
-	printf("%s.\n\r", __func__);
+	printf("--> %s.\n", __func__);
 	return 0;
 }
 
 static int pm_resume_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
-	printf("%s.\n\r", __func__);
+	printf("--> %s.\n", __func__);
 	return 0;
 }
 
@@ -72,6 +72,8 @@ static struct soc_device pm_noirq_dev = {
 
 int main()
 {
+	hardware_init_hook();
+
 	pm_register_ops(PM_DEV);
 	pm_register_ops(PM_NOIRQ_DEV);
 
@@ -80,7 +82,7 @@ int main()
 	if (xTaskCreate(task1, "task1", 1024, NULL, 1, NULL) != pdPASS)
 		while (1)
 			;
-	if (xTaskCreate(task2, "task2", 1024, NULL, 1, NULL) != pdPASS)
+	if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
 		while (1)
 			;
 	vTaskStartScheduler();

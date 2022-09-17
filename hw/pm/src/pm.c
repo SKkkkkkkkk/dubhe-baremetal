@@ -56,6 +56,7 @@ static uint32_t _pm_tmo = OS_WAIT_FOREVER;
 
 static int __suspend_begin(enum suspend_state_t state)
 {
+	PM_LOGD("--> %s line %d\n", __func__, __LINE__);
 	/* set SEVONPEND flag */
 	SCB->SCR = 0x10;
 
@@ -117,6 +118,7 @@ static void pm_hibernation(void)
 
 static void __suspend_enter(enum suspend_state_t state)
 {
+	PM_LOGD("--> %s line %d\n", __func__, __LINE__);
 	/* 写到无复位寄存器表明最终的位置 */
 	__record_dbg_status(PM_SUSPEND_ENTER | 5);
 
@@ -132,23 +134,25 @@ static void __suspend_enter(enum suspend_state_t state)
 #endif
 
 	if (state == PM_MODE_HIBERNATION) {
-		PM_LOGD("PM_MODE_HIBERNATION \n"); /* debug info. */
+		PM_LOGN("PM_MODE_HIBERNATION enter\n"); /* debug info. */
 		__record_dbg_status(PM_SUSPEND_ENTER | 7);
 		/* 配置休眠类型 */
 		/* 清楚挂起唤醒事件 */
 		/* clear */
 		/* set hold */
 		pm_hibernation(); /* never return */
+		PM_LOGN("PM_MODE_HIBERNATION  exit\n"); /* debug info. */
 	} else if (state < PM_MODE_STANDBY) {
-		PM_LOGD("PM_MODE_SLEEP \n"); /* debug info. */
+		PM_LOGN("PM_MODE_SLEEP  enter\n"); /* debug info. */
 		__record_dbg_status(PM_SUSPEND_ENTER | 8);
 		/* TODO: set system bus to low freq */
 		/* 调用汇编代码实现 */
 		__cpu_sleep(state);
 		/* 配置标识表明唤醒之前的状态 */
 		/* TODO: restore system bus to normal freq */
+		PM_LOGN("PM_MODE_SLEEP  exit\n"); /* debug info. */
 	} else {
-		PM_LOGD("PM_MODE_STANDBY \n"); /* debug info. */
+		PM_LOGN("PM_MODE_STANDBY enter\n"); /* debug info. */
 		/* 配置PMU相关寄存器 */
 		/* 配置唤醒原 */
 		/* 配置始终相关 */
@@ -159,6 +163,7 @@ static void __suspend_enter(enum suspend_state_t state)
 		__cpu_suspend(state);
 
 		/* 配置标识表明唤醒之前的状态 */
+		PM_LOGN("PM_MODE_STANDBY  exit\n"); /* debug info. */
 	}
 
 	__record_dbg_status(PM_SUSPEND_ENTER | 0xa);
@@ -169,6 +174,7 @@ static void __suspend_enter(enum suspend_state_t state)
 
 static void __suspend_end(enum suspend_state_t state)
 {
+	PM_LOGD("--> %s line %d\n", __func__, __LINE__);
 	/* clear SEVONPEND flag */
 	SCB->SCR = 0x0;
 }
@@ -215,6 +221,7 @@ void pm_dump_regs(unsigned int flag)
  */
 int pm_init(void)
 {
+
 	/* 配置打印级别 */
 
 	/* 获取当前的启动方式 */

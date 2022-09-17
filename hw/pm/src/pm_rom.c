@@ -441,11 +441,14 @@ static int suspend_enter(enum suspend_state_t state)
 	if (suspend_ops.prepare_late)
 		suspend_ops.prepare_late(state);
 
+	PM_LOGD("suspend core\n");
 	if (!(suspend_test(TEST_CORE) || wakeup)) {
 		__record_dbg_status(PM_SUSPEND_ENTER | 3);
+		printf("suspend_ops.enter(state);\n");
 		suspend_ops.enter(state);
 		__record_dbg_status(PM_SUSPEND_ENTER | 4);
 	}
+	PM_LOGD("resume core\n");
 
 Platform_wake:
 	if (suspend_ops.wake)

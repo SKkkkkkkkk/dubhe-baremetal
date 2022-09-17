@@ -201,7 +201,8 @@ __cpu_suspend:
    * 4. if there are no SEV/NMI/DEBUG events before and no interrupts
    *	 pending too, WFE wil make the CPU go to the SLEEP state.
    */
-  WFE
+  //WFE
+  WFI
 
   /* read the NVIC SET_PENDING_REGISTER to check whether there are
    *  any new pending interrupts after ar400_deepsleep_lock operation
@@ -223,10 +224,14 @@ __cpu_suspend:
   NOP
   NOP
 
-  WFE
+  //WFE
+  WFI
+  WFI
+  WFI
+
   NOP
 
-//__resume:                       //TODO
+__resume:                       //TODO
 //  /* switch cpu clk to pll */
 //  LDR R1, =GPRCM_SYSCLK1_CTRLS
 //  ISB
