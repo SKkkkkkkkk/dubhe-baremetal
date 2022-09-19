@@ -1,10 +1,10 @@
-set(LIB_OBJS_NAME dw_apb_ssi)
+set(LIB_OBJS_NAME dw_apb_gpio)
 
 add_library(${LIB_OBJS_NAME} STATIC)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE
-		src/dw_apb_ssi.c
+		src/dw_apb_gpio.c
 )
 
 target_include_directories(${LIB_OBJS_NAME}
@@ -26,6 +26,5 @@ if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
 			aarch64_libc
-			dw_apb_gpio
 	)
 endif()

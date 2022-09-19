@@ -140,11 +140,12 @@ project($CACHE{PROJECT_NAME}
   DESCRIPTION "dubhe project."
   LANGUAGES C ASM
 )
-set(ENABLE_USE_PL001 OFF)
+set(ENABLE_USE_PL001 ON)
 set(ENABLE_USE_UART_16550 OFF)
 set(ENABLE_USE_DW_APB_UART ON)
 set(ENABLE_USE_DW_APB_TIMERS ON)
-set(ENABLE_USE_DW_APB_SSI OFF)
+set(ENABLE_USE_DW_APB_SSI ON)
+set(ENABLE_USE_DW_APB_GPIO ON)
 set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 
@@ -238,6 +239,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	if(USE_DW_APB_SSI)
 		add_subdirectory(${SDK_DIR}/hw/spi/dw_apb_ssi)
 		set(link_libs ${link_libs} dw_apb_ssi)
+	endif()
+
+	### USE_DW_APB_GPIO (BOARD!=QEMU)
+	cmake_dependent_option(
+		USE_DW_APB_GPIO "Use dw_apb_gpio" ON
+		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_GPIO}" OFF
+	)
+	if(USE_DW_APB_GPIO)
+		add_subdirectory(${SDK_DIR}/hw/gpio/dw_apb_gpio)
+		set(link_libs ${link_libs} dw_apb_gpio)
 	endif()
 
 	### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)

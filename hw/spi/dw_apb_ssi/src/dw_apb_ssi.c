@@ -6,6 +6,7 @@
 
 #include "dw_apb_ssi.h"
 #include "dw_apb_ssi_regs.h"
+#include "dw_apb_gpio.h"
 
 #define BOOTSPI_BASE (0x250D0000) /*!< (BootSPI   ) Base Address */
 #define SPI0_BASE (0xF8030000UL) /*!< (SPI0      ) Base Address */
@@ -34,7 +35,7 @@
 #define SR_TFE  2UL
 #define SR_RFNE 3UL
 
-// static bool const SPI_CS_USE_GPIO = true; ///< SPI CS 是否使用GPIO作为片选
+static bool const SPI_CS_USE_GPIO = false; ///< SPI CS 是否使用GPIO作为片选
 
 /**
  * @brief SPI 状态位.
@@ -60,87 +61,87 @@ static inline void set_spi_state(spi_id_t spi_id, uint8_t state)
  * Todo:
  * 现在std，quad都把4个信号引脚设置为了spi功能，std模式不需要D2，D3.
  */
-static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
-{
-
-}
 // static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 // {
-// 	gpio_init_config_t gpio_init_config = {
-// 		.gpio_control_mode = Software_Mode,
-// 		.gpio_mode = GPIO_Output_Mode
-// 	};
-// 	switch (spi_init_config->spi_id) {
-// 	case BOOTSPI_ID:
-// 		pin_set_iomux(GROUP_GPIO1, 10, 0);
-// 		if ( (!SPI_CS_USE_GPIO) )
-// 		{
-// 			pin_set_iomux(GROUP_GPIO1, 11, 0);
-// 		}
-// 		else
-// 		{
-// 			gpio_init_config.group = GROUP_GPIO1;
-// 			gpio_init_config.pin = 11;
-// 			gpio_init(&gpio_init_config);
-// 			pin_set_iomux(GROUP_GPIO1, 11, 3); //as gpio
-// 		}
-// 		pin_set_iomux(GROUP_GPIO1, 12, 0);
-// 		pin_set_iomux(GROUP_GPIO1, 13, 0);
-// 		pin_set_iomux(GROUP_GPIO1, 14, 0);
-// 		pin_set_iomux(GROUP_GPIO1, 15, 0);
-// 		return;
-// 	case SPI0_ID:
-// 		pin_set_iomux(GROUP_GPIO0, 6, 2);
-// 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-// 			pin_set_iomux(GROUP_GPIO0, 7, 2);
-// 		else
-// 		{
-// 			gpio_init_config.group = GROUP_GPIO0;
-// 			gpio_init_config.pin = 7;
-// 			gpio_init(&gpio_init_config);
-// 			pin_set_iomux(GROUP_GPIO0, 7, 3); //as gpio
-// 		}
-// 		pin_set_iomux(GROUP_GPIO0, 8, 2);
-// 		pin_set_iomux(GROUP_GPIO0, 9, 2);
-// 		pin_set_iomux(GROUP_GPIO0, 10, 2);
-// 		pin_set_iomux(GROUP_GPIO0, 11, 2);
-// 		return;
-// 	case SPI1_ID:
-// 		pin_set_iomux(GROUP_GPIO2, 18, 1);
-// 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-// 			pin_set_iomux(GROUP_GPIO2, 19, 1);
-// 		else
-// 		{
-// 			gpio_init_config.group = GROUP_GPIO2;
-// 			gpio_init_config.pin = 19;
-// 			gpio_init(&gpio_init_config);
-// 			pin_set_iomux(GROUP_GPIO2, 19, 3); //as gpio
-// 		}
-// 		pin_set_iomux(GROUP_GPIO2, 20, 1);
-// 		pin_set_iomux(GROUP_GPIO2, 21, 1);
-// 		pin_set_iomux(GROUP_GPIO2, 22, 1);
-// 		pin_set_iomux(GROUP_GPIO2, 23, 1);
-// 		return;
-// 	case SPI2_ID:
-// 		pin_set_iomux(GROUP_GPIO1, 16, 1);
-// 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-// 			pin_set_iomux(GROUP_GPIO1, 17, 1);
-// 		else
-// 		{
-// 			gpio_init_config.group = GROUP_GPIO1;
-// 			gpio_init_config.pin = 17;
-// 			gpio_init(&gpio_init_config);
-// 			pin_set_iomux(GROUP_GPIO1, 17, 3); //as gpio
-// 		}
-// 		pin_set_iomux(GROUP_GPIO1, 18, 1);
-// 		pin_set_iomux(GROUP_GPIO1, 19, 1);
-// 		pin_set_iomux(GROUP_GPIO1, 20, 1);
-// 		pin_set_iomux(GROUP_GPIO1, 21, 1);
-// 		return;
-// 	default:
-// 		return;
-// 	}
+
 // }
+static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
+{
+	gpio_init_config_t gpio_init_config = {
+		.gpio_control_mode = Software_Mode,
+		.gpio_mode = GPIO_Output_Mode
+	};
+	switch (spi_init_config->spi_id) {
+	case BOOTSPI_ID:
+		pin_set_iomux(GROUP_GPIO0, 16, 0);
+		if ( (!SPI_CS_USE_GPIO) )
+		{
+			pin_set_iomux(GROUP_GPIO1, 17, 0);
+		}
+		else
+		{
+			gpio_init_config.group = GROUP_GPIO0;
+			gpio_init_config.pin = 17;
+			gpio_init(&gpio_init_config);
+			pin_set_iomux(GROUP_GPIO0, 17, 3); //as gpio
+		}
+		pin_set_iomux(GROUP_GPIO0, 18, 0);
+		pin_set_iomux(GROUP_GPIO0, 19, 0);
+		pin_set_iomux(GROUP_GPIO0, 20, 0);
+		pin_set_iomux(GROUP_GPIO0, 21, 0);
+		return;
+	case SPI0_ID:
+		pin_set_iomux(GROUP_GPIO1, 21, 2);
+		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
+			pin_set_iomux(GROUP_GPIO1, 22, 2);
+		else
+		{
+			gpio_init_config.group = GROUP_GPIO1;
+			gpio_init_config.pin = 22;
+			gpio_init(&gpio_init_config);
+			pin_set_iomux(GROUP_GPIO1, 22, 3); //as gpio
+		}
+		pin_set_iomux(GROUP_GPIO1, 23, 2);
+		pin_set_iomux(GROUP_GPIO1, 24, 2);
+		pin_set_iomux(GROUP_GPIO1, 25, 2);
+		pin_set_iomux(GROUP_GPIO1, 26, 2);
+		return;
+	case SPI1_ID:
+		pin_set_iomux(GROUP_GPIO1, 27, 1);
+		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
+			pin_set_iomux(GROUP_GPIO1, 28, 1);
+		else
+		{
+			gpio_init_config.group = GROUP_GPIO1;
+			gpio_init_config.pin = 28;
+			gpio_init(&gpio_init_config);
+			pin_set_iomux(GROUP_GPIO1, 28, 3); //as gpio
+		}
+		pin_set_iomux(GROUP_GPIO1, 29, 1);
+		pin_set_iomux(GROUP_GPIO1, 30, 1);
+		pin_set_iomux(GROUP_GPIO1, 31, 1);
+		pin_set_iomux(GROUP_GPIO2,  0, 1);
+		return;
+	case SPI2_ID:
+		pin_set_iomux(GROUP_GPIO2, 1, 1);
+		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
+			pin_set_iomux(GROUP_GPIO2, 2, 1);
+		else
+		{
+			gpio_init_config.group = GROUP_GPIO2;
+			gpio_init_config.pin = 2;
+			gpio_init(&gpio_init_config);
+			pin_set_iomux(GROUP_GPIO2, 2, 3); //as gpio
+		}
+		pin_set_iomux(GROUP_GPIO2, 3, 1);
+		pin_set_iomux(GROUP_GPIO2, 4, 1);
+		pin_set_iomux(GROUP_GPIO2, 5, 1);
+		pin_set_iomux(GROUP_GPIO2, 6, 1);
+		return;
+	default:
+		return;
+	}
+}
 
 static inline void* get_spi_base(spi_id_t spi_id)
 {
@@ -174,8 +175,8 @@ static inline void bootspi_disable(void)
 	BOOTSPI->SSIENR = 0;
 	BOOTSPI->SER = 0;
 	BOOTSPI->DMACR = 0;
-	// if (SPI_CS_USE_GPIO)
-	// 	gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_SET);
+	if (SPI_CS_USE_GPIO)
+		gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_SET);
 }
 
 static inline void bootspi_enable(void)
@@ -194,23 +195,23 @@ static inline void spi_disable(spi_id_t spi_id, bool is_master)
 		spix->SSIENR = 0;
 		spix->SER = 0;
 		spix->DMACR = 0;
-		// if (SPI_CS_USE_GPIO)
-		// {
-		// 	switch (spi_id)
-		// 	{
-		// 	case SPI0_ID:
-		// 		gpio_write_pin(GROUP_GPIO0, 7, GPIO_PIN_SET);
-		// 		break;
-		// 	case SPI1_ID:
-		// 		gpio_write_pin(GROUP_GPIO2, 19, GPIO_PIN_SET);
-		// 		break;
-		// 	case SPI2_ID:
-		// 		gpio_write_pin(GROUP_GPIO1, 17, GPIO_PIN_SET);
-		// 		break;
-		// 	default:
-		// 		break;
-		// 	}
-		// }
+		if (SPI_CS_USE_GPIO)
+		{
+			switch (spi_id)
+			{
+			case SPI0_ID:
+				gpio_write_pin(GROUP_GPIO0, 7, GPIO_PIN_SET);
+				break;
+			case SPI1_ID:
+				gpio_write_pin(GROUP_GPIO2, 19, GPIO_PIN_SET);
+				break;
+			case SPI2_ID:
+				gpio_write_pin(GROUP_GPIO1, 17, GPIO_PIN_SET);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	else
 	{
@@ -242,13 +243,13 @@ static inline bool bootspi_rxfifo_is_empty(void)
 
 static inline void bootspi_select_slave(uint8_t slave)
 {
-	// if (SPI_CS_USE_GPIO)
-	// {
-	// 	if(slave==0)
-	// 		gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_SET);
-	// 	else
-	// 		gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_RESET);
-	// }
+	if (SPI_CS_USE_GPIO)
+	{
+		if(slave==0)
+			gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_SET);
+		else
+			gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_RESET);
+	}
 	BOOTSPI->SER = slave;
 }
 
@@ -258,23 +259,23 @@ static inline void spi_select_slave(spi_id_t spi_id, uint8_t slave)
 		return bootspi_select_slave(slave);
 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
 	assert(spix!=(DW_APB_SSI_TypeDef*)BOOTSPI_BASE);
-	// if (SPI_CS_USE_GPIO)
-	// {
-	// 	switch (spi_id)
-	// 	{
-	// 	case SPI0_ID:
-	// 		gpio_write_pin(GROUP_GPIO0, 7, GPIO_PIN_RESET);
-	// 		break;
-	// 	case SPI1_ID:
-	// 		gpio_write_pin(GROUP_GPIO2, 19, GPIO_PIN_RESET);
-	// 		break;
-	// 	case SPI2_ID:
-	// 		gpio_write_pin(GROUP_GPIO1, 17, GPIO_PIN_RESET);
-	// 		break;
-	// 	default:
-	// 		break;
-	// 	}
-	// }
+	if (SPI_CS_USE_GPIO)
+	{
+		switch (spi_id)
+		{
+		case SPI0_ID:
+			gpio_write_pin(GROUP_GPIO0, 7, GPIO_PIN_RESET);
+			break;
+		case SPI1_ID:
+			gpio_write_pin(GROUP_GPIO2, 19, GPIO_PIN_RESET);
+			break;
+		case SPI2_ID:
+			gpio_write_pin(GROUP_GPIO1, 17, GPIO_PIN_RESET);
+			break;
+		default:
+			break;
+		}
+	}
 	spix->SER = slave;
 }
 
