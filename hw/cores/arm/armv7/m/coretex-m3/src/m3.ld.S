@@ -5,24 +5,33 @@
 #define ALL_IN_RAM	1
 #define ALL_IN_DDR	2
 
-#ifndef WHERE_TO_LOAD
-	#define WHERE_TO_LOAD ROM_AND_RAM
+#ifndef QEMU
+  #ifndef WHERE_TO_LOAD
+    #define WHERE_TO_LOAD ROM_AND_RAM
+  #endif
 #else
-    #if (WHERE_TO_LOAD == ROM_AND_RAM)
-    #elif (WHERE_TO_LOAD == ALL_IN_RAM)
-    #elif (WHERE_TO_LOAD == ALL_IN_DDR)
-      #warning "ALL_IN_DDR not support now, turn into ALL_IN_RAM."
-      #undef  WHERE_TO_LOAD
-      #define WHERE_TO_LOAD ALL_IN_RAM
-    #else
-      #error "unspport WHERE_TO_LOAD."
-    #endif
+  #ifndef WHERE_TO_LOAD
+    #define WHERE_TO_LOAD ROM_AND_RAM
+  #else
+      #if (WHERE_TO_LOAD == ROM_AND_RAM)
+      #elif (WHERE_TO_LOAD == ALL_IN_RAM)
+      #elif (WHERE_TO_LOAD == ALL_IN_DDR)
+        #warning "ALL_IN_DDR not support in QEMU, turn into ALL_IN_RAM."
+        #undef  WHERE_TO_LOAD
+        #define WHERE_TO_LOAD ALL_IN_RAM
+      #else
+        #error "unspport WHERE_TO_LOAD."
+      #endif
+  #endif
 #endif
 
 MEMORY
 {
-  CODE (rx)  : ORIGIN = __CODE_BASE, LENGTH = __CODE_SIZE
-  SRAM   (rwx) : ORIGIN = __SRAM_BASE, LENGTH = __SRAM_SIZE
+  CODE (rx)  : ORIGIN = __CODE_BASE,         LENGTH = __CODE_SIZE
+  SRAM (rwx) : ORIGIN = __SRAM_BASE,         LENGTH = __SRAM_SIZE
+#ifndef QEMU
+  DDR  (rwx) : ORIGIN = __EXTERNAL_RAM_BASE, LENGTH = __EXTERNAL_RAM_SIZE
+#endif
 }
 
 /* Linker script to place sections and symbol values. Should be used together

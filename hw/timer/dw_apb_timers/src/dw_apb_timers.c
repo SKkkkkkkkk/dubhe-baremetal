@@ -10,6 +10,7 @@ bool timer_enable(timer_id_t timer_id)
 	case Timerx2_T2:
 		TIMERX2->Timer2ControlReg |= TIMER_ENABLE_Msk;
 		break;
+#ifdef A55
 	case Timerx6_T1:
 		TIMERX6->Timer1ControlReg |= TIMER_ENABLE_Msk;
 		break;
@@ -28,6 +29,7 @@ bool timer_enable(timer_id_t timer_id)
 	case Timerx6_T6:
 		TIMERX6->Timer6ControlReg |= TIMER_ENABLE_Msk;
 		break;
+#endif
 	default:
 		ret = false;
 	}
@@ -44,6 +46,7 @@ bool timer_disable(timer_id_t timer_id)
 	case Timerx2_T2:
 		TIMERX2->Timer2ControlReg &= (~TIMER_ENABLE_Msk);
 		break;
+#ifdef A55
 	case Timerx6_T1:
 		TIMERX6->Timer1ControlReg &= (~TIMER_ENABLE_Msk);
 		break;
@@ -62,6 +65,7 @@ bool timer_disable(timer_id_t timer_id)
 	case Timerx6_T6:
 		TIMERX6->Timer6ControlReg &= (~TIMER_ENABLE_Msk);
 		break;
+#endif
 	default:
 		ret = false;
 	}
@@ -84,6 +88,7 @@ bool timer_set_mode(timer_id_t timer_id, timer_mode_t timer_mode)
 		else
 			TIMERX2->Timer2ControlReg |= (TIMER_MODE_Msk);
 		break;
+#ifdef A55
 	case Timerx6_T1:
 		if (timer_mode == Mode_Free_Running)
 			TIMERX6->Timer1ControlReg &= (~TIMER_MODE_Msk);
@@ -120,6 +125,7 @@ bool timer_set_mode(timer_id_t timer_id, timer_mode_t timer_mode)
 		else
 			TIMERX6->Timer6ControlReg |= (TIMER_MODE_Msk);
 		break;
+#endif
 	default:
 		ret = false;
 	}
@@ -142,6 +148,7 @@ bool timer_set_int_mask(timer_id_t timer_id, bool mask)
 		else
 			TIMERX2->Timer2ControlReg |= (TIMER_INTERRUPT_MASK_Msk);
 		break;
+#ifdef A55
 	case Timerx6_T1:
 		if (!mask)
 			TIMERX6->Timer1ControlReg &= (~TIMER_INTERRUPT_MASK_Msk);
@@ -178,6 +185,7 @@ bool timer_set_int_mask(timer_id_t timer_id, bool mask)
 		else
 			TIMERX6->Timer6ControlReg |= (TIMER_INTERRUPT_MASK_Msk);
 		break;
+#endif
 	default:
 		ret = false;
 	}
@@ -194,6 +202,7 @@ bool timer_set_loadcount(timer_id_t timer_id, uint32_t loadcount)
 	case Timerx2_T2:
 		TIMERX2->Timer2LoadCount = loadcount;
 		break;
+#ifdef A55
 	case Timerx6_T1:
 		TIMERX6->Timer1LoadCount = loadcount;
 		break;
@@ -212,6 +221,7 @@ bool timer_set_loadcount(timer_id_t timer_id, uint32_t loadcount)
 	case Timerx6_T6:
 		TIMERX6->Timer6LoadCount = loadcount;
 		break;
+#endif
 	default:
 		ret = false;
 	}

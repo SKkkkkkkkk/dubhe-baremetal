@@ -24,12 +24,14 @@
 typedef enum _timer_id {
 	Timerx2_T1 = 1,
 	Timerx2_T2 = 2,
+#ifdef M3
 	Timerx6_T1 = 3,
 	Timerx6_T2 = 4,
 	Timerx6_T3 = 5,
 	Timerx6_T4 = 6,
 	Timerx6_T5 = 7,
 	Timerx6_T6 = 8,
+#endif
 } timer_id_t;
 
 typedef enum _timer_mode {

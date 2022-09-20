@@ -146,6 +146,8 @@ set(ENABLE_USE_DW_APB_UART ON)
 set(ENABLE_USE_DW_APB_TIMERS ON)
 set(ENABLE_USE_DW_APB_SSI ON)
 set(ENABLE_USE_DW_APB_GPIO ON)
+
+set(ENABLE_USE_SYSTIMER OFF)
 set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 
@@ -254,9 +256,9 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
 	cmake_dependent_option(
 		USE_SYSTIMER "Use systimer" ON
-		"USE_DW_APB_TIMERS" OFF
+		"USE_DW_APB_TIMERS;${ENABLE_USE_SYSTIMER}" OFF
 	)
-	if(USE_DW_APB_TIMERS)
+	if(USE_SYSTIMER)
 		add_subdirectory(${SDK_DIR}/libs/systimer)
 		set(link_libs ${link_libs} systimer)
 	endif()
