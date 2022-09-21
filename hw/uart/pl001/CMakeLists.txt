@@ -1,10 +1,10 @@
-set(LIB_NAME pl001)
+set(LIB_NAME pl011)
 
 add_library(${LIB_NAME} STATIC)
 
 target_sources(${LIB_NAME} 
 	PRIVATE
-		src/pl001.c
+		src/pl011.c
 )
 
 target_include_directories(${LIB_NAME}

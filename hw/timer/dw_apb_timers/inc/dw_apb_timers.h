@@ -24,7 +24,7 @@
 typedef enum _timer_id {
 	Timerx2_T1 = 1,
 	Timerx2_T2 = 2,
-#ifdef M3
+#ifdef A55
 	Timerx6_T1 = 3,
 	Timerx6_T2 = 4,
 	Timerx6_T3 = 5,

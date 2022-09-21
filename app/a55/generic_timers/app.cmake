@@ -10,4 +10,3 @@ set(app_inc
 )
 
 # 添加模块
-set(ENABLE_USE_DW_APB_TIMERS ON)

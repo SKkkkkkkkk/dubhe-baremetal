@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #ifdef QEMU
-	#include "pl001.h"
+	#include "pl011.h"
 #else
 	#include "dw_apb_uart.h"
 #endif

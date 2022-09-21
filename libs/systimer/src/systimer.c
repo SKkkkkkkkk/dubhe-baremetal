@@ -1,5 +1,4 @@
 #include "systimer.h"
-#include "irq_ctrl.h"
 typedef struct _systimer
 {
     volatile bool     running;

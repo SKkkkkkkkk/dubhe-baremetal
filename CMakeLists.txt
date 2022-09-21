@@ -140,14 +140,15 @@ project($CACHE{PROJECT_NAME}
   DESCRIPTION "dubhe project."
   LANGUAGES C ASM
 )
-set(ENABLE_USE_PL001 ON)
+
+set(ENABLE_USE_PL011 ON)
 set(ENABLE_USE_UART_16550 OFF)
 set(ENABLE_USE_DW_APB_UART ON)
 set(ENABLE_USE_DW_APB_TIMERS ON)
-set(ENABLE_USE_DW_APB_SSI ON)
 set(ENABLE_USE_DW_APB_GPIO ON)
+set(ENABLE_USE_DW_APB_SSI OFF)
 
-set(ENABLE_USE_SYSTIMER OFF)
+set(ENABLE_USE_SYSTIMER ON)
 set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 
@@ -193,14 +194,14 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 		set(link_libs ${link_libs} xlat_tables_v2)
 	endif()
 
-	### USE_PL001 (BOARD==QEMU)
+	### USE_PL011 (BOARD==QEMU)
 	cmake_dependent_option(
-		USE_PL001 "Use pl001" ON
-		"$CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_PL001}" OFF
+		USE_PL011 "Use pl011" ON
+		"$CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_PL011}" OFF
 	)
-	if(USE_PL001)
-		add_subdirectory(${SDK_DIR}/hw/uart/pl001)
-		set(link_libs ${link_libs} pl001)
+	if(USE_PL011)
+		add_subdirectory(${SDK_DIR}/hw/uart/pl011)
+		set(link_libs ${link_libs} pl011)
 	endif()
 
 	### USE_UART_16550 (BOARD!=QEMU)

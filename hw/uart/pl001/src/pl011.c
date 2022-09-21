@@ -1,6 +1,6 @@
 #ifdef QEMU
 #include <math.h>
-#include "pl001.h"
+#include "pl011.h"
 
 #ifndef M3
     static uart_registers* uart0 = (uart_registers*)0x09000000U;

@@ -10,7 +10,7 @@ extern int errno;
 #endif
 
 #if defined QEMU
-	#include "pl001.h"
+	#include "pl011.h"
 	static bool uart_init = false;
 	int _write (int fd, char *ptr, int len)
 	{

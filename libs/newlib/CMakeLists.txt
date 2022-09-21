@@ -20,7 +20,7 @@ target_compile_options(${LIB_OBJS_NAME}
 if($CACHE{BOARD} STREQUAL "QEMU")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PRIVATE
-			pl001
+			pl011
 	)
 else()
 	target_link_libraries(${LIB_OBJS_NAME}

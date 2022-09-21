@@ -25,13 +25,12 @@ target_compile_options( ${LIB_OBJS_NAME}
 if($CACHE{BOARD} STREQUAL "QEMU")
 	# target_link_libraries(${LIB_OBJS_NAME}
 	# 	PRIVATE
-	# 		pl001
+	# 		pl011
 	# )
 else()
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
 			dw_apb_timers
-			gic_v2
 	)
 endif()
 
@@ -39,5 +38,13 @@ if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
 			aarch64_libc
+			gic_v2
 	)
+elseif($CACHE{CORE} STREQUAL "M3")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PUBLIC
+			m3
+	)
+else()
+	message(FATAL_ERROR "unsupport core!")
 endif()
