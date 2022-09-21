@@ -6,7 +6,7 @@
 int main()
 {
 	systimer_init();
-	printf("hello world.\n\r");
+	printf("gpio test.\n\r");
 
 	pin_set_iomux(GROUP_GPIO0, 16, 3);
 	pin_set_iomux(GROUP_GPIO0, 17, 3);
@@ -47,14 +47,14 @@ int main()
 		gpio_write_pin(GROUP_GPIO0, 19, GPIO_PIN_SET);
 		gpio_write_pin(GROUP_GPIO0, 20, GPIO_PIN_SET);
 		gpio_write_pin(GROUP_GPIO0, 21, GPIO_PIN_SET);
-		// systimer_delay(500, IN_US);
+		systimer_delay(500, IN_US);
 		gpio_write_pin(GROUP_GPIO0, 16, GPIO_PIN_RESET);
 		gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_RESET);
 		gpio_write_pin(GROUP_GPIO0, 18, GPIO_PIN_RESET);
 		gpio_write_pin(GROUP_GPIO0, 19, GPIO_PIN_RESET);
 		gpio_write_pin(GROUP_GPIO0, 20, GPIO_PIN_RESET);
 		gpio_write_pin(GROUP_GPIO0, 21, GPIO_PIN_RESET);
-		// systimer_delay(500, IN_US);
+		systimer_delay(500, IN_US);
 	}
 	return 0;
 }
