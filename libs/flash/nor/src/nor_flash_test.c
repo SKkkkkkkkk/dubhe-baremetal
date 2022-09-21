@@ -67,7 +67,7 @@ static uint8_t p25q40uj_w_buf[P25Q40UJ_SIZE] = {0};
 void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 {
 	uint8_t _flash_id[3];
-	if(flash_init(spi_id, 100, 3, flash_model) == false)
+	if(flash_init(spi_id, 2, 3, flash_model) == false)
 	{
 		printf("flash_init error.\n\r");
 		return;
@@ -95,7 +95,6 @@ void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 	// flash_reset(spi_id);
 	flash_read_id(spi_id, _flash_id, 3);
 	printf("flash_id: 0x%x 0x%x 0x%x\n\r", _flash_id[0], _flash_id[1], _flash_id[2]);
-
 	if(flash_model == P25Q40UJ)
 	{
 		for(uint32_t i = 0;i<P25Q40UJ_SIZE;i++)

@@ -35,7 +35,7 @@
 #define SR_TFE  2UL
 #define SR_RFNE 3UL
 
-static bool const SPI_CS_USE_GPIO = false; ///< SPI CS 是否使用GPIO作为片选
+static bool const SPI_CS_USE_GPIO = true; ///< SPI CS 是否使用GPIO作为片选
 
 /**
  * @brief SPI 状态位.
@@ -76,7 +76,7 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 		pin_set_iomux(GROUP_GPIO0, 16, 0);
 		if ( (!SPI_CS_USE_GPIO) )
 		{
-			pin_set_iomux(GROUP_GPIO1, 17, 0);
+			pin_set_iomux(GROUP_GPIO0, 17, 0);
 		}
 		else
 		{
@@ -176,7 +176,7 @@ static inline void bootspi_disable(void)
 	BOOTSPI->SER = 0;
 	BOOTSPI->DMACR = 0;
 	if (SPI_CS_USE_GPIO)
-		gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_SET);
 }
 
 static inline void bootspi_enable(void)
@@ -246,9 +246,9 @@ static inline void bootspi_select_slave(uint8_t slave)
 	if (SPI_CS_USE_GPIO)
 	{
 		if(slave==0)
-			gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_SET);
+			gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_SET);
 		else
-			gpio_write_pin(GROUP_GPIO1, 11, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_RESET);
 	}
 	BOOTSPI->SER = slave;
 }
