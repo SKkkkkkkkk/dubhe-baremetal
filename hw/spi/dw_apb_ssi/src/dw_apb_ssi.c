@@ -61,10 +61,6 @@ static inline void set_spi_state(spi_id_t spi_id, uint8_t state)
  * Todo:
  * 现在std，quad都把4个信号引脚设置为了spi功能，std模式不需要D2，D3.
  */
-// static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
-// {
-
-// }
 static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 {
 	gpio_init_config_t gpio_init_config = {
@@ -494,7 +490,7 @@ void dw_spi_transmit_and_receive(spi_id_t spi_id, void *t_buf, void *r_buf, uint
 		return bootspi_transmit_and_receive(t_buf, r_buf, tr_size, safe_mode);
 	
 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
-	// if (spix->CTRLR & 1) 
+	// if (/*spix->CTRLR &*/ 1) 
 	// {
 		uint8_t *t_buf_p = t_buf;
 		uint8_t *r_buf_p = r_buf;
@@ -609,7 +605,7 @@ void dw_spi_eeprom_read(spi_id_t spi_id, void *t_buf, uint8_t t_size, void *r_bu
 
 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
 	assert(spix);
-	// if (spix->CTRLR & 1) { //as master
+	// if (/*spix->CTRLR &*/ 1) { //as master
 
 		uint8_t *t_buf_p = t_buf;
 		uint8_t *r_buf_p = r_buf;
@@ -695,7 +691,7 @@ void dw_spi_receive_only(spi_id_t spi_id, void* r_buf, uint16_t r_size)
 
 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
 	assert(spix);
-	// if (spix->CTRLR & 1) {
+	// if (/*spix->CTRLR &*/ 1) {
 		uint8_t *r_buf_p = r_buf;
 
 		spi_disable(spi_id, true);
@@ -784,7 +780,7 @@ void dw_spi_transmit_only(spi_id_t spi_id, void* t_buf, uint32_t t_size, bool sa
 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
 	assert(spix);
 
-	// if (spix->CTRLR & 1) //as master
+	// if (/*spix->CTRLR &*/ 1) //as master
 	// {
 		uint8_t *t_buf_p = t_buf;
 
@@ -1244,912 +1240,912 @@ int16_t dw_spi_tuning(spi_id_t spi_id, void *t_buf, uint8_t t_size, void *r_buf,
 	return mid;
 }
 
-// /****************** STD & DMA **********************/
-// #ifndef SPI_DMA_DRIVER_VERSION
-// 	#define SPI_DMA_DRIVER_VERSION 0
-// #endif
+/****************** STD & DMA **********************/
+#ifndef SPI_DMA_DRIVER_VERSION
+	#define SPI_DMA_DRIVER_VERSION 0
+#endif
 
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	#include "ape1210_dma.h"
-// 	typedef enum dma0_chan DMA_Channel_t;
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	#include "ape1210_dma.h"
+	typedef enum dma0_chan DMA_Channel_t;
 
-// 	static volatile uint8_t dma_transfer_sig[8] = {0};
+	static volatile uint8_t dma_transfer_sig[8] = {0};
 
 
-// 	static inline bool is_dma_channel_transfer_done(DMA_Channel_t ch)
-// 	{
-// 		return (bool)dma_transfer_sig[(uint32_t)ch];
-// 	}
+	static inline bool is_dma_channel_transfer_done(DMA_Channel_t ch)
+	{
+		return (bool)dma_transfer_sig[(uint32_t)ch];
+	}
 
-// 	static inline void free_dma_channel(DMA_Channel_t ch)
-// 	{
-// 		dma_transfer_sig[(uint32_t)ch] = 0;
-// 		dma_destory(ch);
-// 	}
+	static inline void free_dma_channel(DMA_Channel_t ch)
+	{
+		dma_transfer_sig[(uint32_t)ch] = 0;
+		dma_destory(ch);
+	}
 
-// 	int spi_dma_irq_handler(void* arg)
-// 	{
-// 		dma_transfer_sig[(uint32_t)arg] = 1;
-// 		return 0;
-// 	}
-// #else
-// 	uint8_t dma_channel_state[8] = {0};
-// 	#include "dma.h"
-// #endif
+	int spi_dma_irq_handler(void* arg)
+	{
+		dma_transfer_sig[(uint32_t)arg] = 1;
+		return 0;
+	}
+#else
+	uint8_t dma_channel_state[8] = {0};
+	#include "dma.h"
+#endif
 
-// static inline DMA_Channel_t boot_spi_eeprom_read_dma_start(void *t_buf, uint8_t t_size, void *r_buf, uint16_t r_size)
-// {
-// 	assert(t_buf);
-// 	assert(r_buf);
-// 	assert((t_size<=32) && (t_size!=0));
-// 	assert(r_size<=2048);
+static inline DMA_Channel_t boot_spi_eeprom_read_dma_start(void *t_buf, uint8_t t_size, void *r_buf, uint16_t r_size)
+{
+	assert(t_buf);
+	assert(r_buf);
+	assert((t_size<=32) && (t_size!=0));
+	assert(r_size<=2048);
 
-// 	uint8_t *t_buf_p = t_buf;
-// 	uint8_t *r_buf_p = r_buf;
+	uint8_t *t_buf_p = t_buf;
+	uint8_t *r_buf_p = r_buf;
 
-// 	bootspi_disable();
+	bootspi_disable();
 
-// 	uint32_t ctrl0 = BOOTSPI->CTRLR0;
-// 	//TMOD = EEPROM Read
-// 	ctrl0 &= ~SPI_TMOD_Msk;
-// 	ctrl0 |= 3 << SPI_TMOD_Pos;
-// 	ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
-// 	BOOTSPI->CTRLR0 = ctrl0;
+	uint32_t ctrl0 = BOOTSPI->CTRLR0;
+	//TMOD = EEPROM Read
+	ctrl0 &= ~SPI_TMOD_Msk;
+	ctrl0 |= 3 << SPI_TMOD_Pos;
+	ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
+	BOOTSPI->CTRLR0 = ctrl0;
 
-// 	BOOTSPI->CTRLR1 = r_size - 1;
+	BOOTSPI->CTRLR1 = r_size - 1;
 
-// 	//build-in dma配置
-// 	BOOTSPI->DMACR = 0;
-// 	BOOTSPI->DMARDLR = 15; //16触发DMA请求
-// 	// BOOTSPI->DMARDLR = 0; //1触发DMA请求
-// 	BOOTSPI->DMACR = 1;
+	//build-in dma配置
+	BOOTSPI->DMACR = 0;
+	BOOTSPI->DMARDLR = 15; //16触发DMA请求
+	// BOOTSPI->DMARDLR = 0; //1触发DMA请求
+	BOOTSPI->DMACR = 1;
 
-// 	bootspi_enable();
+	bootspi_enable();
 
-// 	//填充发送数据
-// 	while (t_size--) {
-// 		BOOTSPI->DR = *t_buf_p++; //t_size <= tx_fifo_depth
-// 	}
+	//填充发送数据
+	while (t_size--) {
+		BOOTSPI->DR = *t_buf_p++; //t_size <= tx_fifo_depth
+	}
 
-// 	// dma配置
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	int ret = 0;
-// 	DMA_Channel_t ch = DMA0_CH0_INDEX;
-// 	dma_transfer_sig[(uint32_t)ch] = 0;
-// 	ret = dma_init();
-// 	assert(ret==0);
-// 	dma_register_callback(ch, spi_dma_irq_handler, (void*)DMA0_CH0_INDEX);
+	// dma配置
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	int ret = 0;
+	DMA_Channel_t ch = DMA0_CH0_INDEX;
+	dma_transfer_sig[(uint32_t)ch] = 0;
+	ret = dma_init();
+	assert(ret==0);
+	dma_register_callback(ch, spi_dma_irq_handler, (void*)DMA0_CH0_INDEX);
 
-// 	struct dma_slave_config config = {
-// 		.direction      = DMA_DEV_TO_MEM,
-// 		.src_addr       = (uint32_t)(&(BOOTSPI->DR)),
-// 		.dst_addr       = (uint32_t)r_buf_p,
-// 		.src_maxburst   = 3, //MSIZE_16
-// 		.dst_maxburst   = 3, //MSIZE_16
-// 		.data_len       = r_size,
-// 		.src_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.dst_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.device_fc      = false,
-// 		.slave_id 		= 25,
-// 		.cyclic         = false,
-// 		.period_len		= 0
-// 	};
+	struct dma_slave_config config = {
+		.direction      = DMA_DEV_TO_MEM,
+		.src_addr       = (uint32_t)(&(BOOTSPI->DR)),
+		.dst_addr       = (uint32_t)r_buf_p,
+		.src_maxburst   = 3, //MSIZE_16
+		.dst_maxburst   = 3, //MSIZE_16
+		.data_len       = r_size,
+		.src_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.dst_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.device_fc      = false,
+		.slave_id 		= 25,
+		.cyclic         = false,
+		.period_len		= 0
+	};
 
-// 	while((ret = dma_config(ch, &config)) != 0 );
-// 	dma_enable(ch);
-// #else
-// 	DMA_Channel_t ch;
-// 	while((ch = get_a_free_dma_channel()) == NO_FREE_DMA_CHANNEL);
-// 	dma_config_t config = {
-// 		.ch = ch,
-// 		.sar = (uintptr_t)(&(BOOTSPI->DR)),
-// 		.dar = (uintptr_t)r_buf_p,
+	while((ret = dma_config(ch, &config)) != 0 );
+	dma_enable(ch);
+#else
+	DMA_Channel_t ch;
+	while((ch = get_a_free_dma_channel()) == NO_FREE_DMA_CHANNEL);
+	dma_config_t config = {
+		.ch = ch,
+		.sar = (uintptr_t)(&(BOOTSPI->DR)),
+		.dar = (uintptr_t)r_buf_p,
 
-// 		.axi_dst_burst_length = 16,
-// 		.axi_src_burst_length = 16,
-// 		.block_ts = r_size -1,
+		.axi_dst_burst_length = 16,
+		.axi_src_burst_length = 16,
+		.block_ts = r_size -1,
 		
-// 		.is_src_addr_increse = SRC_ADDR_NOCHANGE,
-// 		.is_dst_addr_increse = DST_ADDR_INCREMENT,
-// 		.src_transfer_width = SRC_TRANSFER_WIDTH_8,
-// 		.dst_transfer_width = DST_TRANSFER_WIDTH_8,
-// 		.dst_msize = DST_MSIZE_16,
-// 		.src_msize = SRC_MSIZE_16,
+		.is_src_addr_increse = SRC_ADDR_NOCHANGE,
+		.is_dst_addr_increse = DST_ADDR_INCREMENT,
+		.src_transfer_width = SRC_TRANSFER_WIDTH_8,
+		.dst_transfer_width = DST_TRANSFER_WIDTH_8,
+		.dst_msize = DST_MSIZE_16,
+		.src_msize = SRC_MSIZE_16,
 
-// 		.handle_shake = 25,
-// 		.dir = PER_TO_MEM
-// 	};
-// 	dma_config(&config);
-// 	dma_channel_start(ch);
-// #endif
-// 	bootspi_select_slave(1U);
-// 	return ch;
-// }
+		.handle_shake = HW_BOOTSPI_RX,
+		.dir = PER_TO_MEM
+	};
+	dma_config(&config);
+	dma_channel_start(ch);
+#endif
+	bootspi_select_slave(1U);
+	return ch;
+}
 
-// DMA_Channel_t dw_spi_eeprom_read_dma_start(spi_id_t spi_id, void *t_buf, uint8_t t_size, void *r_buf, uint32_t r_size)
-// {
-// 	//0. 判断输入合法性
-// 	assert(get_spi_state(spi_id)!=0);
-// 	assert(spi_id <= 3);
-// 	assert(t_buf);
-// 	assert(r_buf);
-// 	assert((t_size<=32) && (t_size!=0));
-// 	assert(r_size <= 2048);
+DMA_Channel_t dw_spi_eeprom_read_dma_start(spi_id_t spi_id, void *t_buf, uint8_t t_size, void *r_buf, uint32_t r_size)
+{
+	//0. 判断输入合法性
+	assert(get_spi_state(spi_id)!=0);
+	assert(spi_id <= 3);
+	assert(t_buf);
+	assert(r_buf);
+	assert((t_size<=32) && (t_size!=0));
+	assert(r_size <= 2048);
 
-// 	//1. bootspi or spix
-// 	if(spi_id == BOOTSPI_ID)
-// 		return boot_spi_eeprom_read_dma_start(t_buf, t_size, r_buf, r_size);
+	//1. bootspi or spix
+	if(spi_id == BOOTSPI_ID)
+		return boot_spi_eeprom_read_dma_start(t_buf, t_size, r_buf, r_size);
 
-// 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
-// 	assert(spix);
-// 	uint8_t handshake;
-// 	switch (spi_id)
-// 	{
-// 	case SPI0_ID:
-// 		handshake = 2;
-// 		break;
-// 	case SPI1_ID:
-// 		handshake = 4;
-// 		break;
-// 	case SPI2_ID:
-// 		handshake = 6;
-// 		break;
-// 	case BOOTSPI_ID:
-// 		assert(0);
-// 		break;
-// 	default:
-// 		assert(0);
-// 		break;
-// 	}
-// 	if (spix->CTRLR & 1) { //as master
+	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
+	assert(spix);
+	uint8_t handshake;
+	switch (spi_id)
+	{
+	case SPI0_ID:
+		handshake = HW_SPI0_RX;
+		break;
+	case SPI1_ID:
+		handshake = HW_SPI1_RX;
+		break;
+	case SPI2_ID:
+		handshake = HW_SPI2_RX;
+		break;
+	case BOOTSPI_ID:
+		assert(0);
+		break;
+	default:
+		assert(0);
+		break;
+	}
+	if (/*spix->CTRLR &*/1) { //as master
 
-// 		uint8_t *t_buf_p = t_buf;
-// 		uint8_t *r_buf_p = r_buf;
+		uint8_t *t_buf_p = t_buf;
+		uint8_t *r_buf_p = r_buf;
 
-// 		spi_disable(SPI0_ID, true);
+		spi_disable(SPI0_ID, true);
 
-// 		uint32_t ctrl0 = spix->CTRLR0;
+		uint32_t ctrl0 = spix->CTRLR0;
 
-// 		//TMOD = EEPROM Read
-// 		ctrl0 &= ~SPI_TMOD_Msk;
-// 		ctrl0 |= 3 << SPI_TMOD_Pos;
+		//TMOD = EEPROM Read
+		ctrl0 &= ~SPI_TMOD_Msk;
+		ctrl0 |= 3 << SPI_TMOD_Pos;
 
-// 		ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
+		ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
 
-// 		spix->CTRLR0 = ctrl0;
+		spix->CTRLR0 = ctrl0;
 
-// 		spix->CTRLR1 = r_size - 1;
+		spix->CTRLR1 = r_size - 1;
 
-// 		//build-in dma配置
-// 		spix->DMACR = 0;
-// 		// spix->DMARDLR = 15; //16触发DMA请求
-// 		spix->DMARDLR = 0; //1触发DMA请求
-// 		spix->DMACR = 1;
+		//build-in dma配置
+		spix->DMACR = 0;
+		// spix->DMARDLR = 15; //16触发DMA请求
+		spix->DMARDLR = 0; //1触发DMA请求
+		spix->DMACR = 1;
 
-// 		spix->SSIENR = 1;
+		spix->SSIENR = 1;
 
-// 		//填充发送数据
-// 		while (t_size--) {
-// 			spix->DR = *t_buf_p++;
-// 		}
+		//填充发送数据
+		while (t_size--) {
+			spix->DR = *t_buf_p++;
+		}
 
-// 		// dma配置
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 		int ret = 0;
-// 		DMA_Channel_t ch = DMA0_CH0_INDEX;
-// 		ret = dma_init();
-// 		assert(ret==0);
-// 		dma_register_callback(ch, spi_dma_irq_handler, NULL);
+		// dma配置
+#if (SPI_DMA_DRIVER_VERSION > 0)
+		int ret = 0;
+		DMA_Channel_t ch = DMA0_CH0_INDEX;
+		ret = dma_init();
+		assert(ret==0);
+		dma_register_callback(ch, spi_dma_irq_handler, NULL);
 
-// 		struct dma_slave_config config = {
-// 			.direction      = DMA_DEV_TO_MEM,
-// 			.src_addr       = (uint32_t)(&(spix->DR)),
-// 			.dst_addr       = (uint32_t)r_buf_p,
-// 			.src_maxburst   = 0,
-// 			.dst_maxburst   = 0,
-// 			.data_len       = r_size,
-// 			.src_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 			.dst_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 			.device_fc      = false,
-// 			.slave_id 		= handshake,
-// 			.cyclic         = false,
-// 			.period_len		= 0
-// 		};
+		struct dma_slave_config config = {
+			.direction      = DMA_DEV_TO_MEM,
+			.src_addr       = (uint32_t)(&(spix->DR)),
+			.dst_addr       = (uint32_t)r_buf_p,
+			.src_maxburst   = 0,
+			.dst_maxburst   = 0,
+			.data_len       = r_size,
+			.src_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+			.dst_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+			.device_fc      = false,
+			.slave_id 		= handshake,
+			.cyclic         = false,
+			.period_len		= 0
+		};
 		
-// 		while((ret = dma_config(ch, &config)) != 0 );
-// 		dma_enable(ch);
-// #else
-// 		DMA_Channel_t ch;
-// 		while((ch = get_a_free_dma_channel()) == NO_FREE_DMA_CHANNEL);
-// 		dma_config_t config = {
-// 			.ch = ch,
-// 			.sar = (uintptr_t)(&(spix->DR)),
-// 			.dar = (uintptr_t)r_buf_p,
+		while((ret = dma_config(ch, &config)) != 0 );
+		dma_enable(ch);
+#else
+		DMA_Channel_t ch;
+		while((ch = get_a_free_dma_channel()) == NO_FREE_DMA_CHANNEL);
+		dma_config_t config = {
+			.ch = ch,
+			.sar = (uintptr_t)(&(spix->DR)),
+			.dar = (uintptr_t)r_buf_p,
 
-// 			.axi_dst_burst_length = 0,
-// 			.axi_src_burst_length = 0,
-// 			.block_ts = r_size -1,
+			.axi_dst_burst_length = 0,
+			.axi_src_burst_length = 0,
+			.block_ts = r_size -1,
 			
-// 			.is_src_addr_increse = SRC_ADDR_NOCHANGE,
-// 			.is_dst_addr_increse = DST_ADDR_INCREMENT,
-// 			.src_transfer_width = SRC_TRANSFER_WIDTH_8,
-// 			.dst_transfer_width = DST_TRANSFER_WIDTH_8,
-// 			.dst_msize = SRC_MSIZE_1,
-// 			.src_msize = DST_MSIZE_1,
+			.is_src_addr_increse = SRC_ADDR_NOCHANGE,
+			.is_dst_addr_increse = DST_ADDR_INCREMENT,
+			.src_transfer_width = SRC_TRANSFER_WIDTH_8,
+			.dst_transfer_width = DST_TRANSFER_WIDTH_8,
+			.dst_msize = SRC_MSIZE_1,
+			.src_msize = DST_MSIZE_1,
 
-// 			.handle_shake = handshake,
-// 			.dir = PER_TO_MEM
-// 		};
-// 		dma_config(&config);
-// 		dma_channel_start(ch);
-// #endif
-// 		spi_select_slave(spi_id, 1);
-// 		return ch;
-// 	} else {
-// 	}
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	return DMA0_ERR;
-// #else
-// 	return NO_FREE_DMA_CHANNEL;
-// #endif
-// }
+			.handle_shake = handshake,
+			.dir = PER_TO_MEM
+		};
+		dma_config(&config);
+		dma_channel_start(ch);
+#endif
+		spi_select_slave(spi_id, 1);
+		return ch;
+	} else {
+	}
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	return DMA0_ERR;
+#else
+	return NO_FREE_DMA_CHANNEL;
+#endif
+}
 
-// bool is_dw_spi_eeprom_read_dma_end(spi_id_t spi_id, DMA_Channel_t ch)
-// {
-// 	if(is_dma_channel_transfer_done(ch))
-// 	{
-// 		#if (SPI_DMA_DRIVER_VERSION == 0)
-// 			clear_channel_transfer_done_irq(ch);
-// 		#endif
-// 		free_dma_channel(ch);
-// 		spi_disable(spi_id, true);
-// 		return true;
-// 	}
-// 	return false;
-// }
+bool is_dw_spi_eeprom_read_dma_end(spi_id_t spi_id, DMA_Channel_t ch)
+{
+	if(is_dma_channel_transfer_done(ch))
+	{
+		#if (SPI_DMA_DRIVER_VERSION == 0)
+			clear_channel_transfer_done_irq(ch);
+		#endif
+		free_dma_channel(ch);
+		spi_disable(spi_id, true);
+		return true;
+	}
+	return false;
+}
 
-// void dw_spi_eeprom_read_dma(spi_id_t spi_id, void *t_buf, uint8_t t_size, void *r_buf, uint16_t r_size)
-// {
-// 	DMA_Channel_t ch = dw_spi_eeprom_read_dma_start(spi_id, t_buf, t_size, r_buf, r_size);
-// 	while(!is_dw_spi_eeprom_read_dma_end(spi_id, ch));
-// }
+void dw_spi_eeprom_read_dma(spi_id_t spi_id, void *t_buf, uint8_t t_size, void *r_buf, uint16_t r_size)
+{
+	DMA_Channel_t ch = dw_spi_eeprom_read_dma_start(spi_id, t_buf, t_size, r_buf, r_size);
+	while(!is_dw_spi_eeprom_read_dma_end(spi_id, ch));
+}
 
-// static inline void bootspi_transmit_only_dma(void* t_buf, uint32_t t_size)
-// {
-// 	assert(t_buf);
-// 	assert(t_size<=2048);
-// 	if(t_size==0)
-// 		return;
-// 	// __DMB();
-// 	bootspi_disable();
+static inline void bootspi_transmit_only_dma(void* t_buf, uint32_t t_size)
+{
+	assert(t_buf);
+	assert(t_size<=2048);
+	if(t_size==0)
+		return;
+	// __DMB();
+	bootspi_disable();
 
-// 	uint32_t ctrl0 = BOOTSPI->CTRLR0;
-// 	ctrl0 &= ~SPI_TMOD_Msk;
-// 	ctrl0 |= 1 << SPI_TMOD_Pos; //TMOD = transmit_only
-// 	ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
-// 	BOOTSPI->CTRLR0 = ctrl0;
+	uint32_t ctrl0 = BOOTSPI->CTRLR0;
+	ctrl0 &= ~SPI_TMOD_Msk;
+	ctrl0 |= 1 << SPI_TMOD_Pos; //TMOD = transmit_only
+	ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
+	BOOTSPI->CTRLR0 = ctrl0;
 
-// 	//build-in DMA配置
-// 	BOOTSPI->DMACR = 0;
-// 	BOOTSPI->DMATDLR = 16; //<=16触发DMA请求
-// 	// BOOTSPI->DMATDLR = 31; //<=31触发DMA请求
-// 	BOOTSPI->DMACR = 2;
+	//build-in DMA配置
+	BOOTSPI->DMACR = 0;
+	BOOTSPI->DMATDLR = 16; //<=16触发DMA请求
+	// BOOTSPI->DMATDLR = 31; //<=31触发DMA请求
+	BOOTSPI->DMACR = 2;
 
-// 	bootspi_enable();
+	bootspi_enable();
 
-// 	// dma配置
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	int ret = 0;
-// 	DMA_Channel_t ch = DMA0_CH0_INDEX;
-// 	ret = dma_init();
-// 	assert(ret==0);
-// 	dma_register_callback(ch, spi_dma_irq_handler, NULL);
+	// dma配置
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	int ret = 0;
+	DMA_Channel_t ch = DMA0_CH0_INDEX;
+	ret = dma_init();
+	assert(ret==0);
+	dma_register_callback(ch, spi_dma_irq_handler, NULL);
 
-// 	struct dma_slave_config config = {
-// 		.direction      = DMA_MEM_TO_DEV,
-// 		.src_addr       = (uint32_t)t_buf,
-// 		.dst_addr       = (uint32_t)(&(BOOTSPI->DR)),
-// 		.src_maxburst   = 3,
-// 		.dst_maxburst   = 3,
-// 		.data_len       = t_size,
-// 		.src_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.dst_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.device_fc      = false,
-// 		.slave_id 		= 26,
-// 		.cyclic         = false,
-// 		.period_len		= 0
-// 	};
+	struct dma_slave_config config = {
+		.direction      = DMA_MEM_TO_DEV,
+		.src_addr       = (uint32_t)t_buf,
+		.dst_addr       = (uint32_t)(&(BOOTSPI->DR)),
+		.src_maxburst   = 3,
+		.dst_maxburst   = 3,
+		.data_len       = t_size,
+		.src_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.dst_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.device_fc      = false,
+		.slave_id 		= 26,
+		.cyclic         = false,
+		.period_len		= 0
+	};
 	
-// 	while((ret = dma_config(ch, &config)) != 0 );
-// 	dma_enable(ch);
-// #else
-// 	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
-// 	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)t_buf;
-// 	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(&(BOOTSPI->DR));
+	while((ret = dma_config(ch, &config)) != 0 );
+	dma_enable(ch);
+#else
+	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
+	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)t_buf;
+	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(&(BOOTSPI->DR));
 
-// 	REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
-// 									AXI_MASTER_0 << 2 |
-// 									SRC_ADDR_INCREMENT << 4 |
-// 									DST_ADDR_NOCHANGE << 6 |
-// 									SRC_TRANSFER_WIDTH_8 << 8 |
-// 									DST_TRANSFER_WIDTH_8 << 11 |
-// 									//   SRC_MSIZE_16 << 14 |
-// 									// DST_MSIZE_1 << 18 |
-// 									DST_MSIZE_16 << 18 |
-// 									NONPOSTED_LASTWRITE_EN << 30;
+	REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
+									AXI_MASTER_0 << 2 |
+									SRC_ADDR_INCREMENT << 4 |
+									DST_ADDR_NOCHANGE << 6 |
+									SRC_TRANSFER_WIDTH_8 << 8 |
+									DST_TRANSFER_WIDTH_8 << 11 |
+									//   SRC_MSIZE_16 << 14 |
+									// DST_MSIZE_1 << 18 |
+									DST_MSIZE_16 << 18 |
+									NONPOSTED_LASTWRITE_EN << 30;
 
-// 	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-// 									16 << (39 - 32) | //axi source burst length
-// 									AWLEN_EN << (47 - 32) |
-// 									16 << (48 - 32) | //axi destination burst length
-// 									SRC_STATUS_DISABLE << (56 - 32) |
-// 									DST_STATUS_DISABLE << (57 - 32) |
-// 									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
-// 									NOTLAST_SHADORLLI << (62 - 32) |
-// 									SHADORLLI_INVALID << (63 - 32);
+	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
+									16 << (39 - 32) | //axi source burst length
+									AWLEN_EN << (47 - 32) |
+									16 << (48 - 32) | //axi destination burst length
+									SRC_STATUS_DISABLE << (56 - 32) |
+									DST_STATUS_DISABLE << (57 - 32) |
+									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
+									NOTLAST_SHADORLLI << (62 - 32) |
+									SHADORLLI_INVALID << (63 - 32);
 
-// 	REG32(DMA_BASE + CH1_BLOCK_TS_0) = t_size - 1;
+	REG32(DMA_BASE + CH1_BLOCK_TS_0) = t_size - 1;
 
-// 	REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
-// 									DST_CONTIGUOUS << 2 |
-// 									26U            << 11;
+	REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
+									DST_CONTIGUOUS << 2 |
+									HW_BOOTSPI_TX  << 11;
 
-// 	REG32(DMA_BASE + CH1_CFG2_32) = MEM_TO_PER_DMAC << (32 - 32) |
-// 									DST_HARDWARE_HS << (36 - 32) |
-// 									/*26 << (44 - 32) | //src handshake*/
-// 									CHANNEL_PRIORITY7 << (47 - 32) |
-// 									CHANNEL_LOCK_DISABLE << (52 - 32) |
-// 									0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
-// 									0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
+	REG32(DMA_BASE + CH1_CFG2_32) = MEM_TO_PER_DMAC << (32 - 32) |
+									DST_HARDWARE_HS << (36 - 32) |
+									/*26 << (44 - 32) | //src handshake*/
+									CHANNEL_PRIORITY7 << (47 - 32) |
+									CHANNEL_LOCK_DISABLE << (52 - 32) |
+									0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
+									0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
 
-// 	REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
-// 	REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
-// 	REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;	//enable DMAC and its interrupt logic
-// 	REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101; //EN channel1  while(1)
-// #endif
-// 	//选择从机，开始发送
-// 	bootspi_select_slave(1U);
+	REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
+	REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
+	REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;	//enable DMAC and its interrupt logic
+	REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101; //EN channel1  while(1)
+#endif
+	//选择从机，开始发送
+	bootspi_select_slave(1U);
 
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	while(!is_dma_channel_transfer_done(ch));
-// 	free_dma_channel(ch);
-// #else
-// 	while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
-// 		;
-// 	REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
-// #endif
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	while(!is_dma_channel_transfer_done(ch));
+	free_dma_channel(ch);
+#else
+	while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
+		;
+	REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
+#endif
 	
 
-// 	//等待数据发送完成
-// 	while( !( BOOTSPI->SR & (1UL << SR_TFE) ) ); //waiting TFE for 1!!! dw_ssi 2.7.1.3
-// 	while( ( BOOTSPI->SR & (1UL << SR_BUSY) ) );
+	//等待数据发送完成
+	while( !( BOOTSPI->SR & (1UL << SR_TFE) ) ); //waiting TFE for 1!!! dw_ssi 2.7.1.3
+	while( ( BOOTSPI->SR & (1UL << SR_BUSY) ) );
 
-// 	bootspi_disable();
-// }
+	bootspi_disable();
+}
 
-// void dw_spi_transmit_only_dma(spi_id_t spi_id, void* t_buf, uint32_t t_size)
-// {
-// 	assert(spi_id <= 3);
-// 	assert(get_spi_state(spi_id)!=0);
-// 	assert(t_buf);
-// 	assert(t_size<=2048);
+void dw_spi_transmit_only_dma(spi_id_t spi_id, void* t_buf, uint32_t t_size)
+{
+	assert(spi_id <= 3);
+	assert(get_spi_state(spi_id)!=0);
+	assert(t_buf);
+	assert(t_size<=2048);
 
-// 	__DMB();
-// 	if(spi_id == BOOTSPI_ID)
-// 		return bootspi_transmit_only_dma(t_buf, t_size);
+	__DMB();
+	if(spi_id == BOOTSPI_ID)
+		return bootspi_transmit_only_dma(t_buf, t_size);
 
-// 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
-// 	assert(spix);
+	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
+	assert(spix);
 
-// 	uint8_t handshake;
-// 	switch (spi_id)
-// 	{
-// 	case SPI0_ID:
-// 		handshake = 3;
-// 		break;
-// 	case SPI1_ID:
-// 		handshake = 5;
-// 		break;
-// 	case SPI2_ID:
-// 		handshake = 7;
-// 		break;
-// 	case BOOTSPI_ID:
-// 		assert(0);
-// 		break;
-// 	default:
-// 		assert(0);
-// 		break;
-// 	}
+	uint8_t handshake;
+	switch (spi_id)
+	{
+	case SPI0_ID:
+		handshake = HW_SPI0_TX;
+		break;
+	case SPI1_ID:
+		handshake = HW_SPI1_TX;
+		break;
+	case SPI2_ID:
+		handshake = HW_SPI2_TX;
+		break;
+	case BOOTSPI_ID:
+		assert(0);
+		break;
+	default:
+		assert(0);
+		break;
+	}
 
-// 	if (spix->CTRLR & 1) //as master
-// 	{
-// 		spi_disable(spi_id, true);
+	if (/*spix->CTRLR &*/ 1) //as master
+	{
+		spi_disable(spi_id, true);
 
-// 		uint32_t ctrl0 = spix->CTRLR0;
-// 		//TMOD = transmit_only
-// 		ctrl0 &= ~SPI_TMOD_Msk;
-// 		ctrl0 |= 1 << SPI_TMOD_Pos;
+		uint32_t ctrl0 = spix->CTRLR0;
+		//TMOD = transmit_only
+		ctrl0 &= ~SPI_TMOD_Msk;
+		ctrl0 |= 1 << SPI_TMOD_Pos;
 
-// 		ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
-// 		spix->CTRLR0 = ctrl0;
+		ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
+		spix->CTRLR0 = ctrl0;
 
-// 		//build-in DMA配置
-// 		spix->DMACR = 0;
-// 		// spix->DMATDLR = 16; //<=16触发DMA请求
-// 		spix->DMATDLR = 31; //<=31触发DMA请求
-// 		spix->DMACR = 2;
+		//build-in DMA配置
+		spix->DMACR = 0;
+		// spix->DMATDLR = 16; //<=16触发DMA请求
+		spix->DMATDLR = 31; //<=31触发DMA请求
+		spix->DMACR = 2;
 
-// 		spi_enable(spi_id, true);
+		spi_enable(spi_id, true);
 
-// 		// dma配置
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 		int ret = 0;
-// 		DMA_Channel_t ch = DMA0_CH0_INDEX;
-// 		ret = dma_init();
-// 		assert(ret==0);
-// 		dma_register_callback(ch, spi_dma_irq_handler, NULL);
+		// dma配置
+#if (SPI_DMA_DRIVER_VERSION > 0)
+		int ret = 0;
+		DMA_Channel_t ch = DMA0_CH0_INDEX;
+		ret = dma_init();
+		assert(ret==0);
+		dma_register_callback(ch, spi_dma_irq_handler, NULL);
 
-// 		struct dma_slave_config config = {
-// 			.direction      = DMA_MEM_TO_DEV,
-// 			.src_addr       = (uint32_t)t_buf,
-// 			.dst_addr       = (uint32_t)(&(spix->DR)),
-// 			.src_maxburst   = 0,
-// 			.dst_maxburst   = 0,
-// 			.data_len       = t_size,
-// 			.src_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 			.dst_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 			.device_fc      = false,
-// 			.slave_id 		= handshake,
-// 			.cyclic         = false,
-// 			.period_len		= 0
-// 		};
+		struct dma_slave_config config = {
+			.direction      = DMA_MEM_TO_DEV,
+			.src_addr       = (uint32_t)t_buf,
+			.dst_addr       = (uint32_t)(&(spix->DR)),
+			.src_maxburst   = 0,
+			.dst_maxburst   = 0,
+			.data_len       = t_size,
+			.src_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+			.dst_width    	= DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+			.device_fc      = false,
+			.slave_id 		= handshake,
+			.cyclic         = false,
+			.period_len		= 0
+		};
 		
-// 		while((ret = dma_config(ch, &config)) != 0 );
-// 		dma_enable(ch);
-// #else
-// 		while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
-// 		REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)t_buf;
-// 		REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(&(spix->DR));
+		while((ret = dma_config(ch, &config)) != 0 );
+		dma_enable(ch);
+#else
+		while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
+		REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)t_buf;
+		REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(&(spix->DR));
 
-// 		REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
-// 										AXI_MASTER_0 << 2 |
-// 										SRC_ADDR_INCREMENT << 4 |
-// 										DST_ADDR_NOCHANGE << 6 |
-// 										SRC_TRANSFER_WIDTH_8 << 8 |
-// 										DST_TRANSFER_WIDTH_8 << 11 |
-// 										//   SRC_MSIZE_16 << 14 |
-// 										DST_MSIZE_1 << 18 |
-// 										// DST_MSIZE_16 << 18 |
-// 										NONPOSTED_LASTWRITE_EN << 30;
+		REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
+										AXI_MASTER_0 << 2 |
+										SRC_ADDR_INCREMENT << 4 |
+										DST_ADDR_NOCHANGE << 6 |
+										SRC_TRANSFER_WIDTH_8 << 8 |
+										DST_TRANSFER_WIDTH_8 << 11 |
+										//   SRC_MSIZE_16 << 14 |
+										DST_MSIZE_1 << 18 |
+										// DST_MSIZE_16 << 18 |
+										NONPOSTED_LASTWRITE_EN << 30;
 
-// 		REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-// 										0 << (39 - 32) | //axi source burst length
-// 										AWLEN_EN << (47 - 32) |
-// 										0 << (48 - 32) | //axi destination burst length
-// 										SRC_STATUS_DISABLE << (56 - 32) |
-// 										DST_STATUS_DISABLE << (57 - 32) |
-// 										INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
-// 										NOTLAST_SHADORLLI << (62 - 32) |
-// 										SHADORLLI_INVALID << (63 - 32);
+		REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
+										0 << (39 - 32) | //axi source burst length
+										AWLEN_EN << (47 - 32) |
+										0 << (48 - 32) | //axi destination burst length
+										SRC_STATUS_DISABLE << (56 - 32) |
+										DST_STATUS_DISABLE << (57 - 32) |
+										INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
+										NOTLAST_SHADORLLI << (62 - 32) |
+										SHADORLLI_INVALID << (63 - 32);
 
-// 		REG32(DMA_BASE + CH1_BLOCK_TS_0) = t_size - 1;
+		REG32(DMA_BASE + CH1_BLOCK_TS_0) = t_size - 1;
 
-// 		REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
-// 										DST_CONTIGUOUS << 2 |
-// 										handshake      << 11;
+		REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
+										DST_CONTIGUOUS << 2 |
+										handshake      << 11;
 
-// 		REG32(DMA_BASE + CH1_CFG2_32) = MEM_TO_PER_DMAC << (32 - 32) |
-// 										DST_HARDWARE_HS << (36 - 32) |
-// 										/*26 << (44 - 32) | //src handshake*/
-// 										CHANNEL_PRIORITY7 << (47 - 32) |
-// 										CHANNEL_LOCK_DISABLE << (52 - 32) |
-// 										0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
-// 										0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
+		REG32(DMA_BASE + CH1_CFG2_32) = MEM_TO_PER_DMAC << (32 - 32) |
+										DST_HARDWARE_HS << (36 - 32) |
+										/*26 << (44 - 32) | //src handshake*/
+										CHANNEL_PRIORITY7 << (47 - 32) |
+										CHANNEL_LOCK_DISABLE << (52 - 32) |
+										0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
+										0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
 
-// 		REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 0xffffffff; //Enable interrupt generation bit is valid
-// 		REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 0xffffffff; //Enable interrupt generation bit is valid
-// 		REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;	//enable DMAC and its interrupt logic
-// 		REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101; //EN channel1  while(1)
-// #endif
-// 		spi_select_slave(spi_id, 1);
+		REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 0xffffffff; //Enable interrupt generation bit is valid
+		REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 0xffffffff; //Enable interrupt generation bit is valid
+		REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;	//enable DMAC and its interrupt logic
+		REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101; //EN channel1  while(1)
+#endif
+		spi_select_slave(spi_id, 1);
 
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 		while(!is_dma_channel_transfer_done(ch));
-// 		free_dma_channel(ch);
-// #else
-// 		while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
-// 			;
-// 		REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
-// #endif
+#if (SPI_DMA_DRIVER_VERSION > 0)
+		while(!is_dma_channel_transfer_done(ch));
+		free_dma_channel(ch);
+#else
+		while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
+			;
+		REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
+#endif
 
-// 		//等待数据接收完
-// 		while (!(spix->SR & SPI_TFE_Msk));
-// 		while ((spix->SR & SPI_BUSY_Msk));
+		//等待数据接收完
+		while (!(spix->SR & SPI_TFE_Msk));
+		while ((spix->SR & SPI_BUSY_Msk));
 
-// 		spi_disable(spi_id, true);
-// 	} else {
-// 	}
-// }
+		spi_disable(spi_id, true);
+	} else {
+	}
+}
 
-// /********* Enhanced + DMA ********/
-// static inline void _bootspi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhanced_transfer_format)
-// {
-// 	assert(get_spi_state(spi_id)!=0);
-// 	assert(spi_id == 3);
-// 	assert(enhanced_transfer_format);
-// 	assert(enhanced_transfer_format->addr_lenth<=60);
-// 	assert(enhanced_transfer_format->ins_lenth<=16);
-// 	assert(enhanced_transfer_format->data);
-// 	assert(enhanced_transfer_format->data_nums!=0 && enhanced_transfer_format->data_nums<=2048);
-// 	assert(enhanced_transfer_format->wait_cycles<=31);
+/********* Enhanced + DMA ********/
+static inline void _bootspi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhanced_transfer_format)
+{
+	assert(get_spi_state(spi_id)!=0);
+	assert(spi_id == 3);
+	assert(enhanced_transfer_format);
+	assert(enhanced_transfer_format->addr_lenth<=60);
+	assert(enhanced_transfer_format->ins_lenth<=16);
+	assert(enhanced_transfer_format->data);
+	assert(enhanced_transfer_format->data_nums!=0 && enhanced_transfer_format->data_nums<=2048);
+	assert(enhanced_transfer_format->wait_cycles<=31);
 
-// 	uint8_t addr_lenth = enhanced_transfer_format->addr_lenth;
-// 	uint8_t ins_lenth = enhanced_transfer_format->ins_lenth;
-// 	//配置spi 
-// 	spi_disable(spi_id, true);
-// 	{
-// 		uint32_t ctrl0 = BOOTSPI->CTRLR0;
-// 		uint32_t spi_ctrl0 = BOOTSPI->SPI_CTRLR0;
-// 		{
-// 			// 1.1 配置几线传输
-// 			ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
-// 			ctrl0 |= enhanced_transfer_format->spi_frf << SPI_SPI_FRF_Pos;
+	uint8_t addr_lenth = enhanced_transfer_format->addr_lenth;
+	uint8_t ins_lenth = enhanced_transfer_format->ins_lenth;
+	//配置spi 
+	spi_disable(spi_id, true);
+	{
+		uint32_t ctrl0 = BOOTSPI->CTRLR0;
+		uint32_t spi_ctrl0 = BOOTSPI->SPI_CTRLR0;
+		{
+			// 1.1 配置几线传输
+			ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
+			ctrl0 |= enhanced_transfer_format->spi_frf << SPI_SPI_FRF_Pos;
 
-// 			ctrl0 &= ~SPI_TMOD_Msk;
-// 			ctrl0 |= 2 << SPI_TMOD_Pos; //read
+			ctrl0 &= ~SPI_TMOD_Msk;
+			ctrl0 |= 2 << SPI_TMOD_Pos; //read
 
-// 			// 1.2 配置 TRANS_TYPE
-// 			// 00 - Instruction and Address will be sent in Standard SPI Mode.
-// 			// 01 - Instruction will be sent in Standard SPI Mode and Address will be sent in the mode specified by CTRLR0.SPI_FRF.
-// 			// 10 - 10 - Both Instruction and Address will be sent in the mode specified by SPI_FRF.
-// 			// 11 - Reserved.
-// 			spi_ctrl0 &= ~SPI_TRANS_TYPE_Msk;
-// 			spi_ctrl0 |= enhanced_transfer_format->trans_type << SPI_TRANS_TYPE_Pos;
+			// 1.2 配置 TRANS_TYPE
+			// 00 - Instruction and Address will be sent in Standard SPI Mode.
+			// 01 - Instruction will be sent in Standard SPI Mode and Address will be sent in the mode specified by CTRLR0.SPI_FRF.
+			// 10 - 10 - Both Instruction and Address will be sent in the mode specified by SPI_FRF.
+			// 11 - Reserved.
+			spi_ctrl0 &= ~SPI_TRANS_TYPE_Msk;
+			spi_ctrl0 |= enhanced_transfer_format->trans_type << SPI_TRANS_TYPE_Pos;
 
-// 			// 1.3 ADDR_L
-// 			spi_ctrl0 &= ~SPI_ADDR_L_Msk;
-// 			spi_ctrl0 |= (addr_lenth/4) << SPI_ADDR_L_Pos;
+			// 1.3 ADDR_L
+			spi_ctrl0 &= ~SPI_ADDR_L_Msk;
+			spi_ctrl0 |= (addr_lenth/4) << SPI_ADDR_L_Pos;
 
-// 			// 1.4 INST_L
-// 			spi_ctrl0 &= ~SPI_INST_L_Msk;
-// 			if(ins_lenth==16)
-// 				spi_ctrl0 |= 3 << SPI_INST_L_Pos;
-// 			else
-// 				spi_ctrl0 |= (ins_lenth/4) << SPI_INST_L_Pos;
+			// 1.4 INST_L
+			spi_ctrl0 &= ~SPI_INST_L_Msk;
+			if(ins_lenth==16)
+				spi_ctrl0 |= 3 << SPI_INST_L_Pos;
+			else
+				spi_ctrl0 |= (ins_lenth/4) << SPI_INST_L_Pos;
 
-// 			// 1.5 WAIT_CYCLES
-// 			spi_ctrl0 &= ~SPI_WAIT_CYCLES_Msk;
-// 			spi_ctrl0 |= enhanced_transfer_format->wait_cycles << SPI_WAIT_CYCLES_Pos;
+			// 1.5 WAIT_CYCLES
+			spi_ctrl0 &= ~SPI_WAIT_CYCLES_Msk;
+			spi_ctrl0 |= enhanced_transfer_format->wait_cycles << SPI_WAIT_CYCLES_Pos;
 		
-// 			// 1.6 DDR disable
-// 			spi_ctrl0 &= ~SPI_SPI_DDR_EN_Msk;
-// 			spi_ctrl0 &= ~SPI_INST_DDR_EN_Msk;
-// 			spi_ctrl0 &= ~SPI_SPI_RXDS_EN_Msk;
-// 		} 
-// 		BOOTSPI->CTRLR0 = ctrl0;
-// 		BOOTSPI->SPI_CTRLR0 = spi_ctrl0;
+			// 1.6 DDR disable
+			spi_ctrl0 &= ~SPI_SPI_DDR_EN_Msk;
+			spi_ctrl0 &= ~SPI_INST_DDR_EN_Msk;
+			spi_ctrl0 &= ~SPI_SPI_RXDS_EN_Msk;
+		} 
+		BOOTSPI->CTRLR0 = ctrl0;
+		BOOTSPI->SPI_CTRLR0 = spi_ctrl0;
 
-// 		//build-in dma配置
-// 		BOOTSPI->DMACR = 0;
-// 		BOOTSPI->DMARDLR = 15; //16触发DMA请求
-// 		// BOOTSPI->DMARDLR = 0; //1触发DMA请求
-// 		BOOTSPI->DMACR = 1;
+		//build-in dma配置
+		BOOTSPI->DMACR = 0;
+		BOOTSPI->DMARDLR = 15; //16触发DMA请求
+		// BOOTSPI->DMARDLR = 0; //1触发DMA请求
+		BOOTSPI->DMACR = 1;
 
-// 		//配置接收数据量
-// 		BOOTSPI->CTRLR1 = enhanced_transfer_format->data_nums - 1;
-// 	}
-// 	spi_enable(spi_id, true);
+		//配置接收数据量
+		BOOTSPI->CTRLR1 = enhanced_transfer_format->data_nums - 1;
+	}
+	spi_enable(spi_id, true);
 
-// 	// dma配置
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	int ret = 0;
-// 	DMA_Channel_t ch = DMA0_CH0_INDEX;
-// 	dma_transfer_sig[(uint32_t)ch] = 0;
-// 	ret = dma_init();
-// 	assert(ret==0);
-// 	dma_register_callback(ch, spi_dma_irq_handler, (void*)DMA0_CH0_INDEX);
+	// dma配置
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	int ret = 0;
+	DMA_Channel_t ch = DMA0_CH0_INDEX;
+	dma_transfer_sig[(uint32_t)ch] = 0;
+	ret = dma_init();
+	assert(ret==0);
+	dma_register_callback(ch, spi_dma_irq_handler, (void*)DMA0_CH0_INDEX);
 
-// 	struct dma_slave_config config = {
-// 		.direction      = DMA_DEV_TO_MEM,
-// 		.src_addr       = (uint32_t)(&(BOOTSPI->DR)),
-// 		.dst_addr       = (uint32_t)(enhanced_transfer_format->data),
-// 		.src_maxburst   = 3, //MSIZE_16
-// 		.dst_maxburst   = 3, //MSIZE_16
-// 		.data_len       = enhanced_transfer_format->data_nums,
-// 		.src_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.dst_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.device_fc      = false,
-// 		.slave_id 		= 25,
-// 		.cyclic         = false,
-// 		.period_len		= 0
-// 	};
+	struct dma_slave_config config = {
+		.direction      = DMA_DEV_TO_MEM,
+		.src_addr       = (uint32_t)(&(BOOTSPI->DR)),
+		.dst_addr       = (uint32_t)(enhanced_transfer_format->data),
+		.src_maxburst   = 3, //MSIZE_16
+		.dst_maxburst   = 3, //MSIZE_16
+		.data_len       = enhanced_transfer_format->data_nums,
+		.src_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.dst_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.device_fc      = false,
+		.slave_id 		= 25,
+		.cyclic         = false,
+		.period_len		= 0
+	};
 
-// 	while((ret = dma_config(ch, &config)) != 0 );
-// 	dma_enable(ch);
-// #else
-// 	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
-// 	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)(&(BOOTSPI->DR));
-// 	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(enhanced_transfer_format->data);
+	while((ret = dma_config(ch, &config)) != 0 );
+	dma_enable(ch);
+#else
+	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
+	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)(&(BOOTSPI->DR));
+	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(enhanced_transfer_format->data);
 
-// 	REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
-// 								AXI_MASTER_0 << 2 |
-// 								SRC_ADDR_NOCHANGE << 4 |
-// 								DST_ADDR_INCREMENT << 6 |
-// 								SRC_TRANSFER_WIDTH_8 << 8 |
-// 								DST_TRANSFER_WIDTH_8 << 11 |
-// 								SRC_MSIZE_16 << 14 |
-// 								// SRC_MSIZE_1 << 14 |
-// 									//   DST_MSIZE_16 <<18  |
-// 								NONPOSTED_LASTWRITE_EN << 30;
+	REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
+								AXI_MASTER_0 << 2 |
+								SRC_ADDR_NOCHANGE << 4 |
+								DST_ADDR_INCREMENT << 6 |
+								SRC_TRANSFER_WIDTH_8 << 8 |
+								DST_TRANSFER_WIDTH_8 << 11 |
+								SRC_MSIZE_16 << 14 |
+								// SRC_MSIZE_1 << 14 |
+									//   DST_MSIZE_16 <<18  |
+								NONPOSTED_LASTWRITE_EN << 30;
 
-// 	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-// 									16 << (39 - 32) | //source burst length
-// 									AWLEN_EN << (47 - 32) |
-// 									16 << (48 - 32) | //destination burst length
-// 									SRC_STATUS_DISABLE << (56 - 32) |
-// 									DST_STATUS_DISABLE << (57 - 32) |
-// 									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
-// 									NOTLAST_SHADORLLI << (62 - 32) |
-// 									SHADORLLI_INVALID << (63 - 32);
+	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
+									16 << (39 - 32) | //source burst length
+									AWLEN_EN << (47 - 32) |
+									16 << (48 - 32) | //destination burst length
+									SRC_STATUS_DISABLE << (56 - 32) |
+									DST_STATUS_DISABLE << (57 - 32) |
+									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
+									NOTLAST_SHADORLLI << (62 - 32) |
+									SHADORLLI_INVALID << (63 - 32);
 
-// 	REG32(DMA_BASE + CH1_BLOCK_TS_0) = enhanced_transfer_format->data_nums - 1;
+	REG32(DMA_BASE + CH1_BLOCK_TS_0) = enhanced_transfer_format->data_nums - 1;
 
-// 	REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
-// 								DST_CONTIGUOUS << 2 |
-// 								25U            << 4;
+	REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
+								DST_CONTIGUOUS 	  << 2 |
+								HW_BOOTSPI_RX     << 4;
 
-// 	REG32(DMA_BASE + CH1_CFG2_32) = PER_TO_MEM_DMAC << (32 - 32) |
-// 									SRC_HARDWARE_HS << (35 - 32) |
-// 									/*25 << (39 - 32) | //src handshake*/
-// 									CHANNEL_PRIORITY7 << (47 - 32) |
-// 									CHANNEL_LOCK_DISABLE << (52 - 32) |
-// 									0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
-// 									0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
+	REG32(DMA_BASE + CH1_CFG2_32) = PER_TO_MEM_DMAC << (32 - 32) |
+									SRC_HARDWARE_HS << (35 - 32) |
+									/*25 << (39 - 32) | //src handshake*/
+									CHANNEL_PRIORITY7 << (47 - 32) |
+									CHANNEL_LOCK_DISABLE << (52 - 32) |
+									0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
+									0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
 
-// 	REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
-// 	REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
-// 	REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;           //enable DMAC and its interrupt logic
-// 	REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101;        //EN channel1
-// #endif
+	REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
+	REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
+	REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;           //enable DMAC and its interrupt logic
+	REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101;        //EN channel1
+#endif
 
-// 	//传输阶段
-// 	uint8_t quotient = addr_lenth / 32; 
-// 	uint8_t remainder = addr_lenth % 32;
-// 	uint8_t cnt = (remainder) ? (quotient + 1) : (quotient);
-// 	uint32_t* address = enhanced_transfer_format->address;
-// 	// uint8_t *data = enhanced_transfer_format->data;
-// 	// uint32_t data_nums = enhanced_transfer_format->data_nums;
-// Instruction_phase:
-// 	if(ins_lenth!=0)
-// 		BOOTSPI->DR = enhanced_transfer_format->instruction; //An instruction takes one FIFO location
-// Address_phase:
-// 	//address can take more than one FIFO locations
-// 	for (uint8_t i = 0; i < cnt; i++)
-// 			BOOTSPI->DR = address[i];
+	//传输阶段
+	uint8_t quotient = addr_lenth / 32; 
+	uint8_t remainder = addr_lenth % 32;
+	uint8_t cnt = (remainder) ? (quotient + 1) : (quotient);
+	uint32_t* address = enhanced_transfer_format->address;
+	// uint8_t *data = enhanced_transfer_format->data;
+	// uint32_t data_nums = enhanced_transfer_format->data_nums;
+Instruction_phase:
+	if(ins_lenth!=0)
+		BOOTSPI->DR = enhanced_transfer_format->instruction; //An instruction takes one FIFO location
+Address_phase:
+	//address can take more than one FIFO locations
+	for (uint8_t i = 0; i < cnt; i++)
+			BOOTSPI->DR = address[i];
 	
-// 	spi_select_slave(spi_id, 1);
-// 	if(addr_lenth==0 && ins_lenth==0)
-// 		BOOTSPI->DR = 0xff; //write a dummy data to start transmit.
-// Wait_cycles:
-// 	//waiting...
-// Data_phase:
-// 	// for (uint8_t i = 0; i < data_nums; i++) {
-// 	// 	while (bootspi_rxfifo_is_empty());
-// 	// 	data[i] = BOOTSPI->DR;
-// 	// }
-// #if (SPI_DMA_DRIVER_VERSION == 0)
-// 	while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
-// 		;
+	spi_select_slave(spi_id, 1);
+	if(addr_lenth==0 && ins_lenth==0)
+		BOOTSPI->DR = 0xff; //write a dummy data to start transmit.
+Wait_cycles:
+	//waiting...
+Data_phase:
+	// for (uint8_t i = 0; i < data_nums; i++) {
+	// 	while (bootspi_rxfifo_is_empty());
+	// 	data[i] = BOOTSPI->DR;
+	// }
+#if (SPI_DMA_DRIVER_VERSION == 0)
+	while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
+		;
 
-// 	REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
-// #else
-// 	while(!is_dma_channel_transfer_done(ch));
-// 	free_dma_channel(ch);
-// #endif
-// 	spi_disable(spi_id, true);
-// 	return;
-// }
+	REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
+#else
+	while(!is_dma_channel_transfer_done(ch));
+	free_dma_channel(ch);
+#endif
+	spi_disable(spi_id, true);
+	return;
+}
 
-// void dw_spi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhanced_transfer_format)
-// {
-// 	assert(get_spi_state(spi_id)!=0);
-// 	assert(spi_id <= 3);
-// 	assert(enhanced_transfer_format);
-// 	assert(enhanced_transfer_format->addr_lenth<=60);
-// 	assert(enhanced_transfer_format->ins_lenth<=16);
-// 	assert(enhanced_transfer_format->data);
-// 	assert(enhanced_transfer_format->data_nums!=0 && enhanced_transfer_format->data_nums<=2048);
-// 	assert(enhanced_transfer_format->wait_cycles<=31);
+void dw_spi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhanced_transfer_format)
+{
+	assert(get_spi_state(spi_id)!=0);
+	assert(spi_id <= 3);
+	assert(enhanced_transfer_format);
+	assert(enhanced_transfer_format->addr_lenth<=60);
+	assert(enhanced_transfer_format->ins_lenth<=16);
+	assert(enhanced_transfer_format->data);
+	assert(enhanced_transfer_format->data_nums!=0 && enhanced_transfer_format->data_nums<=2048);
+	assert(enhanced_transfer_format->wait_cycles<=31);
 
-// 	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
-// 	assert(spix);
-// 	if((uintptr_t)spix == BOOTSPI_BASE)
-// 		return _bootspi_enhanced_read_dma(spi_id, enhanced_transfer_format);
-// 	uint8_t handshake;
-// 	switch (spi_id)
-// 	{
-// 	case SPI0_ID:
-// 		handshake = 2;
-// 		break;
-// 	case SPI1_ID:
-// 		handshake = 4;
-// 		break;
-// 	case SPI2_ID:
-// 		handshake = 6;
-// 		break;
-// 	case BOOTSPI_ID:
-// 		assert(0);
-// 		return;
-// 	default:
-// 		assert(0);
-// 		return;
-// 	}
-// 	uint8_t addr_lenth = enhanced_transfer_format->addr_lenth;
-// 	uint8_t ins_lenth = enhanced_transfer_format->ins_lenth;
-// 	//配置spi 
-// 	spi_disable(spi_id, true);
-// 	{
-// 		uint32_t ctrl0 = spix->CTRLR0;
-// 		uint32_t spi_ctrl0 = spix->SPI_CTRLR0;
-// 		{
-// 			// 1.1 配置几线传输
-// 			ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
-// 			ctrl0 |= enhanced_transfer_format->spi_frf << SPI_SPI_FRF_Pos;
+	DW_APB_SSI_TypeDef* spix = get_spi_base(spi_id);
+	assert(spix);
+	if((uintptr_t)spix == BOOTSPI_BASE)
+		return _bootspi_enhanced_read_dma(spi_id, enhanced_transfer_format);
+	uint8_t handshake;
+	switch (spi_id)
+	{
+	case SPI0_ID:
+		handshake = HW_SPI0_RX;
+		break;
+	case SPI1_ID:
+		handshake = HW_SPI1_RX;
+		break;
+	case SPI2_ID:
+		handshake = HW_SPI2_RX;
+		break;
+	case BOOTSPI_ID:
+		assert(0);
+		return;
+	default:
+		assert(0);
+		return;
+	}
+	uint8_t addr_lenth = enhanced_transfer_format->addr_lenth;
+	uint8_t ins_lenth = enhanced_transfer_format->ins_lenth;
+	//配置spi 
+	spi_disable(spi_id, true);
+	{
+		uint32_t ctrl0 = spix->CTRLR0;
+		uint32_t spi_ctrl0 = spix->SPI_CTRLR0;
+		{
+			// 1.1 配置几线传输
+			ctrl0 &= ~SPI_SPI_FRF_Msk; //SPI_FRF
+			ctrl0 |= enhanced_transfer_format->spi_frf << SPI_SPI_FRF_Pos;
 
-// 			ctrl0 &= ~SPI_TMOD_Msk;
-// 			ctrl0 |= 2 << SPI_TMOD_Pos; //read
+			ctrl0 &= ~SPI_TMOD_Msk;
+			ctrl0 |= 2 << SPI_TMOD_Pos; //read
 
-// 			// 1.2 配置 TRANS_TYPE
-// 			// 00 - Instruction and Address will be sent in Standard SPI Mode.
-// 			// 01 - Instruction will be sent in Standard SPI Mode and Address will be sent in the mode specified by CTRLR0.SPI_FRF.
-// 			// 10 - 10 - Both Instruction and Address will be sent in the mode specified by SPI_FRF.
-// 			// 11 - Reserved.
-// 			spi_ctrl0 &= ~SPI_TRANS_TYPE_Msk;
-// 			spi_ctrl0 |= enhanced_transfer_format->trans_type << SPI_TRANS_TYPE_Pos;
+			// 1.2 配置 TRANS_TYPE
+			// 00 - Instruction and Address will be sent in Standard SPI Mode.
+			// 01 - Instruction will be sent in Standard SPI Mode and Address will be sent in the mode specified by CTRLR0.SPI_FRF.
+			// 10 - 10 - Both Instruction and Address will be sent in the mode specified by SPI_FRF.
+			// 11 - Reserved.
+			spi_ctrl0 &= ~SPI_TRANS_TYPE_Msk;
+			spi_ctrl0 |= enhanced_transfer_format->trans_type << SPI_TRANS_TYPE_Pos;
 
-// 			// 1.3 ADDR_L
-// 			spi_ctrl0 &= ~SPI_ADDR_L_Msk;
-// 			spi_ctrl0 |= (addr_lenth/4) << SPI_ADDR_L_Pos;
+			// 1.3 ADDR_L
+			spi_ctrl0 &= ~SPI_ADDR_L_Msk;
+			spi_ctrl0 |= (addr_lenth/4) << SPI_ADDR_L_Pos;
 
-// 			// 1.4 INST_L
-// 			spi_ctrl0 &= ~SPI_INST_L_Msk;
-// 			if(ins_lenth==16)
-// 				spi_ctrl0 |= 3 << SPI_INST_L_Pos;
-// 			else
-// 				spi_ctrl0 |= (ins_lenth/4) << SPI_INST_L_Pos;
+			// 1.4 INST_L
+			spi_ctrl0 &= ~SPI_INST_L_Msk;
+			if(ins_lenth==16)
+				spi_ctrl0 |= 3 << SPI_INST_L_Pos;
+			else
+				spi_ctrl0 |= (ins_lenth/4) << SPI_INST_L_Pos;
 
-// 			// 1.5 WAIT_CYCLES
-// 			spi_ctrl0 &= ~SPI_WAIT_CYCLES_Msk;
-// 			spi_ctrl0 |= enhanced_transfer_format->wait_cycles << SPI_WAIT_CYCLES_Pos;
+			// 1.5 WAIT_CYCLES
+			spi_ctrl0 &= ~SPI_WAIT_CYCLES_Msk;
+			spi_ctrl0 |= enhanced_transfer_format->wait_cycles << SPI_WAIT_CYCLES_Pos;
 		
-// 			// 1.6 DDR disable
-// 			spi_ctrl0 &= ~SPI_SPI_DDR_EN_Msk;
-// 			spi_ctrl0 &= ~SPI_INST_DDR_EN_Msk;
-// 			spi_ctrl0 &= ~SPI_SPI_RXDS_EN_Msk;
-// 		} 
-// 		spix->CTRLR0 = ctrl0;
-// 		spix->SPI_CTRLR0 = spi_ctrl0;
+			// 1.6 DDR disable
+			spi_ctrl0 &= ~SPI_SPI_DDR_EN_Msk;
+			spi_ctrl0 &= ~SPI_INST_DDR_EN_Msk;
+			spi_ctrl0 &= ~SPI_SPI_RXDS_EN_Msk;
+		} 
+		spix->CTRLR0 = ctrl0;
+		spix->SPI_CTRLR0 = spi_ctrl0;
 
-// 		//build-in dma配置
-// 		spix->DMACR = 0;
-// 		// spix->DMARDLR = 15; //16触发DMA请求
-// 		spix->DMARDLR = 0; //1触发DMA请求
-// 		spix->DMACR = 1;
+		//build-in dma配置
+		spix->DMACR = 0;
+		// spix->DMARDLR = 15; //16触发DMA请求
+		spix->DMARDLR = 0; //1触发DMA请求
+		spix->DMACR = 1;
 
-// 		//配置接收数据量
-// 		spix->CTRLR1 = enhanced_transfer_format->data_nums - 1;
-// 	}
-// 	spi_enable(spi_id, true);
+		//配置接收数据量
+		spix->CTRLR1 = enhanced_transfer_format->data_nums - 1;
+	}
+	spi_enable(spi_id, true);
 
-// 	// dma配置
-// #if (SPI_DMA_DRIVER_VERSION > 0)
-// 	int ret = 0;
-// 	DMA_Channel_t ch = DMA0_CH0_INDEX;
-// 	dma_transfer_sig[(uint32_t)ch] = 0;
-// 	ret = dma_init();
-// 	assert(ret==0);
-// 	dma_register_callback(ch, spi_dma_irq_handler, (void*)DMA0_CH0_INDEX);
+	// dma配置
+#if (SPI_DMA_DRIVER_VERSION > 0)
+	int ret = 0;
+	DMA_Channel_t ch = DMA0_CH0_INDEX;
+	dma_transfer_sig[(uint32_t)ch] = 0;
+	ret = dma_init();
+	assert(ret==0);
+	dma_register_callback(ch, spi_dma_irq_handler, (void*)DMA0_CH0_INDEX);
 
-// 	struct dma_slave_config config = {
-// 		.direction      = DMA_DEV_TO_MEM,
-// 		.src_addr       = (uint32_t)(&(spix->DR)),
-// 		.dst_addr       = (uint32_t)(enhanced_transfer_format->data),
-// 		.src_maxburst   = 0, //MSIZE_16
-// 		.dst_maxburst   = 0, //MSIZE_16
-// 		.data_len       = enhanced_transfer_format->data_nums,
-// 		.src_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.dst_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
-// 		.device_fc      = false,
-// 		.slave_id 		= handshake,
-// 		.cyclic         = false,
-// 		.period_len		= 0
-// 	};
+	struct dma_slave_config config = {
+		.direction      = DMA_DEV_TO_MEM,
+		.src_addr       = (uint32_t)(&(spix->DR)),
+		.dst_addr       = (uint32_t)(enhanced_transfer_format->data),
+		.src_maxburst   = 0, //MSIZE_16
+		.dst_maxburst   = 0, //MSIZE_16
+		.data_len       = enhanced_transfer_format->data_nums,
+		.src_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.dst_width      = DWAXIDMAC_TRANS_WIDTH_8, /* size=block_ts * width/8 */
+		.device_fc      = false,
+		.slave_id 		= handshake,
+		.cyclic         = false,
+		.period_len		= 0
+	};
 
-// 	while((ret = dma_config(ch, &config)) != 0 );
-// 	dma_enable(ch);
-// #else
-// 	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
-// 	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)(&(spix->DR));
-// 	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(enhanced_transfer_format->data);
+	while((ret = dma_config(ch, &config)) != 0 );
+	dma_enable(ch);
+#else
+	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
+	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)(&(spix->DR));
+	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(enhanced_transfer_format->data);
 
-// 	REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
-// 								AXI_MASTER_0 << 2 |
-// 								SRC_ADDR_NOCHANGE << 4 |
-// 								DST_ADDR_INCREMENT << 6 |
-// 								SRC_TRANSFER_WIDTH_8 << 8 |
-// 								DST_TRANSFER_WIDTH_8 << 11 |
-// 								// SRC_MSIZE_16 << 14 |
-// 								SRC_MSIZE_1 << 14 |
-// 									//   DST_MSIZE_16 <<18  |
-// 								NONPOSTED_LASTWRITE_EN << 30;
+	REG32(DMA_BASE + CH1_CTL_0) = AXI_MASTER_0 << 0 |
+								AXI_MASTER_0 << 2 |
+								SRC_ADDR_NOCHANGE << 4 |
+								DST_ADDR_INCREMENT << 6 |
+								SRC_TRANSFER_WIDTH_8 << 8 |
+								DST_TRANSFER_WIDTH_8 << 11 |
+								// SRC_MSIZE_16 << 14 |
+								SRC_MSIZE_1 << 14 |
+									//   DST_MSIZE_16 <<18  |
+								NONPOSTED_LASTWRITE_EN << 30;
 
-// 	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-// 									0 << (39 - 32) | //source burst length
-// 									AWLEN_EN << (47 - 32) |
-// 									0 << (48 - 32) | //destination burst length
-// 									SRC_STATUS_DISABLE << (56 - 32) |
-// 									DST_STATUS_DISABLE << (57 - 32) |
-// 									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
-// 									NOTLAST_SHADORLLI << (62 - 32) |
-// 									SHADORLLI_INVALID << (63 - 32);
+	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
+									0 << (39 - 32) | //source burst length
+									AWLEN_EN << (47 - 32) |
+									0 << (48 - 32) | //destination burst length
+									SRC_STATUS_DISABLE << (56 - 32) |
+									DST_STATUS_DISABLE << (57 - 32) |
+									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
+									NOTLAST_SHADORLLI << (62 - 32) |
+									SHADORLLI_INVALID << (63 - 32);
 
-// 	REG32(DMA_BASE + CH1_BLOCK_TS_0) = enhanced_transfer_format->data_nums - 1;
+	REG32(DMA_BASE + CH1_BLOCK_TS_0) = enhanced_transfer_format->data_nums - 1;
 
-// 	REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
-// 								DST_CONTIGUOUS << 2 |
-// 								handshake      << 4;
+	REG32(DMA_BASE + CH1_CFG2_0) = SRC_CONTIGUOUS << 0 |
+								DST_CONTIGUOUS << 2 |
+								handshake      << 4;
 
-// 	REG32(DMA_BASE + CH1_CFG2_32) = PER_TO_MEM_DMAC << (32 - 32) |
-// 									SRC_HARDWARE_HS << (35 - 32) |
-// 									/*25 << (39 - 32) | //src handshake*/
-// 									CHANNEL_PRIORITY7 << (47 - 32) |
-// 									CHANNEL_LOCK_DISABLE << (52 - 32) |
-// 									0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
-// 									0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
+	REG32(DMA_BASE + CH1_CFG2_32) = PER_TO_MEM_DMAC << (32 - 32) |
+									SRC_HARDWARE_HS << (35 - 32) |
+									/*25 << (39 - 32) | //src handshake*/
+									CHANNEL_PRIORITY7 << (47 - 32) |
+									CHANNEL_LOCK_DISABLE << (52 - 32) |
+									0x4 << (55 - 32) | //Source Outstanding Request Limit == 3
+									0x4 << (59 - 32);  //Destination Outstanding Request Limit == 3
 
-// 	REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
-// 	REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
-// 	REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;           //enable DMAC and its interrupt logic
-// 	REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101;        //EN channel1
-// #endif
+	REG32(DMA_BASE + CH1_INTSTATUS_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
+	REG32(DMA_BASE + CH1_INTSIGNAL_ENABLEREG_0) = 2; //Enable interrupt generation bit is valid
+	REG32(DMA_BASE + DMAC_CFGREG_0) = 0x3;           //enable DMAC and its interrupt logic
+	REG32(DMA_BASE + DMAC_CHENREG_0) = 0x101;        //EN channel1
+#endif
 
-// 	//传输阶段
-// 	uint8_t quotient = addr_lenth / 32; 
-// 	uint8_t remainder = addr_lenth % 32;
-// 	uint8_t cnt = (remainder) ? (quotient + 1) : (quotient);
-// 	uint32_t* address = enhanced_transfer_format->address;
-// 	// uint8_t *data = enhanced_transfer_format->data;
-// 	// uint32_t data_nums = enhanced_transfer_format->data_nums;
-// Instruction_phase:
-// 	if(ins_lenth!=0)
-// 		spix->DR = enhanced_transfer_format->instruction; //An instruction takes one FIFO location
-// Address_phase:
-// 	//address can take more than one FIFO locations
-// 	for (uint8_t i = 0; i < cnt; i++)
-// 			spix->DR = address[i];
+	//传输阶段
+	uint8_t quotient = addr_lenth / 32; 
+	uint8_t remainder = addr_lenth % 32;
+	uint8_t cnt = (remainder) ? (quotient + 1) : (quotient);
+	uint32_t* address = enhanced_transfer_format->address;
+	// uint8_t *data = enhanced_transfer_format->data;
+	// uint32_t data_nums = enhanced_transfer_format->data_nums;
+Instruction_phase:
+	if(ins_lenth!=0)
+		spix->DR = enhanced_transfer_format->instruction; //An instruction takes one FIFO location
+Address_phase:
+	//address can take more than one FIFO locations
+	for (uint8_t i = 0; i < cnt; i++)
+			spix->DR = address[i];
 	
-// 	spi_select_slave(spi_id, 1);
-// 	if(addr_lenth==0 && ins_lenth==0)
-// 		spix->DR = 0xff; //write a dummy data to start transmit.
-// Wait_cycles:
-// 	//waiting...
-// Data_phase:
-// 	// for (uint8_t i = 0; i < data_nums; i++) {
-// 	// 	while ((spix->SR & SPI_RFNE_Msk) == 0);
-// 	// 	data[i] = spix->DR;
-// 	// }
-// #if (SPI_DMA_DRIVER_VERSION == 0)
-// 	while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
-// 		;
+	spi_select_slave(spi_id, 1);
+	if(addr_lenth==0 && ins_lenth==0)
+		spix->DR = 0xff; //write a dummy data to start transmit.
+Wait_cycles:
+	//waiting...
+Data_phase:
+	// for (uint8_t i = 0; i < data_nums; i++) {
+	// 	while ((spix->SR & SPI_RFNE_Msk) == 0);
+	// 	data[i] = spix->DR;
+	// }
+#if (SPI_DMA_DRIVER_VERSION == 0)
+	while ((REG32(DMA_BASE + CH1_INTSTATUS_0) & 0x00000002) == 0)
+		;
 
-// 	REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
-// #else
-// 	while(!is_dma_channel_transfer_done(ch));
-// 	free_dma_channel(ch);
-// #endif
-// 	spi_disable(spi_id, true);
-// 	return;
-// }
+	REG32(DMA_BASE + CH1_INTCLEARREG_0) = 0x00000002;
+#else
+	while(!is_dma_channel_transfer_done(ch));
+	free_dma_channel(ch);
+#endif
+	spi_disable(spi_id, true);
+	return;
+}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

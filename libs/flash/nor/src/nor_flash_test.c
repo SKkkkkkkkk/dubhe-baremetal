@@ -1,8 +1,8 @@
 #include <stdio.h>
 #define OFF_RW_ADDR (2*1024*1024)
 
-// #define DMA_READ
-// #define DMA_WRITE
+#define DMA_READ
+#define DMA_WRITE
 // #define QUAD_READ
 
 #if !defined(DMA_WRITE) // flash_write
@@ -226,118 +226,122 @@ if((flash_model==GD25LQ255)||(flash_model==W25Q256JW))
 	#define CPU_READ_BLOCK_SIZE 32U
 	#define BLOCK_SIZE_DMA (2048U)
 */
-// #define CASE5_ADDR (OFF_RW_ADDR+10)
-// #define CASE5_SIZE (1024*1024-1)
-// static uint8_t case5_r_buf[CASE5_SIZE] /* 使用DMA时，接收首地址和大小需要对齐DU_CACHE_LINE_SIZE */ __attribute__((aligned(64))) /*__attribute__((section(".noncache_mem.case5_r_buf")))*/ = {0};
-// static uint8_t case5_w_buf[CASE5_SIZE] /*__attribute__((section(".noncache_mem.case5_w_buf")))*/ = {0};
-// void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model)
-// {
-// 	printf("flash_fastest_read_test:\n\r");
+#define CASE5_ADDR (OFF_RW_ADDR+10)
+#define CASE5_SIZE (1024*1024-1)
+static uint8_t case5_r_buf[CASE5_SIZE] /* 使用DMA时，接收首地址和大小需要对齐DU_CACHE_LINE_SIZE */ __attribute__((aligned(64))) /*__attribute__((section(".noncache_mem.case5_r_buf")))*/ = {0};
+static uint8_t case5_w_buf[CASE5_SIZE] /*__attribute__((section(".noncache_mem.case5_w_buf")))*/ = {0};
+void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model)
+{
+	printf("flash_fastest_read_test:\n\r");
 
-// 	#ifndef NO_DCACHE
-// 		printf("\tUSE_DCACHE\n\r");
-// 	#endif
-// 	#ifndef NO_ICACHE
-// 		printf("\tUSE_ICACHE\n\r");
-// 	#endif
+	// #ifndef NO_DCACHE
+	// 	printf("\tUSE_DCACHE\n\r");
+	// #endif
+	// #ifndef NO_ICACHE
+	// 	printf("\tUSE_ICACHE\n\r");
+	// #endif
 	
-// 	uint8_t flash_id[3];
-// 	uint16_t spi_div = 20;
-// 	if(!flash_init(spi_id, spi_div, 3, flash_model))
-// 	{
-// 		printf("\tflash_init error.\n\r");
-// 		return;
-// 	}
-// 	printf("\tSPI_DIV: %u\n\r", spi_div);
-// 	printf("\tTest Addr: 0x%x\n\r", CASE5_ADDR);
+	uint8_t flash_id[3];
+	uint16_t spi_div = 2;
+	if(!flash_init(spi_id, spi_div, 3, flash_model))
+	{
+		printf("\tflash_init error.\n\r");
+		return;
+	}
+	printf("\tSPI_DIV: %u\n\r", spi_div);
+	printf("\tTest Addr: 0x%x\n\r", CASE5_ADDR);
 
-// 	flash_reset(spi_id);
-// 	flash_read_id(spi_id, flash_id, 3);
-// 	printf("\tflash_id: 0x%x 0x%x 0x%x\n\r", flash_id[0], flash_id[1], flash_id[2]);
+	// flash_reset(spi_id);
+	flash_read_id(spi_id, flash_id, 3);
+	printf("\tflash_id: 0x%x 0x%x 0x%x\n\r", flash_id[0], flash_id[1], flash_id[2]);
 	
-// 	// 写SR的QE bit
-// 	uint8_t sr[2] = {0x00,0x00};
-// 	sr[0] = _flash_read_sr(spi_id);
-// 	sr[1] = _flash_read_sr_high(spi_id);
-// 	sr[1] |= Quad_Enable_Bit;
-// 	_flash_write_enable(spi_id);
-// 	_flash_write_sr(spi_id, sr);
+	// 写SR的QE bit
+	uint8_t sr[2] = {0x00,0x00};
+	sr[0] = _flash_read_sr(spi_id);
+	sr[1] = _flash_read_sr_high(spi_id);
+	printf("before sr: 0x%x 0x%x\n\r", sr[0], sr[1]);
+	sr[1] |= Quad_Enable_Bit;
+	_flash_write_enable(spi_id);
+	_flash_write_sr(spi_id, sr);
+	sr[0] = _flash_read_sr(spi_id);
+	sr[1] = _flash_read_sr_high(spi_id);
+	printf("after sr: 0x%x 0x%x\n\r", sr[0], sr[1]);
 
-// 	systimer_id_t timer;
-// 	uint64_t delta;
+	systimer_id_t timer;
+	uint64_t delta;
 
-// #if !defined(DMA_WRITE) // flash_write
-// 	printf("\tflash_write\n\r");
-// #else // flash_write_dma
-// 	printf("\tflash_write_dma\n\r");
-// #endif
+#if !defined(DMA_WRITE) // flash_write
+	printf("\tflash_write\n\r");
+#else // flash_write_dma
+	printf("\tflash_write_dma\n\r");
+#endif
 
-// 	for(uint32_t i = 0;i<CASE5_SIZE;i++)
-// 		case5_w_buf[i] = i%256;
-// 	for(uint32_t i = 0;i<257;i++)
-// 		flash_sector_erase(spi_id, (CASE5_ADDR&0xfffff000)+4096*i);
-// 	FLASH_WRITE(spi_id, CASE5_ADDR, case5_w_buf, CASE5_SIZE);
+	for(uint32_t i = 0;i<CASE5_SIZE;i++)
+		case5_w_buf[i] = i%256;
+	for(uint32_t i = 0;i<257;i++)
+		flash_sector_erase(spi_id, (CASE5_ADDR&0xfffff000)+4096*i);
+	FLASH_WRITE(spi_id, CASE5_ADDR, case5_w_buf, CASE5_SIZE);
 	
-// 	//1. cpu方式 + 标准spi模式
-// 	memset(case5_r_buf, 0xa5, CASE5_SIZE);
-//  	timer = systimer_acquire_timer();
-// 	flash_read(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
-// 	delta = systimer_get_elapsed_time(timer, IN_MS);
-// 	systimer_release_timer(timer);
-// 	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
-// 	{
-// 		printf("\tcpu + std: %d\n\r", (int)delta);
-// 	}
-// 	else
-// 	{
-// 		printf("\tcpu + std read error!\n\r");
-// 	}
+	//1. cpu方式 + 标准spi模式
+	memset(case5_r_buf, 0xa5, CASE5_SIZE);
+ 	timer = systimer_acquire_timer();
+	flash_read(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
+	delta = systimer_get_elapsed_time(timer, IN_MS);
+	systimer_release_timer(timer);
+	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
+	{
+		printf("\tcpu + std: %d\n\r", (int)delta);
+	}
+	else
+	{
+		printf("\tcpu + std read error!\n\r");
+	}
 
-// 	//2. dma方式 + 标准spi模式
-// 	memset(case5_r_buf, 0xa5, CASE5_SIZE);
-// 	timer = systimer_acquire_timer();
-// 	flash_read_dma(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
-// 	delta = systimer_get_elapsed_time(timer, IN_MS);
-// 	systimer_release_timer(timer);
-// 	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
-// 	{
-// 		printf("\tdma + std: %d\n\r", (int)delta);
-// 	}
-// 	else
-// 	{
-// 		printf("\tdma + std read error!\n\r");
-// 	}
+	//2. dma方式 + 标准spi模式
+	memset(case5_r_buf, 0xa5, CASE5_SIZE);
+	timer = systimer_acquire_timer();
+	flash_read_dma(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
+	delta = systimer_get_elapsed_time(timer, IN_MS);
+	systimer_release_timer(timer);
+	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
+	{
+		printf("\tdma + std: %d\n\r", (int)delta);
+	}
+	else
+	{
+		printf("\tdma + std read error!\n\r");
+	}
 
-// 	//3. cpu方式 + quad
-// 	memset(case5_r_buf, 0xa5, CASE5_SIZE);
-// 	timer = systimer_acquire_timer();
-// 	flash_read_quad(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
-// 	delta = systimer_get_elapsed_time(timer, IN_MS);
-// 	systimer_release_timer(timer);
-// 	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
-// 	{
-// 		printf("\tcpu + quad: %d\n\r", (int)delta);
-// 	}
-// 	else
-// 	{
-// 		printf("\tcpu + quad read error!\n\r");
-// 	}
+	//3. cpu方式 + quad
+	memset(case5_r_buf, 0xa5, CASE5_SIZE);
+	timer = systimer_acquire_timer();
+	flash_read_quad(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
+	delta = systimer_get_elapsed_time(timer, IN_MS);
+	systimer_release_timer(timer);
+	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
+	{
+		printf("\tcpu + quad: %d\n\r", (int)delta);
+	}
+	else
+	{
+		printf("\tcpu + quad read error!\n\r");
+	}
 
-// 	//4. dma方式 + quad
-// 	memset(case5_r_buf, 0xa5, CASE5_SIZE);
-// 	timer = systimer_acquire_timer();
-// 	flash_read_quad_dma(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
-// 	delta = systimer_get_elapsed_time(timer, IN_MS);
-// 	systimer_release_timer(timer);
-// 	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
-// 	{
-// 		printf("\tdma + quad: %d\n\r", (int)delta);
-// 	}
-// 	else
-// 	{
-// 		printf("\tdma + quad read error!\n\r");
-// 	}
-// }
+	//4. dma方式 + quad
+	memset(case5_r_buf, 0xa5, CASE5_SIZE);
+	timer = systimer_acquire_timer();
+	flash_read_quad_dma(spi_id, CASE5_ADDR, case5_r_buf, CASE5_SIZE);
+	delta = systimer_get_elapsed_time(timer, IN_MS);
+	systimer_release_timer(timer);
+	if(memcmp(case5_w_buf,case5_r_buf,CASE5_SIZE)==0) //比对
+	{
+		printf("\tdma + quad: %d\n\r", (int)delta);
+	}
+	else
+	{
+		printf("\tdma + quad read error!\n\r");
+	}
+}
 
 // uint32_t flash_read_dma_start(spi_id_t spi_id, DMA_Channel_t* const ch, uint32_t addr, uint8_t* const buf, uint32_t size);
 

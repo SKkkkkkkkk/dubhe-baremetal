@@ -65,6 +65,9 @@ int main()
 	void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model);
 	nor_flash_test(BOOTSPI_ID, W25Q64JW);
 
+	void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model);
+	flash_fastest_read_test(BOOTSPI_ID, W25Q64JW);
+
 	// spi_init_config_t spi_init_config = {
 	// 	.as_master = true,
 	// 	.clock_div = 40,

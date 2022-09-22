@@ -1,7 +1,15 @@
 #ifndef __DMA_H__
 #define __DMA_H__
 
-#define DMA_BASE (0xF5020000UL) /*!< (DMA       ) Base Address */
+#define DMAC0_BASE 0x41100000
+#define DMAC1_BASE 0x24000000
+#if defined(A55)
+	#define DMA_BASE (DMAC1_BASE)
+#elif defined(M3)
+	#define DMA_BASE (DMAC0_BASE)
+#else
+	#error "unsupport core."
+#endif
 
 //common register offset
 #define DMAC_IDREG_0 0x0
@@ -536,6 +544,34 @@
 #define CHANNEL_LOCK_DMATRANSFER 0x0
 #define CHANNEL_LOCK_BLKTRANSFER 0x1
 
+#define HW_BOOTSPI_TX    0
+#define HW_BOOTSPI_RX    1
+#define HW_SPI0_TX        2
+#define HW_SPI0_RX        3
+#define HW_SPI1_TX        4
+#define HW_SPI1_RX        5
+#define HW_SPI2_TX        6
+#define HW_SPI2_RX        7
+#define HW_SPI_TX        8
+#define HW_SPI_RX        9
+#define HW_I2C1_TX        10
+#define HW_I2C1_RX        11
+#define HW_I2C2_TX        12
+#define HW_I2C2_RX        13
+#define HW_I2C3_TX        14
+#define HW_I2C3_RX        15
+#define HW_UART1_TX        16
+#define HW_UART1_RX        17
+#define HW_UART2_TX        18
+#define HW_UART2_RX        19
+#define HW_UART3_TX        20
+#define HW_UART3_RX        21
+#define HW_I2S1_TX        22
+#define HW_I2S1_RX        23
+#define HW_I2S2_TX        24
+#define HW_I2S2_RX        25
+#define HW_PDM1_RX        26
+
 #include <stdint.h>
 #include <assert.h>
 // #include "ape1210.h"
@@ -625,7 +661,6 @@ static inline bool is_dma_channel_transfer_done(DMA_Channel_t ch)
 {
 	assert((ch<=DMA_CHANNEL_8)&&(ch!=NO_FREE_DMA_CHANNEL));
 	return (REG32(DMA_BASE + CH1_INTSTATUS_0 + (ch-1)*0x100) & 0x00000002);
-	// return true;
 }
 
 static inline void clear_channel_transfer_done_irq(DMA_Channel_t ch)
