@@ -63,7 +63,7 @@ void pm_set_debug_mask(uint16_t debug_mask)
 	pm_debug_mask = debug_mask;
 }
 
-struct platform_suspend_ops suspend_ops;
+__ramdata struct platform_suspend_ops suspend_ops;
 
 static volatile int user_sel_power_mode = PM_MODE_ON;
 
