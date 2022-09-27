@@ -37,3 +37,11 @@ app/cv32e40p/hello/build.sh
 - **BUILD_TYPE**:Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo.
 
 - **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR。
+
+# Tips
+
+1. ccmake可以在显示和修改工程配置信息(cmake-gui也可以)
+   
+   1. cmake -S ../../../ -B build -DPROJECT_NAME=hello -DPROJECT_PATH=. -DCORE=A55 -DBOARD=FPGA -DBUILD_TYPE=Debug -DWHERE_TO_LOAD=ALL_IN_DDR
+   
+   2. ccmake build![](docs/imgs/ccmake.png)
