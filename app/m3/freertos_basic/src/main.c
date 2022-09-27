@@ -6,9 +6,9 @@
 int main()
 {
 	// printf("hello world.\n\r");
-	SCB->SHCSR |= 7<<16;
-	printf("SCB->SHCSR: 0x%lx\n\r", SCB->SHCSR);
-	__DSB();
+	// SCB->SHCSR |= 7<<16;
+	// printf("SCB->SHCSR: 0x%lx\n\r", SCB->SHCSR);
+	// __DSB();
 	void task1(void* arg);
 	void task2(void* arg);
 	if (xTaskCreate(task1, "task1", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
