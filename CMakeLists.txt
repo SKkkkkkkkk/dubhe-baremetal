@@ -4,361 +4,429 @@ include (CMakeDependentOption)
 set(SDK_DIR ${CMAKE_SOURCE_DIR})
 
 # 选择project
+
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
 set(PROJECT_PATH "" CACHE STRING "Project path.")
 set(EXTRA_SRC "" CACHE STRING "a extra src.")
 if(IS_ABSOLUTE $CACHE{PROJECT_PATH})
-	set(PROJECT_PATH "${PROJECT_PATH}")
+    set(PROJECT_PATH "${PROJECT_PATH}")
 else()
-	set(PROJECT_PATH "$ENV{PWD}/${PROJECT_PATH}")
+    set(PROJECT_PATH "$ENV{PWD}/${PROJECT_PATH}")
 endif()
 if(IS_ABSOLUTE ${EXTRA_SRC})
-	set(EXTRA_SRC "${EXTRA_SRC}")
+    set(EXTRA_SRC "${EXTRA_SRC}")
 else()
-	set(EXTRA_SRC "$ENV{PWD}/${EXTRA_SRC}")
+    set(EXTRA_SRC "$ENV{PWD}/${EXTRA_SRC}")
 endif()
 
 # 选择core
+
 set(CORE "A55" CACHE STRING "Core: A55, M3, CV32E40P.")
 
 # 选择borad
+
 set(BOARD "QEMU" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 
 # 选择build type
+
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
 
 # Where to load & run
+
 set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR")
 
 # GIT_HASH
+
+## 在程序中可以打印git 提交版本hash值。printf("git hash:"GIT_HASH)
+
 execute_process(
-	COMMAND git rev-parse --short HEAD
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	OUTPUT_VARIABLE git_hash
-	OUTPUT_STRIP_TRAILING_WHITESPACE
+    COMMAND git rev-parse --short HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE git_hash
+    OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
 # 打印工程配置信息
+
 message(STATUS "Project     : $CACHE{PROJECT_NAME}")
 message(STATUS "Core        : $CACHE{CORE}")
 message(STATUS "Board       : $CACHE{BOARD}")
 message(STATUS "Build Type  : $CACHE{BUILD_TYPE}")
 if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
-	message(STATUS "Proj Path   : ${PROJECT_PATH}")
+    message(STATUS "Proj Path   : ${PROJECT_PATH}")
 else()
-	message(STATUS "Proj Path   : No Proj Path!")
+    message(STATUS "Proj Path   : No Proj Path!")
 endif()
 if(NOT $CACHE{EXTRA_SRC} STREQUAL "")
-	message(STATUS "Extra SRC   : ${EXTRA_SRC}")
+    message(STATUS "Extra SRC   : ${EXTRA_SRC}")
 else()
-	message(STATUS "Extra SRC   : No Extra SRC.")
+    message(STATUS "Extra SRC   : No Extra SRC.")
 endif()
 if($CACHE{CORE} STREQUAL "A55" OR $CACHE{CORE} STREQUAL "M3")
-	message(STATUS "Where to load & run: ${WHERE_TO_LOAD}")
+    message(STATUS "Where to load & run: ${WHERE_TO_LOAD}")
 endif()
 
 # 编译选项
+
 ## 通用的编译选项
+
 set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
 set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}")
 set(link_options -static -nostartfiles --specs=nosys.specs -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
+
 ## 添加编译选项depends on CORE.
+
 ### A55
+
 if($CACHE{CORE} STREQUAL "A55")
-	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
-	set(compile_options_arch -mlittle-endian -march=armv8.1-a -mcmodel=large -DA55 -nostdlib)
-	set(link_options ${link_options})
+    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
+    set(compile_options_arch -mlittle-endian -march=armv8.1-a -mcmodel=large -DA55 -nostdlib)
+    set(link_options ${link_options})
+
 ### M3
+
 elseif($CACHE{CORE} STREQUAL "M3")
-	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/armgcc.cmake)
-	set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
-	set(link_options ${link_options} --specs=nano.specs)
+    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/armgcc.cmake)
+    set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
+    set(link_options ${link_options} --specs=nano.specs)
+
 ### CV32E40P
+
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
-	set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/riscv_gcc.cmake)
-	set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
-	set(link_options ${link_options})
+    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/riscv_gcc.cmake)
+    set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
+    set(link_options ${link_options})
+
 ### unsupport
+
 else()
-	message(FATAL_ERROR "unsupport core!")
+    message(FATAL_ERROR "unsupport core!")
 endif()
 
+## 编译器对齐在arm-none-eabi-gcc编译器中不太一样
+
 if(NOT $CACHE{CORE} STREQUAL "M3")
-	set(compile_options_align -mstrict-align)
+    set(compile_options_align -mstrict-align)
 else()
-	set(compile_options_align -mno-unaligned-access)
+    set(compile_options_align -mno-unaligned-access)
 endif()
 
 ## 添加编译选项depends on BOARD.
-### RTL
-if($CACHE{BOARD} STREQUAL "RTL")
-	set(compile_options_board -DRTL -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
-### QEMU
-elseif($CACHE{BOARD} STREQUAL "QEMU")
-	set(compile_options_board -DQEMU -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
-### FPGA
-elseif($CACHE{BOARD} STREQUAL "FPGA")
-	set(compile_options_board -DFPGA -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
-### EVB
-elseif($CACHE{BOARD} STREQUAL "EVB")
-	set(compile_options_board -DEVB -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
-### unsupport
-else()
-	message(FATAL_ERROR "unsupport board!")
-endif()
 
+### RTL
+
+if($CACHE{BOARD} STREQUAL "RTL")
+    set(compile_options_board -DRTL -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
+
+### QEMU
+
+elseif($CACHE{BOARD} STREQUAL "QEMU")
+    set(compile_options_board -DQEMU -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
+
+### FPGA
+
+elseif($CACHE{BOARD} STREQUAL "FPGA")
+    set(compile_options_board -DFPGA -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
+
+### EVB
+
+elseif($CACHE{BOARD} STREQUAL "EVB")
+    set(compile_options_board -DEVB -DWHERE_TO_LOAD=$CACHE{WHERE_TO_LOAD})
+
+### unsupport
+
+else()
+    message(FATAL_ERROR "unsupport board!")
+endif()
 
 ## 添加编译选项depends on BUILD_TYPE.
+
 ### Debug
+
 if($CACHE{BUILD_TYPE} STREQUAL "Debug")
-	set(compile_options_opt ${compile_options_opt} -O0 -g3 -DDEBUG)
+    set(compile_options_opt ${compile_options_opt} -O0 -g3 -DDEBUG)
+
 ### FastRel
+
 elseif($CACHE{BUILD_TYPE} STREQUAL "FastRel")
-	set(compile_options_opt ${compile_options_opt} -Ofast -g0 -DFastRel)
+    set(compile_options_opt ${compile_options_opt} -Ofast -g0 -DFastRel)
+
 ### FastRelWithDebInfo
+
 elseif($CACHE{BUILD_TYPE} STREQUAL "FastRelWithDebInfo")
-	set(compile_options_opt ${compile_options_opt} -Ofast -Og -g3 -DFastRelWithDebInfo)
+    set(compile_options_opt ${compile_options_opt} -Ofast -Og -g3 -DFastRelWithDebInfo)
+
 ### MinSizeRel
+
 elseif($CACHE{BUILD_TYPE} STREQUAL "MinSizeRel")
-	set(compile_options_opt ${compile_options_opt} -Os -g0 -DMinSizeRel)
+    set(compile_options_opt ${compile_options_opt} -Os -g0 -DMinSizeRel)
+
 ### MinSizeRelWithDebInfo
+
 elseif($CACHE{BUILD_TYPE} STREQUAL "MinSizeRelWithDebInfo")
-	set(compile_options_opt ${compile_options_opt} -Os -Og -g3 -DMinSizeRelWithDebInfo)
+    set(compile_options_opt ${compile_options_opt} -Os -Og -g3 -DMinSizeRelWithDebInfo)
 else()
+
 ### unsupport
-	message(WARNING "unsupport BUILD_TYPE, using Debug!")
+
+    message(WARNING "unsupport BUILD_TYPE, using Debug!")
+
 endif()
 
-
-
 # 开始构建工程
+
 project($CACHE{PROJECT_NAME}
   VERSION 1.0
   DESCRIPTION "dubhe project."
   LANGUAGES C ASM
 )
 
-# ON的一般是最小系统必须的，凡是不是必须的都默认OFF，在app.cmake中再开启
+## 每个模块添加一个使能开关，ON的一般是最小系统必须的，凡是不是必须的都默认OFF，如app工程需要，在app.cmake中再开启
+
+### HW
+
 set(ENABLE_USE_PL011 ON)
-set(ENABLE_USE_UART_16550 OFF)
+set(ENABLE_USE_UART_16550 OFF) # UART_16550驱动用作DW_APB_UART驱动，可能导致波特率精度不够
 set(ENABLE_USE_DW_APB_UART ON)
 set(ENABLE_USE_DW_APB_TIMERS ON)
 set(ENABLE_USE_DW_APB_GPIO ON)
 set(ENABLE_USE_DW_APB_SSI OFF)
 set(ENABLE_USE_PM OFF)
 
+### LIBS
+
 set(ENABLE_USE_SYSTIMER ON)
 set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 
-
 ## 获取工程配置信息(由app.cmake提供)
+
 if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
-	include (${PROJECT_PATH}/app.cmake)
+    include (${PROJECT_PATH}/app.cmake)
 endif()
 
 add_executable($CACHE{PROJECT_NAME}.elf)
 
 ## 添加子模块
+
 ### 添加common通用模块
+
 add_subdirectory(${SDK_DIR}/common)
 set(link_libs ${link_libs} common)
 
 ### A55必须的模块
+
 if($CACHE{CORE} STREQUAL "A55")
-	add_subdirectory(${SDK_DIR}/hw/cores/arm/armv8/a/cortex-a55)
-	set(link_libs ${link_libs} a55)
+    add_subdirectory(${SDK_DIR}/hw/cores/arm/armv8/a/cortex-a55)
+    set(link_libs ${link_libs} a55)
+
 ### M3必须的模块
+
 elseif($CACHE{CORE} STREQUAL "M3")
-	add_subdirectory(${SDK_DIR}/hw/cores/arm/armv7/m/coretex-m3)
-	add_subdirectory(${SDK_DIR}/libs/newlib newlib_port)
-	set(link_libs ${link_libs} m3 newlib_port)
+    add_subdirectory(${SDK_DIR}/hw/cores/arm/armv7/m/coretex-m3)
+    add_subdirectory(${SDK_DIR}/libs/newlib newlib_port)
+    set(link_libs ${link_libs} m3 newlib_port)
+
 ### CV32E40P必须的模块
+
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
-	add_subdirectory(${SDK_DIR}/hw/cores/riscv/cv32e40p)
-	set(link_libs ${link_libs} cv32e40p)
+    add_subdirectory(${SDK_DIR}/hw/cores/riscv/cv32e40p)
+    set(link_libs ${link_libs} cv32e40p)
+
 ### unsupport
+
 else()
-	message(FATAL_ERROR "unsupport core!")
+    message(FATAL_ERROR "unsupport core!")
 endif()
 
 ### 添加可选模块
+
 if(NOT $CACHE{CORE} STREQUAL CV32E40P)
-	### USE_XLAT_TABLES_V2 (CORE==A55)
-	cmake_dependent_option(
-		USE_XLAT_TABLES_V2 "Use xlat_tables_v2" ON
-		"$CACHE{CORE} STREQUAL A55" OFF
-	)
-	if(USE_XLAT_TABLES_V2)
-		add_subdirectory(${SDK_DIR}/libs/xlat_tables_v2)
-		set(link_libs ${link_libs} xlat_tables_v2)
-	endif()
+    ### USE_XLAT_TABLES_V2 (CORE==A55)
+    cmake_dependent_option(
+        USE_XLAT_TABLES_V2 "Use xlat_tables_v2" ON
+        "$CACHE{CORE} STREQUAL A55" OFF
+    )
+    if(USE_XLAT_TABLES_V2)
+        add_subdirectory(${SDK_DIR}/libs/xlat_tables_v2)
+        set(link_libs ${link_libs} xlat_tables_v2)
+    endif()
 
-	### USE_PL011 (BOARD==QEMU)
-	cmake_dependent_option(
-		USE_PL011 "Use pl011" ON
-		"$CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_PL011}" OFF
-	)
-	if(USE_PL011)
-		add_subdirectory(${SDK_DIR}/hw/uart/pl011)
-		set(link_libs ${link_libs} pl011)
-	endif()
+    ### USE_PL011 (BOARD==QEMU)
+    cmake_dependent_option(
+        USE_PL011 "Use pl011" ON
+        "$CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_PL011}" OFF
+    )
+    if(USE_PL011)
+        add_subdirectory(${SDK_DIR}/hw/uart/pl011)
+        set(link_libs ${link_libs} pl011)
+    endif()
+    
+    ### USE_UART_16550 (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_UART_16550 "Use 16550" ON
+        "$CACHE{CORE} STREQUAL A55;NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_UART_16550}" OFF
+    )
+    if(USE_UART_16550)
+        add_subdirectory(${SDK_DIR}/hw/uart/uart_16550)
+        set(link_libs ${link_libs} uart_16550)
+    endif()
+    
+    ### USE_DW_UART (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_DW_UART "Use dw_apb_uart" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_UART}" OFF
+    )
+    if(USE_DW_UART)
+        add_subdirectory(${SDK_DIR}/hw/uart/dw_apb_uart)
+        set(link_libs ${link_libs} dw_apb_uart)
+    endif()
+    
+    ### USE_DW_APB_TIMERS (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_DW_APB_TIMERS "Use dw_apb_timers" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_TIMERS}" OFF
+    )
+    if(USE_DW_APB_TIMERS)
+        add_subdirectory(${SDK_DIR}/hw/timer/dw_apb_timers)
+        set(link_libs ${link_libs} dw_apb_timers)
+    endif()
+    
+    ### USE_DW_APB_SSI (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_DW_APB_SSI "Use dw_apb_ssi" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_SSI}" OFF
+    )
+    if(USE_DW_APB_SSI)
+        add_subdirectory(${SDK_DIR}/hw/spi/dw_apb_ssi)
+        set(link_libs ${link_libs} dw_apb_ssi)
+    endif()
+    
+    ### USE_DW_APB_GPIO (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_DW_APB_GPIO "Use dw_apb_gpio" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_GPIO}" OFF
+    )
+    if(USE_DW_APB_GPIO)
+        add_subdirectory(${SDK_DIR}/hw/gpio/dw_apb_gpio)
+        set(link_libs ${link_libs} dw_apb_gpio)
+    endif()
+    
+    ### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
+    cmake_dependent_option(
+        USE_SYSTIMER "Use systimer" ON
+        "USE_DW_APB_TIMERS;${ENABLE_USE_SYSTIMER}" OFF
+    )
+    if(USE_SYSTIMER)
+        add_subdirectory(${SDK_DIR}/libs/systimer)
+        set(link_libs ${link_libs} systimer)
+    endif()
+    
+    ### USE_NOR_FLASH (USE_DW_APB_SSI && ENABLE_USE_NOR_FLASH)
+    cmake_dependent_option(
+        USE_NOR_FLASH "Use nor flash" ON
+        "USE_DW_APB_SSI;ENABLE_USE_NOR_FLASH" OFF
+    )
+    if(USE_NOR_FLASH)
+        add_subdirectory(${SDK_DIR}/libs/flash/nor)
+        set(link_libs ${link_libs} nor_flash)
+    endif()
+    
+    ### USE_FREERTOS
+    cmake_dependent_option(
+        USE_FREERTOS "Use FreeRTOS" ON
+        "ENABLE_USE_FREERTOS;$CACHE{CORE} STREQUAL M3" OFF
+    )
+    if(USE_FREERTOS)
+        add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel_10_4_6)
+        set(link_libs ${link_libs} freertos_kernel)
+    endif()
+    
+    ### USE_PM
+    cmake_dependent_option(
+        USE_PM "Use Power Management" ON 
+        "ENABLE_USE_PM;$CACHE{CORE} STREQUAL M3" OFF
+    )
+    if(USE_PM)
+        set(compile_options_board ${compile_options_board} -DCONFIG_PM)
+        add_subdirectory(${SDK_DIR}/hw/pm)
+        set(link_libs ${link_libs} pm)
+    endif()
 
-	### USE_UART_16550 (BOARD!=QEMU)
-	cmake_dependent_option(
-		USE_UART_16550 "Use 16550" ON
-		"$CACHE{CORE} STREQUAL A55;NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_UART_16550}" OFF
-	)
-	if(USE_UART_16550)
-		add_subdirectory(${SDK_DIR}/hw/uart/uart_16550)
-		set(link_libs ${link_libs} uart_16550)
-	endif()
-
-	### USE_DW_UART (BOARD!=QEMU)
-	cmake_dependent_option(
-		USE_DW_UART "Use dw_apb_uart" ON
-		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_UART}" OFF
-	)
-	if(USE_DW_UART)
-		add_subdirectory(${SDK_DIR}/hw/uart/dw_apb_uart)
-		set(link_libs ${link_libs} dw_apb_uart)
-	endif()
-
-	### USE_DW_APB_TIMERS (BOARD!=QEMU)
-	cmake_dependent_option(
-		USE_DW_APB_TIMERS "Use dw_apb_timers" ON
-		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_TIMERS}" OFF
-	)
-	if(USE_DW_APB_TIMERS)
-		add_subdirectory(${SDK_DIR}/hw/timer/dw_apb_timers)
-		set(link_libs ${link_libs} dw_apb_timers)
-	endif()
-
-	### USE_DW_APB_SSI (BOARD!=QEMU)
-	cmake_dependent_option(
-		USE_DW_APB_SSI "Use dw_apb_ssi" ON
-		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_SSI}" OFF
-	)
-	if(USE_DW_APB_SSI)
-		add_subdirectory(${SDK_DIR}/hw/spi/dw_apb_ssi)
-		set(link_libs ${link_libs} dw_apb_ssi)
-	endif()
-
-	### USE_DW_APB_GPIO (BOARD!=QEMU)
-	cmake_dependent_option(
-		USE_DW_APB_GPIO "Use dw_apb_gpio" ON
-		"NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_DW_APB_GPIO}" OFF
-	)
-	if(USE_DW_APB_GPIO)
-		add_subdirectory(${SDK_DIR}/hw/gpio/dw_apb_gpio)
-		set(link_libs ${link_libs} dw_apb_gpio)
-	endif()
-
-	### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
-	cmake_dependent_option(
-		USE_SYSTIMER "Use systimer" ON
-		"USE_DW_APB_TIMERS;${ENABLE_USE_SYSTIMER}" OFF
-	)
-	if(USE_SYSTIMER)
-		add_subdirectory(${SDK_DIR}/libs/systimer)
-		set(link_libs ${link_libs} systimer)
-	endif()
-
-	### USE_NOR_FLASH (USE_DW_APB_SSI && ENABLE_USE_NOR_FLASH)
-	cmake_dependent_option(
-		USE_NOR_FLASH "Use nor flash" ON
-		"USE_DW_APB_SSI;ENABLE_USE_NOR_FLASH" OFF
-	)
-	if(USE_NOR_FLASH)
-		add_subdirectory(${SDK_DIR}/libs/flash/nor)
-		set(link_libs ${link_libs} nor_flash)
-	endif()
-
-	### USE_FREERTOS
-	cmake_dependent_option(
-		USE_FREERTOS "Use FreeRTOS" ON
-		"ENABLE_USE_FREERTOS;$CACHE{CORE} STREQUAL M3" OFF
-	)
-	if(USE_FREERTOS)
-		add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel_10_4_6)
-		set(link_libs ${link_libs} freertos_kernel)
-	endif()
-
-	### USE_PM
-	cmake_dependent_option(
-		USE_PM "Use Power Management" ON 
-		"ENABLE_USE_PM;$CACHE{CORE} STREQUAL M3" OFF
-	)
-	if(USE_PM)
-		set(compile_options_board ${compile_options_board} -DCONFIG_PM)
-		add_subdirectory(${SDK_DIR}/hw/pm)
-		set(link_libs ${link_libs} pm)
-	endif()
 endif()
 
 ## 构建app
+
 ### app sources
+
 target_sources($CACHE{PROJECT_NAME}.elf
-	PRIVATE
-		${app_src}
-		${EXTRA_SRC}
+    PRIVATE
+        ${app_src}
+        ${EXTRA_SRC}
 )
 
 ### app include dirs
+
 target_include_directories($CACHE{PROJECT_NAME}.elf
-	PRIVATE
-		${CMAKE_CURRENT_BINARY_DIR}
-		${app_inc}
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${app_inc}
 )
 
 ### app compile options
+
 target_compile_options($CACHE{PROJECT_NAME}.elf
-	PRIVATE
-		${compile_options_arch}
-		${compile_options_board}
-		${compile_options_common}
-		${compile_options_opt}
-		${compile_options_align}
+    PRIVATE
+        ${compile_options_arch}
+        ${compile_options_board}
+        ${compile_options_common}
+        ${compile_options_opt}
+        ${compile_options_align}
 )
 
 ### link options
+
 target_link_options($CACHE{PROJECT_NAME}.elf
-	PRIVATE
-		${compile_options_arch}
-		${link_options}
+    PRIVATE
+        ${compile_options_arch}
+        ${link_options}
 )
 
 ### link libs
+
 target_link_libraries($CACHE{PROJECT_NAME}.elf
-	PRIVATE -Wl,--start-group ${link_libs} -Wl,--end-group linkerscript
+    PRIVATE -Wl,--start-group ${link_libs} -Wl,--end-group linkerscript
 )
 
 # Cumtom targets
+
 ## dump
+
 add_custom_target($CACHE{PROJECT_NAME}.dump ALL
-	COMMAND ${CMAKE_OBJDUMP} -dx $CACHE{PROJECT_NAME}.elf > $CACHE{PROJECT_NAME}.dump
-	DEPENDS $CACHE{PROJECT_NAME}.elf
+    COMMAND ${CMAKE_OBJDUMP} -dx $CACHE{PROJECT_NAME}.elf > $CACHE{PROJECT_NAME}.dump
+    DEPENDS $CACHE{PROJECT_NAME}.elf
     WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
 )
 
 ## bin
+
 add_custom_target( $CACHE{PROJECT_NAME}.bin ALL
-	COMMAND ${CMAKE_OBJCOPY} -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
-	COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
-	COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
-	COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
-	DEPENDS $CACHE{PROJECT_NAME}.elf
-	WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
+    COMMAND ${CMAKE_OBJCOPY} -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
+    COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+    COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
+    DEPENDS $CACHE{PROJECT_NAME}.elf
+    WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
 )
 
 set_property(TARGET $CACHE{PROJECT_NAME}.elf
-	APPEND
-	PROPERTY
-		ADDITIONAL_CLEAN_FILES
-				$CACHE{PROJECT_NAME}.bin
-				$CACHE{PROJECT_NAME}.dump
-				$CACHE{PROJECT_NAME}.verilog.hex
+    APPEND
+    PROPERTY
+        ADDITIONAL_CLEAN_FILES
+                $CACHE{PROJECT_NAME}.bin
+                $CACHE{PROJECT_NAME}.dump
+                $CACHE{PROJECT_NAME}.verilog.hex
 )

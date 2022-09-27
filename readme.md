@@ -1,12 +1,12 @@
 # Quick Start
 
-build_a55.sh
+app/a55/hello/build.sh
 
-build_m3.sh
+app/m3/freertos_basic/build.sh
 
-build_cv32e40p.sh
+app/cv32e40p/hello/build.sh
 
-上述3个脚本包含了编译不同cpu的简单测试。
+上述3个脚本包含了编译3个不同cpu的app工程的简单编译测试。
 
 # Build
 
