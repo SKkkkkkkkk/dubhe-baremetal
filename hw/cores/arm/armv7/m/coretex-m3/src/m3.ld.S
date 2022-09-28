@@ -101,16 +101,6 @@ SECTIONS
 	} >DDR
 #endif
 
-  .ram :
-  {
-    . = ALIGN(4);
-	__ram_start = .;
-	*(.ram_vector*)
-	*(.ram_func*)
-	*(.ram_data*)
-	__ram_end = .;
-  } > SRAM
-
   /*
    * SG veneers:
    * All SG veneers are placed in the special output section .gnu.sgstubs. Its start address
@@ -309,14 +299,14 @@ SECTIONS
   } >SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_RAM)
 	} >SRAM
-#else // SRAM
-	} >SRAM
+#else // DDR
+	} >DDR
 #endif
 
 
   .stack
 #if (WHERE_TO_LOAD == ALL_IN_DDR)
-  (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
+  (ORIGIN(DDR) + LENGTH(DDR) - __STACK_SIZE) 
 #else
 	(ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
 #endif
@@ -331,8 +321,8 @@ SECTIONS
   } >SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_RAM)
 	} >SRAM
-#else // SRAM
-	} >SRAM
+#else // DDR
+	} >DDR
 #endif
 
   PROVIDE(__stack = __StackTop);

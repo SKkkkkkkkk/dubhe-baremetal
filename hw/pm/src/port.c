@@ -75,7 +75,7 @@ void cpu_tz_hibernation(void)
 	PM_LOGD("--> %s line %d\n", __func__, __LINE__);
 }
 
-__ramfunc void cpu_tz_suspend(void)
+void cpu_tz_suspend(void)
 {   
 
 }

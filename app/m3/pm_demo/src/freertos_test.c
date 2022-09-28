@@ -54,7 +54,6 @@ void task1(void* arg)
 			printf("Exit hibernation mode\n\n");
 			/* 唤醒源配置关闭 */
 #endif
-			// NVIC->ISPR[(((uint32_t)Interrupt0_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)Interrupt0_IRQn) & 0x1FUL));
 		}
 		vTaskDelay(100);
 	}

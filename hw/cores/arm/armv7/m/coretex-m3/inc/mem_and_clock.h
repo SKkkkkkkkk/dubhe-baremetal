@@ -15,7 +15,7 @@
 	#define __SRAM_SIZE 		0x00020000
 	#define __EXTERNAL_RAM_SIZE	0x00100000
 
-	#define __STACK_SIZE 0x00001000
+	#define __STACK_SIZE 0x00000400
 	#define __HEAP_SIZE  0x00000C00
 #else
 	#error "unkowned board."
