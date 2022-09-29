@@ -1616,6 +1616,25 @@ enum {
 #define DEFINE_RES_IRQ(_irq)                        \
     DEFINE_RES_IRQ_NAMED((_irq), NULL)
 
+struct of_device_id {
+	char *compatible;
+	void *data;
+};
+
+struct dev_pm_ops {
+	int (*suspend)(void *);
+	int (*resume)(void *);
+};
+
+struct platform_driver {
+	char *name;
+	struct of_device_id *of_match_table;
+	int (*probe)(void *, void *);
+	int (*remove)(void *);
+	struct of_device_id *id_table;
+	struct dev_pm_ops *pm;
+};
+
 struct resource {
     size_t start;
     size_t end;
@@ -1736,11 +1755,209 @@ struct regmap_irq_chip {
 };
 ///////////////////////////////////////////////////////////////////////
 
+typedef unsigned int u32;
+typedef int s32;
+
+#define REGULATOR_LINEAR_RANGE(_min_uV, _min_sel, _max_sel, _step_uV)   \
+{                                   \
+    .min_uV     = _min_uV,                  \
+    .min_sel    = _min_sel,                 \
+    .max_sel    = _max_sel,                 \
+    .uV_step    = _step_uV,                 \
+}
+
+struct regulator_dev;
+
+struct regulator_ops {
+
+    /* enumerate supported voltages */
+    int (*list_voltage) (struct regulator_dev *, unsigned selector);
+
+    /* get/set regulator voltage */
+    int (*set_voltage) (struct regulator_dev *, int min_uV, int max_uV,
+                unsigned *selector);
+    int (*map_voltage)(struct regulator_dev *, int min_uV, int max_uV);
+    int (*set_voltage_sel) (struct regulator_dev *, unsigned selector);
+    int (*get_voltage) (struct regulator_dev *);
+    int (*get_voltage_sel) (struct regulator_dev *);
+
+    /* get/set regulator current  */
+    int (*set_current_limit) (struct regulator_dev *,
+                 int min_uA, int max_uA);
+    int (*get_current_limit) (struct regulator_dev *);
+
+    int (*set_input_current_limit) (struct regulator_dev *, int lim_uA);
+    int (*set_over_current_protection) (struct regulator_dev *);
+    int (*set_active_discharge) (struct regulator_dev *, bool enable);
+
+    /* enable/disable regulator */
+    int (*enable) (struct regulator_dev *);
+    int (*disable) (struct regulator_dev *);
+    int (*is_enabled) (struct regulator_dev *);
+
+    /* get/set regulator operating mode (defined in consumer.h) */
+    int (*set_mode) (struct regulator_dev *, unsigned int mode);
+    unsigned int (*get_mode) (struct regulator_dev *);
+
+    /* Time taken to enable or set voltage on the regulator */
+    int (*enable_time) (struct regulator_dev *);
+    int (*set_ramp_delay) (struct regulator_dev *, int ramp_delay);
+    int (*set_voltage_time) (struct regulator_dev *, int old_uV,
+                 int new_uV);
+    int (*set_voltage_time_sel) (struct regulator_dev *,
+                     unsigned int old_selector,
+                     unsigned int new_selector);
+
+    int (*set_soft_start) (struct regulator_dev *);
+
+    /* report regulator status ... most other accessors report
+     * control inputs, this reports results of combining inputs
+     * from Linux (and other sources) with the actual load.
+     * returns REGULATOR_STATUS_* or negative errno.
+     */
+    int (*get_status)(struct regulator_dev *);
+
+    /* get most efficient regulator operating mode for load */
+    unsigned int (*get_optimum_mode) (struct regulator_dev *, int input_uV,
+                      int output_uV, int load_uA);
+    /* set the load on the regulator */
+    int (*set_load)(struct regulator_dev *, int load_uA);
+
+    /* control and report on bypass mode */
+    int (*set_bypass)(struct regulator_dev *dev, bool enable);
+    int (*get_bypass)(struct regulator_dev *dev, bool *enable);
+
+    /* the operations below are for configuration of regulator state when
+     * its parent PMIC enters a global STANDBY/HIBERNATE state */
+
+    /* set regulator suspend voltage */
+    int (*set_suspend_voltage) (struct regulator_dev *, int uV);
+
+    /* enable/disable regulator in suspend state */
+    int (*set_suspend_enable) (struct regulator_dev *);
+    int (*set_suspend_disable) (struct regulator_dev *);
+
+    /* set regulator suspend operating mode (defined in consumer.h) */
+    int (*set_suspend_mode) (struct regulator_dev *, unsigned int mode);
+
+    int (*set_pull_down) (struct regulator_dev *);
+};
+
+enum regulator_type {
+    REGULATOR_VOLTAGE,
+    REGULATOR_CURRENT,
+};
+
+struct regulator_linear_range {
+    unsigned int min_uV;
+    unsigned int min_sel;
+    unsigned int max_sel;
+    unsigned int uV_step;
+};
+
+struct regulator_desc {
+    const char *name;
+    const char *supply_name;
+    const char *of_match;
+    const char *regulators_node;
+    // int (*of_parse_cb)(struct device_node *,
+                // const struct regulator_desc *,
+                // struct regulator_config *);
+    int id;
+    unsigned int continuous_voltage_range:1;
+    unsigned n_voltages;
+    const struct regulator_ops *ops;
+    int irq;
+    enum regulator_type type;
+    // struct module *owner;
+
+    unsigned int min_uV;
+    unsigned int uV_step;
+    unsigned int linear_min_sel;
+    int fixed_uV;
+    unsigned int ramp_delay;
+    int min_dropout_uV;
+
+    const struct regulator_linear_range *linear_ranges;
+    int n_linear_ranges;
+
+    const unsigned int *volt_table;
+    unsigned int vsel_reg;
+    unsigned int vsel_mask;
+    unsigned int csel_reg;
+    unsigned int csel_mask;
+    unsigned int apply_reg;
+    unsigned int apply_bit;
+    unsigned int enable_reg;
+    unsigned int enable_mask;
+    unsigned int enable_val;
+    unsigned int disable_val;
+    bool enable_is_inverted;
+    unsigned int bypass_reg;
+    unsigned int bypass_mask;
+    unsigned int bypass_val_on;
+    unsigned int bypass_val_off;
+    unsigned int active_discharge_on;
+    unsigned int active_discharge_off;
+    unsigned int active_discharge_mask;
+    unsigned int active_discharge_reg;
+
+    unsigned int enable_time;
+
+    unsigned int off_on_delay;
+
+    unsigned int (*of_map_mode)(unsigned int mode);
+};
+
+struct regulator_dev {
+    const struct regulator_desc *desc;
+    int exclusive;
+    u32 use_count;
+    u32 open_count;
+    u32 bypass_count;
+
+    /* lists we belong to */
+    // struct list_head list; [> list of all regulators <]
+
+	// lists we own
+    // struct list_head consumer_list; [> consumers we supply <]
+//
+// #if defined(CONFIG_AW_AXP)
+    // struct list_head axp_enable_list; [> supply we enable <]
+// #endif
+//
+    // struct blocking_notifier_head notifier;
+    // struct mutex mutex; [> consumer lock <]
+    // struct module *owner;
+    // struct device dev;
+    // struct regulation_constraints *constraints;
+    // struct regulator *supply;   [> for tree <]
+    const char *supply_name;
+    // struct regmap *regmap;
+
+    // struct delayed_work disable_work;
+    int deferred_disables;
+
+    void *reg_data;     /* regulator_dev data */
+
+    // struct dentry *debugfs;
+
+    // struct regulator_enable_gpio *ena_pin;
+    unsigned int ena_gpio_state:1;
+
+    unsigned int is_switch:1;
+
+    /* time when this regulator was disabled last time */
+    unsigned long last_off_jiffy;
+};
+
+//////////////////////////////////////////////////////////////////////
 struct axp20x_dev {
 	// struct device			*dev;
 	int				irq;
 	// struct regmap			*regmap;
 	// struct regmap_irq_chip_data	*regmap_irqc;
+	struct regulator_dev *rdev;
 	long				variant;
 	int                             nr_cells;
 	struct mfd_cell                 *cells;

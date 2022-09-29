@@ -8,6 +8,8 @@ file(GLOB PMIC_SOURCE
 		# src/*.c
 		src/axp2101-i2c.c
 		src/axp2101.c
+		src/axp2101-regulator.c
+		src/axp2101-pek.c
 )
 
 # 该模块的源文件

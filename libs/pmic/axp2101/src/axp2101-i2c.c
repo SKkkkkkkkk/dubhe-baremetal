@@ -34,10 +34,6 @@ struct i2c_driver {
 	struct of_device_id *id_table;
 };
 
-struct of_device_id {
-	char *compatible;
-	void *data;
-};
 
 static struct of_device_id axp20x_i2c_of_match[] = {
 	{ .compatible = "x-powers,axp152", .data = (void *)AXP152_ID },
