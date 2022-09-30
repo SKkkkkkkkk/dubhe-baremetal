@@ -60,16 +60,20 @@ void task1(void* arg)
 }
 
 
+void single_func(void)
+{
+		printf("task2\n");
+		vTaskDelay(1000);
+		/* if(test_count++ < 1) */
+			xSemaphoreGive(pmSemaphore);
+}
 void task2(void* arg)
 {
 	/* int32_t test_count = 0; */
 
 	while(1)
 	{
-		printf("task2\n");
-		vTaskDelay(1000);
-		/* if(test_count++ < 1) */
-			xSemaphoreGive(pmSemaphore);
+		single_func();
 	}
 }
 
