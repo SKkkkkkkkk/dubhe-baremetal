@@ -1,10 +1,12 @@
 #include "m3.h"
 #include <stdio.h>
+#include <string.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "pm.h"
+#include "mem_and_clock.h"
 
-#define TEST_SLEEP          1
+#define TEST_SLEEP          0
 #define TEST_STANDBY        1
 #define TEST_HIBERNATION    0
 #define STACK_SIZE			1024
@@ -155,11 +157,25 @@ __ramfunc void clear_ddr(void)
 
 int main()
 {
+	memcpy(__VECTOR_TABLE_IN_SRAM, __VECTOR_TABLE, sizeof(__VECTOR_TABLE_IN_SRAM));
+	__DSB();
+	SCB->VTOR = (uint32_t) &(__VECTOR_TABLE_IN_SRAM[0]);
+	__DSB();
+	__ISB();
+
+	NVIC_SetVector(Interrupt0_IRQn, (uintptr_t)irq_handler0);
+	NVIC_EnableIRQ(Interrupt0_IRQn);
+	NVIC_SetPendingIRQ(Interrupt0_IRQn);
+
+	NVIC_SetVector(Interrupt1_IRQn, (uintptr_t)irq_handler1);
+	NVIC_EnableIRQ(Interrupt1_IRQn);
+	NVIC_SetPendingIRQ(Interrupt1_IRQn);
+
 	hardware_init_hook();
 
 	pm_register_ops(PM_DEV);
 	pm_register_ops(PM_NOIRQ_DEV);
-
+//
 	void task1(void* arg);
 	void task2(void* arg);
 
@@ -171,7 +187,6 @@ int main()
 
 	if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
 		while (1);
-
 	vTaskStartScheduler();
 	return 0;
 }
