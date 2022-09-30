@@ -33,12 +33,18 @@ set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebI
 
 # Where to load & run
 
-set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR")
+if($CACHE{CORE} STREQUAL "A55")
+    set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR")
+elseif($CACHE{CORE} STREQUAL "M3")
+    set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR, MEMMAP_SCHEME_1")
+elseif($CACHE{CORE} STREQUAL "CV32E40P")
+    set(WHERE_TO_LOAD "UNSUPPORT" CACHE STRING "Unsupport in CV32E40P")
+else()
+    message(FATAL_ERROR "unsupport core!")
+endif()
 
 # GIT_HASH
-
 ## 在程序中可以打印git 提交版本hash值。printf("git hash:"GIT_HASH)
-
 execute_process(
     COMMAND git rev-parse --short HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

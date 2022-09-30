@@ -4,10 +4,19 @@
 #define ROM_AND_RAM 0
 #define ALL_IN_RAM	1
 #define ALL_IN_DDR	2
+#define MEMMAP_SCHEME_1 3 
 
 #ifndef QEMU
   #ifndef WHERE_TO_LOAD
     #define WHERE_TO_LOAD ROM_AND_RAM
+  #else
+      #if (WHERE_TO_LOAD == ROM_AND_RAM)
+      #elif (WHERE_TO_LOAD == ALL_IN_RAM)
+      #elif (WHERE_TO_LOAD == ALL_IN_DDR)
+      #elif (WHERE_TO_LOAD == MEMMAP_SCHEME_1)
+      #else
+        #error "unspport WHERE_TO_LOAD."
+      #endif
   #endif
 #else
   #ifndef WHERE_TO_LOAD
@@ -16,9 +25,9 @@
       #if (WHERE_TO_LOAD == ROM_AND_RAM)
       #elif (WHERE_TO_LOAD == ALL_IN_RAM)
       #elif (WHERE_TO_LOAD == ALL_IN_DDR)
-        #warning "ALL_IN_DDR not support in QEMU, turn into ALL_IN_RAM."
-        #undef  WHERE_TO_LOAD
-        #define WHERE_TO_LOAD ALL_IN_RAM
+        #error "unspport ALL_IN_DDR in qemu."
+      #elif (WHERE_TO_LOAD == MEMMAP_SCHEME_1)
+        #error "unspport MEMMAP_SCHEME_1 in qemu."
       #else
         #error "unspport WHERE_TO_LOAD."
       #endif
@@ -104,11 +113,11 @@ SECTIONS
   .ram :
   {
     . = ALIGN(4);
-	__ram_start = .;
-	*(.ram_vector*)
-	*(.ram_func*)
-	*(.ram_data*)
-	__ram_end = .;
+    __ram_start = .;
+    *(.ram_vector*)
+    *(.ram_func*)
+    *(.ram_data*)
+    __ram_end = .;
   } > SRAM
 
   /*
@@ -259,7 +268,7 @@ SECTIONS
   } > RAM2
 */
 
-  .bss :
+  .bss (NOLOAD) :
   {
     . = ALIGN(4);
     __bss_start__ = .;
@@ -295,7 +304,7 @@ SECTIONS
   } > RAM2 AT > RAM2
 */
 
-  .heap (COPY) :
+  .heap (NOLOAD) :
   {
     . = ALIGN(8);
     __end__ = .;
@@ -309,18 +318,14 @@ SECTIONS
   } >SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_RAM)
 	} >SRAM
-#else // SRAM
-	} >SRAM
+#elif (WHERE_TO_LOAD == ALL_IN_DDR)
+	} >DDR
+#else // MEMMAP_SCHEME_1
+  } >SRAM
 #endif
 
 
-  .stack
-#if (WHERE_TO_LOAD == ALL_IN_DDR)
-  (ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
-#else
-	(ORIGIN(SRAM) + LENGTH(SRAM) - __STACK_SIZE) 
-#endif
-  (COPY) :
+  .stack (NOLOAD) :
   {
     . = ALIGN(8);
     __StackLimit = .;
@@ -331,8 +336,10 @@ SECTIONS
   } >SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_RAM)
 	} >SRAM
-#else // SRAM
-	} >SRAM
+#elif (WHERE_TO_LOAD == ALL_IN_DDR)
+	} >DDR
+#else // MEMMAP_SCHEME_1
+  } >SRAM
 #endif
 
   PROVIDE(__stack = __StackTop);
