@@ -9,11 +9,39 @@
 #define TEST_SLEEP          0
 #define TEST_STANDBY        1
 #define TEST_HIBERNATION    0
+#define STACK_SIZE			1024
+#define ROUND_UP(x, align) (((int) (x) + (align - 1)) & ~(align - 1))
+#define ROUND_DOWN(x, align) ((int)(x) & ~(align - 1))
 
 extern const VECTOR_TABLE_Type __VECTOR_TABLE[240];
 __ramvector VECTOR_TABLE_Type __VECTOR_TABLE_IN_SRAM[240];
 
 __ramdata int count = 0;
+__ramdata StaticTask_t xTaskBuffer;
+__ramdata StackType_t xStack[STACK_SIZE];
+__ramdata StackType_t IdleTaskStack[configMINIMAL_STACK_SIZE];
+__ramdata StaticTask_t IdleTaskTCB;
+__ramdata StackType_t TimerTaskStack[configTIMER_TASK_STACK_DEPTH];
+__ramdata StaticTask_t TimerTaskTCB;
+
+
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
+									StackType_t **ppxIdleTaskStackBuffer,
+									uint32_t *pulIdleTaskStackSize)
+{
+	*ppxIdleTaskTCBBuffer=&IdleTaskTCB;
+	*ppxIdleTaskStackBuffer=IdleTaskStack;
+	*pulIdleTaskStackSize=configMINIMAL_STACK_SIZE;
+}
+
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
+									StackType_t **ppxTimerTaskStackBuffer,
+									uint32_t *pulTimerTaskStackSize)
+{
+	*ppxTimerTaskTCBBuffer=&TimerTaskTCB;
+	*ppxTimerTaskStackBuffer=TimerTaskStack;
+	*pulTimerTaskStackSize=configTIMER_TASK_STACK_DEPTH;
+}
 
 __ramfunc void irq_handler0(void)
 {
@@ -106,8 +134,6 @@ __ramfunc static inline void _mdelay(unsigned long msec)
 
 __ramfunc void clear_ddr(void)
 {
-#define ROUND_UP(x, align) (((int) (x) + (align - 1)) & ~(align - 1))
-#define ROUND_DOWN(x, align) ((int)(x) & ~(align - 1))
 
 	extern int __bss_end__[];
 	int i = 0;
@@ -153,13 +179,14 @@ int main()
 	void task1(void* arg);
 	void task2(void* arg);
 
-	clear_ddr();
+	// clear_ddr();
 	// if (xTaskCreate(task1, "task1", 1024, NULL, 1, NULL) != pdPASS)
 		// while (1)
-			// ;
-	// if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
-		// while (1)
-			// ;
-	// vTaskStartScheduler();
+	if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack, &xTaskBuffer) == NULL)
+		while (1);
+
+	if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
+		while (1);
+	vTaskStartScheduler();
 	return 0;
 }
