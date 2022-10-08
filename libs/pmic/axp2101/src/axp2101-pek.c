@@ -320,42 +320,47 @@ int axp20x_pek_probe(void *pdev, void *config)
 	return 0;
 }
 
-static int axp2101_powerkey_suspend(void *dev)
+int axp2101_powerkey_suspend(void)
 {
-	// struct platform_device *pdev = to_platform_device(dev);
-	// struct axp20x_pek *axp20x_pek = platform_get_drvdata(pdev);
-//
-	// if (!axp20x_pek->pk_dts.pmu_powkey_wakeup_rising) {
-		// disable_irq(axp20x_pek->irq_dbr);
-	// }
-//
-	// if (!axp20x_pek->pk_dts.pmu_powkey_wakeup_falling) {
-		// disable_irq(axp20x_pek->irq_dbf);
-	// }
+	uint32_t val = 0;
+
+	// SLEEP enable
+	axp20x_i2c_write(AXP2101_SLEEP_CFG, 0x01);
+
+	// IRQ Pin low to Wakeup
+	axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
+	val |= 0x10;
+	axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
+
+	// POWERON Short Long IRQ
+	val = 0x0c;
+	axp20x_i2c_write(AXP2101_INTEN2, val);
+
+	// close voltage 80H 90H 91H
+
+	axp20x_set_dcdc1(0);
+	axp20x_set_dcdc2(0);
+	axp20x_set_dcdc3(0);
+	axp20x_set_dcdc4(0);
+	axp20x_set_dcdc5(0);
+	axp20x_set_aldo1(0);
+	axp20x_set_aldo2(0);
+	axp20x_set_aldo3(0);
+	axp20x_set_aldo4(0);
+	axp20x_set_bldo1(0);
+	axp20x_set_bldo2(0);
+	axp20x_set_dldo1(0);
+	axp20x_set_dldo2(0);
+	axp20x_set_cpusldo(0);
 
 	return 0;
 }
 
-static int axp2101_powerkey_resume(void *dev)
+int axp2101_powerkey_resume(void)
 {
-	// struct platform_device *pdev = to_platform_device(dev);
-	// struct axp20x_pek *axp20x_pek = platform_get_drvdata(pdev);
-//
-	// if (!axp20x_pek->pk_dts.pmu_powkey_wakeup_rising) {
-		// enable_irq(axp20x_pek->irq_dbr);
-	// }
-//
-	// if (!axp20x_pek->pk_dts.pmu_powkey_wakeup_falling) {
-		// enable_irq(axp20x_pek->irq_dbf);
-	// }
 
 	return 0;
 }
-
-static struct dev_pm_ops axp2101_powerkey_pm_ops = {
-	.suspend      = axp2101_powerkey_suspend,
-	.resume       = axp2101_powerkey_resume,
-};
 
 static struct of_device_id axp_match_table[] = {
 	{ .compatible = "x-powers,axp2585-pek" },
@@ -370,5 +375,4 @@ __nouse__ static struct platform_driver axp20x_pek_driver = {
 	.probe		= axp20x_pek_probe,
 	.of_match_table = axp_match_table,
 	.name = "axp2101-pek",
-	.pm = &axp2101_powerkey_pm_ops,
 };

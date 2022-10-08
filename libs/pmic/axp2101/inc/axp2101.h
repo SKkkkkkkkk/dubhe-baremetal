@@ -2091,4 +2091,8 @@ int axp20x_set_dldo1(unsigned int mvolt);
 int axp20x_set_dldo2(unsigned int mvolt);
 int axp20x_set_cpusldo(unsigned int mvolt);
 
+
+void axp20x_power_off(void);
+int axp2101_powerkey_suspend(void);
+
 #endif /* __LINUX_MFD_AXP20X_H */

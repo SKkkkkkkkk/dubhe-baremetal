@@ -272,7 +272,7 @@ static struct mfd_cell axp2101_cells[] = {
 };
 /*----------------------*/
 static struct axp20x_dev *axp20x_pm_power_off;
-__nouse__ static void axp20x_power_off(void)
+void axp20x_power_off(void)
 {
 	if (axp20x_pm_power_off->variant == AXP2101_ID)
 		axp20x_i2c_write(AXP2101_COMM_CFG, AXP20X_OFF);
@@ -286,45 +286,34 @@ __nouse__ static void axp20x_power_off(void)
  */
 static void axp2101_dts_parse(struct axp20x_dev *axp20x)
 {
-#if 0
-	struct device_node *node = axp20x->dev->of_node;
-	struct regmap *map = axp20x->regmap;
 	uint32_t val;
 
-	if (of_property_read_bool(axp20x->dev->of_node, "pmu_powerok_noreset")) {
-		regmap_update_bits(axp20x->regmap, AXP2101_COMM_CFG, BIT(3), 0);
-	} else {
-		regmap_update_bits(axp20x->regmap, AXP2101_COMM_CFG, BIT(3),
-				   BIT(3));
-	}
+	// "pmu_powerok_noreset"
+	axp20x_i2c_read(AXP2101_COMM_CFG, &val);
+	val &= 0xfe;
+	axp20x_i2c_write(AXP2101_COMM_CFG, val);
 
 	/* init 16's reset pmu en */
-	if (of_property_read_uint32_t(node, "pmu_reset", &val))
-		val = 0;
-	if (val) {
-		regmap_update_bits(map, AXP2101_COMM_CFG, BIT(2), BIT(2));
-	} else {
-		regmap_update_bits(map, AXP2101_COMM_CFG, BIT(2), 0);
-	}
+	axp20x_i2c_read(AXP2101_COMM_CFG, &val);
+	val |= 0x04;
+	axp20x_i2c_write(AXP2101_COMM_CFG, val);
 
 	/* enable pwrok pin pull low to restart the system */
-	regmap_update_bits(map, AXP2101_COMM_CFG, BIT(3), BIT(3));
+	// regmap_update_bits(map, AXP2101_COMM_CFG, BIT(3), BIT(3));
 
 	/* init pmu over temperature protection */
-	if (of_property_read_u32(node, "pmu_hot_shutdown", &val))
-		val = 0;
-	if (val)
-		regmap_update_bits(map, AXP2101_PWROFF_EN, BIT(2), BIT(2));
-	else
-		regmap_update_bits(map, AXP2101_PWROFF_EN, BIT(2), 0);
+	axp20x_i2c_read(AXP2101_PWROFF_EN, &val);
+	val |= 0x04;
+	axp20x_i2c_write(AXP2101_PWROFF_EN, val);
 
 	/* 85% low voltage turn off pmic function */
 	/* axp_regmap_write(axp2101->regmap, axp2101_DCDC_PWROFF_EN, 0x3f); */
 	/* set 2.6v for battery poweroff */
-	regmap_write(map, AXP2101_VOFF_THLD, 0x00);
+	axp20x_i2c_write(AXP2101_VOFF_THLD, 0x00);
 	/* set delay of powerok after all power output good to 8ms */
-	regmap_update_bits(map, AXP2101_PWR_TIME_CTRL, 0x03, 0x00);
-#endif
+	axp20x_i2c_read(AXP2101_PWR_TIME_CTRL, &val);
+	val &= 0xfc;
+	axp20x_i2c_write(AXP2101_PWR_TIME_CTRL, val);
 }
 
 int axp20x_match_device(struct axp20x_dev *axp20x)
@@ -346,36 +335,6 @@ int axp20x_match_device(struct axp20x_dev *axp20x)
 		 axp20x_model_names[axp20x->variant]);
 
 	return 0;
-}
-
-static uint32_t axp_reg_addr;
-
-__nouse__ static ssize_t axp_reg_show(char *buf)
-{
-	uint32_t val;
-
-	axp20x_i2c_read(axp_reg_addr, &val);
-	return sprintf(buf, "REG[0x%lx]=0x%lx\n",
-				axp_reg_addr, val);
-}
-
-__nouse__ static ssize_t axp_reg_store(const char *buf, size_t count)
-{
-	int32_t tmp;
-	uint32_t val;
-	__nouse__ int err;
-
-	tmp = *(int *)buf;
-
-	if (tmp < 256) {
-		axp_reg_addr = tmp;
-	} else {
-		val = tmp & 0x00FF;
-		axp_reg_addr = (tmp >> 8) & 0x00FF;
-		axp20x_i2c_write(axp_reg_addr, val);
-	}
-
-	return count;
 }
 
 int axp20x_device_probe(struct axp20x_dev *axp20x)
