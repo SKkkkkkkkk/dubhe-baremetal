@@ -24,7 +24,8 @@
 #include "axp2101.h"
 
 
-extern __nouse__  struct i2c_driver axp2101_i2c_driver;
+struct i2c_driver axp2101_i2c_driver;
+static void axp2101_i2c_exit(void);
 
 struct i2c_driver {
 	char *name;
@@ -51,6 +52,68 @@ static struct of_device_id axp20x_i2c_of_match[] = {
 	{ },
 };
 
+#if 0
+__nouse__ static int i2c_write_reg(struct sensor_cfg *cfg, uint16_t reg, uint32_t len, uint32_t val)
+{
+	i2c_msg msgs;
+	int ret = 0;
+	uint8_t tmp8 = 0;
+	uint8_t tmp[2];
+
+	msgs.addr = cfg->reg_addr;
+	msgs.flags = RT_I2C_WR;
+	msgs.reg_addr = reg;
+	msgs.alen = 1;
+	if (len == 1) {
+		tmp8 = (uint8_t)val;
+		msgs.buf = &tmp8;
+	} else if (len == 2) {
+		tmp[0] = (uint8_t)val >> 8;
+		tmp[1] = (uint8_t)val;
+		msgs.buf = tmp;
+	} else {
+		printf("i2c write unkonw i2c len");
+	}
+	msgs.buf_len = len;
+	ret = i2c_master_transfer(cfg->i2c_bus, &msgs, 1);
+	if (ret != 0) {
+		printf("i2c_write_reg err");
+		return -1;
+	}
+
+	return 0;
+}
+
+__nouse__ static int i2c_read_reg(struct sensor_cfg *cfg, uint16_t reg, unsigned int len, uint32_t *val)
+{
+	i2c_msg msgs;
+	int ret = 0;
+	uint8_t tmp[2];
+
+	msgs.addr = cfg->reg_addr;
+	msgs.flags = RT_I2C_RD;
+	msgs.reg_addr = reg;
+	msgs.alen = 1;
+	msgs.buf = tmp;
+	msgs.buf_len = len;
+	ret = i2c_master_transfer(cfg->i2c_bus, &msgs, 1);
+	if (ret != 0) {
+		printf("i2c_read_reg err");
+		return -1;
+	}
+
+	if (len == 1) {
+		*val = tmp[0];
+	} else if (len == 2) {
+		*val = (uint16_t)(tmp[0] << 8 | tmp[1]);
+	} else {
+		printf("i2c read unkonw i2c len");
+	}
+
+	return 0;
+}
+#endif
+
 __nouse__ static int axp20x_i2c_probe(void *i2c,
 			    void *id)
 {
@@ -67,33 +130,41 @@ __nouse__ static int axp20x_i2c_probe(void *i2c,
 	if (ret)
 		return ret;
 
-	// return axp20x_device_probe(axp20x);
-	return 0;
+	return axp20x_device_probe(axp20x);
 }
 
 __nouse__ static int axp20x_i2c_remove(void *i2c)
 {
 
-	// return axp20x_device_remove(axp20x);
+	axp2101_i2c_exit();
 	return 0;
 }
 
 __nouse__ static int axp2101_i2c_init(void)
 {
-	__nouse__ int ret = 1;
+	// int err = 0;
+	// struct sensor_cfg *cfg;
 
-	// ret = i2c_add_driver(&axp2101_i2c_driver);
-	if (ret != 0) {
-		printf("axp2101 i2c registration failed %d\n", ret);
-		return ret;
-	}
+	// err = i2c_master_init(cfg->i2c_bus);
+	// if (err) {
+		// printf("i2c_master_init err");
+		// return err;
+	// }
+
+    // i2c_control control = {0};
+    // control.speed = 400000;
+    // err = i2c_config_control(cfg->i2c_bus, &control);
+    // if (err != 0) {
+        // printf("i2c_config_control failed, ret=%d\r\n", err);
+        // return -1;
+    // }
 
 	return 0;
 }
 
 __nouse__ static void axp2101_i2c_exit(void)
 {
-	// i2c_del_driver(&axp2101_i2c_driver);
+	// i2c_master_deinit(cfg->i2c_bus);
 }
 
 __nouse__  struct i2c_driver axp2101_i2c_driver = {

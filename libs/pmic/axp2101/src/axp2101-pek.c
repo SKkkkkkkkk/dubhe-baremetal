@@ -196,375 +196,13 @@ __nouse__ static int axp20x_pek_irq(int irq, void *pwr)
 	return 0;
 }
 
-#if 0
-static int axp2202_config_set(struct axp20x_pek *axp20x_pek)
-{
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct regmap *regmap = axp20x_dev->regmap;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val;
-
-	regmap_read(regmap, AXP2202_PONLEVEL, &val);
-	if (pk_dts->pmu_powkey_on_time < 128)
-		val &= 0x3C;
-	else if (pk_dts->pmu_powkey_on_time < 512) {
-		val &= 0x3C;
-		val |= 0x01;
-	} else if (pk_dts->pmu_powkey_on_time < 1000) {
-		val &= 0x3C;
-		val |= 0x10;
-	} else {
-		val &= 0x3C;
-		val |= 0x11;
-	}
-	regmap_write(regmap, AXP2202_PONLEVEL, val);
-
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
-
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
-
-	regmap_read(regmap, AXP2202_PONLEVEL, &val);
-	val &= 0xcf;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
-		<< 4);
-	regmap_write(regmap, AXP2202_PONLEVEL, val);
-
-	/* pek offlevel poweroff en set*/
-	if (pk_dts->pmu_powkey_off_en)
-		pk_dts->pmu_powkey_off_en = 1;
-	else
-		pk_dts->pmu_powkey_off_en = 0;
-
-	regmap_read(regmap, AXP2202_PWROFF_EN, &val);
-	val &= 0xfD;
-	val |= (pk_dts->pmu_powkey_off_en << 1);
-	regmap_write(regmap, AXP2202_PWROFF_EN, val);
-
-	/*Init offlevel restart or not */
-	if (pk_dts->pmu_powkey_off_func)
-		regmap_update_bits(regmap, AXP2202_PWROFF_EN, 0x01,
-				   0x01); /* restart */
-	else
-		regmap_update_bits(regmap, AXP2202_PWROFF_EN, 0x01,
-				   0x00); /* power off */
-
-	/* pek delay set */
-	/* regmap_read(regmap, AXP2202_PWR_TIME_CTRL, &val); */
-	/* val &= 0xfc; */
-	/* if (pk_dts->pmu_pwrok_time < 32) */
-		/* val |= ((pk_dts->pmu_pwrok_time / 8) - 1); */
-	/* else */
-		/* val |= ((pk_dts->pmu_pwrok_time / 32) + 1); */
-	/* regmap_write(regmap, AXP2202_PWR_TIME_CTRL, val); */
-
-	/* pek offlevel time set */
-	if (pk_dts->pmu_powkey_off_time < 4000)
-		pk_dts->pmu_powkey_off_time = 4000;
-
-	if (pk_dts->pmu_powkey_off_time > 10000)
-		pk_dts->pmu_powkey_off_time = 10000;
-
-	regmap_read(regmap, AXP2202_PONLEVEL, &val);
-	val &= 0xf3;
-	val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000
-		<< 2);
-	regmap_write(regmap, AXP2202_PONLEVEL, val);
-
-	/* vbat use all channels */
-	/* regmap_write(regmap, AXP2202_VBAT_H, 0x40); */
-
-	return 0;
-}
-#endif
-static int axp152_config_set(struct axp20x_pek *axp20x_pek)
-{
-#if 0
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val;
-
-	regmap_read(regmap, AXP152_PEK_KEY, &val);
-	if (pk_dts->pmu_powkey_on_time <= 128)
-		val &= 0x3f;
-	else if (pk_dts->pmu_powkey_on_time <= 1000) {
-		val &= 0x3f;
-		val |= 0x10;
-	} else if (pk_dts->pmu_powkey_on_time <= 2000) {
-		val &= 0x3f;
-		val |= 0x11;
-	} else {
-		val &= 0x3f;
-		val |= 0x01;
-	}
-	regmap_write(regmap, AXP152_PEK_KEY, val);
-
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
-
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
-
-	regmap_read(regmap, AXP152_PEK_KEY, &val);
-	val &= 0xcf;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
-		<< 4);
-	regmap_write(regmap, AXP152_PEK_KEY, val);
-
-	/* pek offlevel poweroff en set*/
-	if (pk_dts->pmu_powkey_off_en)
-		pk_dts->pmu_powkey_off_en = 1;
-	else
-		pk_dts->pmu_powkey_off_en = 0;
-
-	regmap_read(regmap, AXP152_PEK_KEY, &val);
-	val &= 0xf7;
-	val |= (pk_dts->pmu_powkey_off_en << 3);
-	regmap_write(regmap, AXP152_PEK_KEY, val);
-
-	/* pwrok time */
-	if (pk_dts->pmu_pwrok_time == 64)
-		regmap_update_bits(regmap, AXP152_PEK_KEY, 0x04,
-				   0x04); /* 64ms */
-	else
-		regmap_update_bits(regmap, AXP152_PEK_KEY, 0x04,
-				   0x00); /* 8ms */
-
-	/* pek offlevel time set */
-	if (pk_dts->pmu_powkey_off_time < 4000)
-		pk_dts->pmu_powkey_off_time = 4000;
-
-	if (pk_dts->pmu_powkey_off_time > 10000)
-		pk_dts->pmu_powkey_off_time = 10000;
-
-	regmap_read(regmap, AXP152_PEK_KEY, &val);
-	val &= 0xfc;
-	val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000);
-	regmap_write(regmap, AXP152_PEK_KEY, val);
-
-#endif
-	return 0;
-}
-
-static int axp803_config_set(struct axp20x_pek *axp20x_pek)
-{
-#if 0
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct regmap *regmap = axp20x_dev->regmap;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val;
-
-	/* onlevel setting */
-	regmap_read(regmap, AXP803_POK_SET, &val);
-	if (pk_dts->pmu_powkey_on_time <= 128)
-		val &= 0x3f;
-	else if (pk_dts->pmu_powkey_on_time <= 1000) {
-		val &= 0x3f;
-		val |= 0x40;
-	} else if (pk_dts->pmu_powkey_on_time <= 2000) {
-		val &= 0x3f;
-		val |= 0x80;
-	} else {
-		val &= 0x3f;
-		val |= 0xc0;
-	}
-	regmap_write(regmap, AXP803_POK_SET, val);
-
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
-
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
-
-	regmap_read(regmap, AXP803_POK_SET, &val);
-	val &= 0xcf;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
-		<< 4);
-	regmap_write(regmap, AXP803_POK_SET, val);
-
-	/* pek offlevel poweroff en set*/
-	if (pk_dts->pmu_powkey_off_en)
-		pk_dts->pmu_powkey_off_en = 1;
-	else
-		pk_dts->pmu_powkey_off_en = 0;
-
-	regmap_read(regmap, AXP803_POK_SET, &val);
-	val &= 0xf7;
-	val |= (pk_dts->pmu_powkey_off_en << 3);
-	regmap_write(regmap, AXP803_POK_SET, val);
-
-	/*Init offlevel restart or not */
-	if (pk_dts->pmu_powkey_off_func)
-		regmap_update_bits(regmap, AXP803_POK_SET, 0x04,
-				   0x01); /* restart */
-	else
-		regmap_update_bits(regmap, AXP803_POK_SET, 0x04,
-				   0x00); /* not restart*/
-
-	/* pek offlevel poweroff time set */
-	if (pk_dts->pmu_powkey_off_time < 4000)
-		pk_dts->pmu_powkey_off_time = 4000;
-
-	if (pk_dts->pmu_powkey_off_time > 10000)
-		pk_dts->pmu_powkey_off_time = 10000;
-
-	regmap_read(regmap, AXP803_POK_SET, &val);
-	val &= 0xfc;
-	val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000);
-	regmap_write(regmap, AXP803_POK_SET, val);
-#endif
-
-	return 0;
-}
-
-
-static int axp2585_config_set(struct axp20x_pek *axp20x_pek)
-{
-#if 0
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct regmap *regmap = axp20x_dev->regmap;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val;
-
-	/* onlevel setting */
-	regmap_read(regmap, AXP2585_POK_SET, &val);
-	if (pk_dts->pmu_powkey_on_time <= 628)
-		val &= 0xf3;
-	else if (pk_dts->pmu_powkey_on_time <= 1500) {
-		val &= 0xf3;
-		val |= 0x04;
-	} else if (pk_dts->pmu_powkey_on_time <= 2500) {
-		val &= 0xf3;
-		val |= 0x08;
-	} else {
-		val &= 0xf3;
-		val |= 0x0c;
-	}
-	regmap_write(regmap, AXP2585_POK_SET, val);
-
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
-
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
-
-	regmap_read(regmap, AXP2585_POK_SET, &val);
-	val &= 0x3f;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
-		<< 6);
-	regmap_write(regmap, AXP2585_POK_SET, val);
-
-	/* pek offlevel poweroff time set */
-	if (pk_dts->pmu_powkey_off_time < 4500)
-		pk_dts->pmu_powkey_off_time = 4500;
-
-	if (pk_dts->pmu_powkey_off_time > 10500)
-		pk_dts->pmu_powkey_off_time = 10500;
-
-	regmap_read(regmap, AXP2585_POK_SET, &val);
-	val &= 0xfc;
-	val |= ((pk_dts->pmu_powkey_off_time - 4500) / 2000);
-	regmap_write(regmap, AXP2585_POK_SET, val);
-#endif
-	return 0;
-}
-
-static int axp2202_config_set(struct axp20x_pek *axp20x_pek)
-{
-#if 0
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct regmap *regmap = axp20x_dev->regmap;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val;
-
-	regmap_read(regmap, AXP2202_PONLEVEL, &val);
-	if (pk_dts->pmu_powkey_on_time < 128)
-		val &= 0x3C;
-	else if (pk_dts->pmu_powkey_on_time < 512) {
-		val &= 0x3C;
-		val |= 0x01;
-	} else if (pk_dts->pmu_powkey_on_time < 1000) {
-		val &= 0x3C;
-		val |= 0x10;
-	} else {
-		val &= 0x3C;
-		val |= 0x11;
-	}
-	regmap_write(regmap, AXP2202_PONLEVEL, val);
-
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
-
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
-
-	regmap_read(regmap, AXP2202_PONLEVEL, &val);
-	val &= 0xcf;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
-		<< 4);
-	regmap_write(regmap, AXP2202_PONLEVEL, val);
-
-	/* pek offlevel poweroff en set*/
-	if (pk_dts->pmu_powkey_off_en)
-		pk_dts->pmu_powkey_off_en = 1;
-	else
-		pk_dts->pmu_powkey_off_en = 0;
-
-	regmap_read(regmap, AXP2202_PWROFF_EN, &val);
-	val &= 0xfD;
-	val |= (pk_dts->pmu_powkey_off_en << 1);
-	regmap_write(regmap, AXP2202_PWROFF_EN, val);
-
-	/*Init offlevel restart or not */
-	if (pk_dts->pmu_powkey_off_func)
-		regmap_update_bits(regmap, AXP2202_PWROFF_EN, 0x01,
-				   0x01); /* restart */
-	else
-		regmap_update_bits(regmap, AXP2202_PWROFF_EN, 0x01,
-				   0x00); /* power off */
-
-	/* pek delay set */
-	/* regmap_read(regmap, AXP2202_PWR_TIME_CTRL, &val); */
-	/* val &= 0xfc; */
-	/* if (pk_dts->pmu_pwrok_time < 32) */
-		/* val |= ((pk_dts->pmu_pwrok_time / 8) - 1); */
-	/* else */
-		/* val |= ((pk_dts->pmu_pwrok_time / 32) + 1); */
-	/* regmap_write(regmap, AXP2202_PWR_TIME_CTRL, val); */
-
-	/* pek offlevel time set */
-	if (pk_dts->pmu_powkey_off_time < 4000)
-		pk_dts->pmu_powkey_off_time = 4000;
-
-	if (pk_dts->pmu_powkey_off_time > 10000)
-		pk_dts->pmu_powkey_off_time = 10000;
-
-	regmap_read(regmap, AXP2202_PONLEVEL, &val);
-	val &= 0xf3;
-	val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000
-		<< 2);
-	regmap_write(regmap, AXP2202_PONLEVEL, val);
-
-	/* vbat use all channels */
-	/* regmap_write(regmap, AXP2202_VBAT_H, 0x40); */
-
-#endif
-	return 0;
-}
-
 static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 {
 	__nouse__ struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
 	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val = 0;
+	uint32_t val = 0;
 
-	// regmap_read(regmap, axp2101_PONLEVEL, &val);
+	axp20x_i2c_read(axp2101_PONLEVEL, &val);
 	if (pk_dts->pmu_powkey_on_time < 128)
 		val &= 0x3C;
 	else if (pk_dts->pmu_powkey_on_time < 512) {
@@ -577,7 +215,7 @@ static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 		val &= 0x3C;
 		val |= 0x03;
 	}
-	// regmap_write(regmap, axp2101_PONLEVEL, val);
+	axp20x_i2c_write(axp2101_PONLEVEL, val);
 
 	/* pok long time set*/
 	if (pk_dts->pmu_powkey_long_time < 1000)
@@ -586,11 +224,11 @@ static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 	if (pk_dts->pmu_powkey_long_time > 2500)
 		pk_dts->pmu_powkey_long_time = 2500;
 
-	// regmap_read(regmap, axp2101_PONLEVEL, &val);
+	axp20x_i2c_read(axp2101_PONLEVEL, &val);
 	val &= 0xcf;
 	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
 		<< 4);
-	// regmap_write(regmap, axp2101_PONLEVEL, val);
+	axp20x_i2c_write(axp2101_PONLEVEL, val);
 
 	/* pek offlevel poweroff en set*/
 	if (pk_dts->pmu_powkey_off_en)
@@ -598,27 +236,26 @@ static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 	else
 		pk_dts->pmu_powkey_off_en = 0;
 
-	// regmap_read(regmap, axp2101_PWROFF_EN, &val);
+	axp20x_i2c_read(axp2101_PWROFF_EN, &val);
 	val &= 0x0D;
 	val |= (pk_dts->pmu_powkey_off_en << 1);
-	// regmap_write(regmap, axp2101_PWROFF_EN, val);
+	axp20x_i2c_write(axp2101_PWROFF_EN, val);
 
 	/*Init offlevel restart or not */
-	// if (pk_dts->pmu_powkey_off_func)
-		// regmap_update_bits(regmap, axp2101_PWROFF_EN, 0x01,
-				   // 0x01); /* restart */
-	// else
-		// regmap_update_bits(regmap, axp2101_PWROFF_EN, 0x01,
-				   // 0x00); /* not restart*/
+	axp20x_i2c_read(axp2101_PWROFF_EN, &val);
+	if (pk_dts->pmu_powkey_off_func)
+		axp20x_i2c_write(axp2101_PWROFF_EN, val|0x1);
+	else
+		axp20x_i2c_write(axp2101_PWROFF_EN, val&(~0x1));
 
 	/* pek delay set */
-	// regmap_read(regmap, axp2101_PWR_TIME_CTRL, &val);
+	axp20x_i2c_read(axp2101_PWR_TIME_CTRL, &val);
 	val &= 0xfc;
 	if (pk_dts->pmu_pwrok_time < 32)
 		val |= ((pk_dts->pmu_pwrok_time / 8) - 1);
 	else
 		val |= ((pk_dts->pmu_pwrok_time / 32) + 1);
-	// regmap_write(regmap, axp2101_PWR_TIME_CTRL, val);
+	axp20x_i2c_write(axp2101_PWR_TIME_CTRL, val);
 
 	/* pek offlevel time set */
 	if (pk_dts->pmu_powkey_off_time < 4000)
@@ -627,83 +264,16 @@ static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 	if (pk_dts->pmu_powkey_off_time > 10000)
 		pk_dts->pmu_powkey_off_time = 10000;
 
-	// regmap_read(regmap, axp2101_PONLEVEL, &val);
+	axp20x_i2c_read(axp2101_PONLEVEL, &val);
 	val &= 0x33;
 	val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000
 		<< 2);
-	// regmap_write(regmap, axp2101_PONLEVEL, val);
+	axp20x_i2c_write(axp2101_PONLEVEL, val);
 
 	/* vbat use all channels */
 	// regmap_write(regmap, axp2101_VBAT_H, 0x40);
+	axp20x_i2c_write(axp2101_VBAT_H, 0x40);
 
-	return 0;
-}
-
-static int axp806_config_set(struct axp20x_pek *axp20x_pek)
-{
-#if 0
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct regmap *regmap = axp20x_dev->regmap;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	unsigned int val;
-
-	regmap_read(regmap, AXP806_POK_SET, &val);
-	if (pk_dts->pmu_powkey_on_time < 128)
-		val &= 0x3f;
-	else if (pk_dts->pmu_powkey_on_time < 1000) {
-		val &= 0x3f;
-		val |= 0x40;
-	} else if (pk_dts->pmu_powkey_on_time < 2000) {
-		val &= 0x3f;
-		val |= 0x80;
-	} else {
-		val &= 0x3f;
-		val |= 0xc0;
-	}
-	regmap_write(regmap, AXP806_POK_SET, val);
-
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
-
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
-
-	regmap_read(regmap, AXP806_POK_SET, &val);
-	val &= 0xcf;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500) << 4);
-	regmap_write(regmap, AXP806_POK_SET, val);
-
-	/*Init offlevel restart or not */
-	if (pk_dts->pmu_powkey_off_func)
-		regmap_update_bits(regmap, AXP806_POK_SET, 0x04, 0x04); /* restart */
-	else
-		regmap_update_bits(regmap, AXP806_POK_SET, 0x04, 0x00); /* not restart*/
-
-	/* pek offlevel poweroff en set*/
-	if (pk_dts->pmu_powkey_off_en)
-		pk_dts->pmu_powkey_off_en = 1;
-	else
-		pk_dts->pmu_powkey_off_en = 0;
-
-	regmap_read(regmap, AXP806_POK_SET, &val);
-	val &= 0xf7;
-	val |= (pk_dts->pmu_powkey_off_en << 3);
-	regmap_write(regmap, AXP806_POK_SET, val);
-
-	/* pek offlevel time set */
-	if (pk_dts->pmu_powkey_off_time < 4000)
-		pk_dts->pmu_powkey_off_time = 4000;
-
-	if (pk_dts->pmu_powkey_off_time > 10000)
-		pk_dts->pmu_powkey_off_time = 10000;
-
-	regmap_read(regmap, AXP806_POK_SET, &val);
-	val &= 0xfc;
-	val |= (pk_dts->pmu_powkey_off_time - 4000) / 2000;
-	regmap_write(regmap, AXP806_POK_SET, val);
-
-#endif
 	return 0;
 }
 
@@ -713,23 +283,8 @@ static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek)
 
 	if (!axp_powerkey_dt_parse(&axp20x_pek->pk_dts)) {
 		switch (axp20x_dev->variant) {
-		case AXP152_ID:
-			axp152_config_set(axp20x_pek);
-			break;
-		case AXP2202_ID:
-			axp2202_config_set(axp20x_pek);
-			break;
-		case AXP2585_ID:
-			axp2585_config_set(axp20x_pek);
-			break;
-		case AXP803_ID:
-			axp803_config_set(axp20x_pek);
-			break;
 		case AXP2101_ID:
 			axp2201_config_set(axp20x_pek);
-			break;
-		case AXP806_ID:
-			axp806_config_set(axp20x_pek);
 			break;
 		default:
 			printf("Setting power key for unsupported AXP variant\n");
@@ -737,7 +292,7 @@ static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek)
 	}
 }
 
-static int axp20x_pek_probe(void *pdev, void *config)
+int axp20x_pek_probe(void *pdev, void *config)
 {
 	__nouse__ struct axp20x_pek *axp20x_pek;
 	__nouse__ struct axp20x_dev *axp20x = (struct axp20x_dev *)pdev;

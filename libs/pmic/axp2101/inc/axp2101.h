@@ -1766,81 +1766,81 @@ typedef int s32;
     .uV_step    = _step_uV,                 \
 }
 
-struct regulator_dev;
+struct regulator_desc;
 
 struct regulator_ops {
 
     /* enumerate supported voltages */
-    int (*list_voltage) (struct regulator_dev *, unsigned selector);
+    int (*list_voltage) (struct regulator_desc *, unsigned selector);
 
     /* get/set regulator voltage */
-    int (*set_voltage) (struct regulator_dev *, int min_uV, int max_uV,
+    int (*set_voltage) (struct regulator_desc *, int min_uV, int max_uV,
                 unsigned *selector);
-    int (*map_voltage)(struct regulator_dev *, int min_uV, int max_uV);
-    int (*set_voltage_sel) (struct regulator_dev *, unsigned selector);
-    int (*get_voltage) (struct regulator_dev *);
-    int (*get_voltage_sel) (struct regulator_dev *);
+    int (*map_voltage)(struct regulator_desc *, int min_uV, int max_uV);
+    int (*set_voltage_sel) (struct regulator_desc *, unsigned selector);
+    int (*get_voltage) (struct regulator_desc *);
+    int (*get_voltage_sel) (struct regulator_desc *);
 
     /* get/set regulator current  */
-    int (*set_current_limit) (struct regulator_dev *,
+    int (*set_current_limit) (struct regulator_desc *,
                  int min_uA, int max_uA);
-    int (*get_current_limit) (struct regulator_dev *);
+    int (*get_current_limit) (struct regulator_desc *);
 
-    int (*set_input_current_limit) (struct regulator_dev *, int lim_uA);
-    int (*set_over_current_protection) (struct regulator_dev *);
-    int (*set_active_discharge) (struct regulator_dev *, bool enable);
+    int (*set_input_current_limit) (struct regulator_desc *, int lim_uA);
+    int (*set_over_current_protection) (struct regulator_desc *);
+    int (*set_active_discharge) (struct regulator_desc *, bool enable);
 
     /* enable/disable regulator */
-    int (*enable) (struct regulator_dev *);
-    int (*disable) (struct regulator_dev *);
-    int (*is_enabled) (struct regulator_dev *);
+    int (*enable) (struct regulator_desc *);
+    int (*disable) (struct regulator_desc *);
+    int (*is_enabled) (struct regulator_desc *);
 
     /* get/set regulator operating mode (defined in consumer.h) */
-    int (*set_mode) (struct regulator_dev *, unsigned int mode);
-    unsigned int (*get_mode) (struct regulator_dev *);
+    int (*set_mode) (struct regulator_desc *, unsigned int mode);
+    unsigned int (*get_mode) (struct regulator_desc *);
 
     /* Time taken to enable or set voltage on the regulator */
-    int (*enable_time) (struct regulator_dev *);
-    int (*set_ramp_delay) (struct regulator_dev *, int ramp_delay);
-    int (*set_voltage_time) (struct regulator_dev *, int old_uV,
+    int (*enable_time) (struct regulator_desc *);
+    int (*set_ramp_delay) (struct regulator_desc *, int ramp_delay);
+    int (*set_voltage_time) (struct regulator_desc *, int old_uV,
                  int new_uV);
-    int (*set_voltage_time_sel) (struct regulator_dev *,
+    int (*set_voltage_time_sel) (struct regulator_desc *,
                      unsigned int old_selector,
                      unsigned int new_selector);
 
-    int (*set_soft_start) (struct regulator_dev *);
+    int (*set_soft_start) (struct regulator_desc *);
 
     /* report regulator status ... most other accessors report
      * control inputs, this reports results of combining inputs
      * from Linux (and other sources) with the actual load.
      * returns REGULATOR_STATUS_* or negative errno.
      */
-    int (*get_status)(struct regulator_dev *);
+    int (*get_status)(struct regulator_desc *);
 
     /* get most efficient regulator operating mode for load */
-    unsigned int (*get_optimum_mode) (struct regulator_dev *, int input_uV,
+    unsigned int (*get_optimum_mode) (struct regulator_desc *, int input_uV,
                       int output_uV, int load_uA);
     /* set the load on the regulator */
-    int (*set_load)(struct regulator_dev *, int load_uA);
+    int (*set_load)(struct regulator_desc *, int load_uA);
 
     /* control and report on bypass mode */
-    int (*set_bypass)(struct regulator_dev *dev, bool enable);
-    int (*get_bypass)(struct regulator_dev *dev, bool *enable);
+    int (*set_bypass)(struct regulator_desc *dev, bool enable);
+    int (*get_bypass)(struct regulator_desc *dev, bool *enable);
 
     /* the operations below are for configuration of regulator state when
      * its parent PMIC enters a global STANDBY/HIBERNATE state */
 
     /* set regulator suspend voltage */
-    int (*set_suspend_voltage) (struct regulator_dev *, int uV);
+    int (*set_suspend_voltage) (struct regulator_desc *, int uV);
 
     /* enable/disable regulator in suspend state */
-    int (*set_suspend_enable) (struct regulator_dev *);
-    int (*set_suspend_disable) (struct regulator_dev *);
+    int (*set_suspend_enable) (struct regulator_desc *);
+    int (*set_suspend_disable) (struct regulator_desc *);
 
     /* set regulator suspend operating mode (defined in consumer.h) */
-    int (*set_suspend_mode) (struct regulator_dev *, unsigned int mode);
+    int (*set_suspend_mode) (struct regulator_desc *, unsigned int mode);
 
-    int (*set_pull_down) (struct regulator_dev *);
+    int (*set_pull_down) (struct regulator_desc *);
 };
 
 enum regulator_type {
@@ -1863,6 +1863,7 @@ struct regulator_desc {
     // int (*of_parse_cb)(struct device_node *,
                 // const struct regulator_desc *,
                 // struct regulator_config *);
+    void *reg_data;     /* regulator_dev data */
     int id;
     unsigned int continuous_voltage_range:1;
     unsigned n_voltages;
@@ -1871,6 +1872,8 @@ struct regulator_desc {
     enum regulator_type type;
     // struct module *owner;
 
+    unsigned int min_mV;
+    unsigned int max_mV;
     unsigned int min_uV;
     unsigned int uV_step;
     unsigned int linear_min_sel;
@@ -1958,6 +1961,7 @@ struct axp20x_dev {
 	// struct regmap			*regmap;
 	// struct regmap_irq_chip_data	*regmap_irqc;
 	struct regulator_dev *rdev;
+    struct regulator_desc *desc;
 	long				variant;
 	int                             nr_cells;
 	struct mfd_cell                 *cells;
@@ -2067,5 +2071,24 @@ int axp20x_device_probe(struct axp20x_dev *axp20x);
  * This tells the axp20x core to remove the associated mfd devices
  */
 int axp20x_device_remove(struct axp20x_dev *axp20x);
+
+int axp20x_pek_probe(void *pdev, void *config);
+
+int axp2101_regulator_probe(void *dev, void *config);
+
+int axp20x_set_dcdc1(unsigned int mvolt);
+int axp20x_set_dcdc2(unsigned int mvolt);
+int axp20x_set_dcdc3(unsigned int mvolt);
+int axp20x_set_dcdc4(unsigned int mvolt);
+int axp20x_set_dcdc5(unsigned int mvolt);
+int axp20x_set_aldo1(unsigned int mvolt);
+int axp20x_set_aldo2(unsigned int mvolt);
+int axp20x_set_aldo3(unsigned int mvolt);
+int axp20x_set_aldo4(unsigned int mvolt);
+int axp20x_set_bldo1(unsigned int mvolt);
+int axp20x_set_bldo2(unsigned int mvolt);
+int axp20x_set_dldo1(unsigned int mvolt);
+int axp20x_set_dldo2(unsigned int mvolt);
+int axp20x_set_cpusldo(unsigned int mvolt);
 
 #endif /* __LINUX_MFD_AXP20X_H */
