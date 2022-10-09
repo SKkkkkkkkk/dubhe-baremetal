@@ -9,6 +9,7 @@
 
 int main()
 {
+	printf("git hash: "GIT_HASH"\n\r");
 	printf("hello world.\n\r");
 	return 0;
 }
