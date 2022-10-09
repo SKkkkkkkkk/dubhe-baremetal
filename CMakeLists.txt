@@ -201,6 +201,7 @@ set(ENABLE_USE_DW_APB_TIMERS ON)
 set(ENABLE_USE_DW_APB_GPIO ON)
 set(ENABLE_USE_DW_APB_SSI OFF)
 set(ENABLE_USE_PM OFF)
+set(ENABLE_USE_I2C OFF)
 
 ### LIBS
 
@@ -271,7 +272,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/uart/pl011)
         set(link_libs ${link_libs} pl011)
     endif()
-    
+
     ### USE_UART_16550 (BOARD!=QEMU)
     cmake_dependent_option(
         USE_UART_16550 "Use 16550" ON
@@ -281,7 +282,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/uart/uart_16550)
         set(link_libs ${link_libs} uart_16550)
     endif()
-    
+
     ### USE_DW_UART (BOARD!=QEMU)
     cmake_dependent_option(
         USE_DW_UART "Use dw_apb_uart" ON
@@ -291,7 +292,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/uart/dw_apb_uart)
         set(link_libs ${link_libs} dw_apb_uart)
     endif()
-    
+
     ### USE_DW_APB_TIMERS (BOARD!=QEMU)
     cmake_dependent_option(
         USE_DW_APB_TIMERS "Use dw_apb_timers" ON
@@ -301,7 +302,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/timer/dw_apb_timers)
         set(link_libs ${link_libs} dw_apb_timers)
     endif()
-    
+
     ### USE_DW_APB_SSI (BOARD!=QEMU)
     cmake_dependent_option(
         USE_DW_APB_SSI "Use dw_apb_ssi" ON
@@ -311,7 +312,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/spi/dw_apb_ssi)
         set(link_libs ${link_libs} dw_apb_ssi)
     endif()
-    
+
     ### USE_DW_APB_GPIO (BOARD!=QEMU)
     cmake_dependent_option(
         USE_DW_APB_GPIO "Use dw_apb_gpio" ON
@@ -321,7 +322,17 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/gpio/dw_apb_gpio)
         set(link_libs ${link_libs} dw_apb_gpio)
     endif()
-    
+
+    cmake_dependent_option(
+        USE_DW_APB_GPIO "Use i2c" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_I2C}" OFF
+    )
+    if(ENABLE_USE_I2C)
+        add_subdirectory(${SDK_DIR}/hw/i2c)
+        set(link_libs ${link_libs} i2c)
+    endif()
+
+
     ### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
     cmake_dependent_option(
         USE_SYSTIMER "Use systimer" ON
@@ -331,7 +342,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/libs/systimer)
         set(link_libs ${link_libs} systimer)
     endif()
-    
+
     ### USE_NOR_FLASH (USE_DW_APB_SSI && ENABLE_USE_NOR_FLASH)
     cmake_dependent_option(
         USE_NOR_FLASH "Use nor flash" ON
@@ -341,7 +352,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/libs/flash/nor)
         set(link_libs ${link_libs} nor_flash)
     endif()
-    
+
     ### USE_FREERTOS
     cmake_dependent_option(
         USE_FREERTOS "Use FreeRTOS" ON
@@ -351,10 +362,10 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel_10_4_6)
         set(link_libs ${link_libs} freertos_kernel)
     endif()
-    
+
     ### USE_PM
     cmake_dependent_option(
-        USE_PM "Use Power Management" ON 
+        USE_PM "Use Power Management" ON
         "ENABLE_USE_PM;$CACHE{CORE} STREQUAL M3" OFF
     )
     if(USE_PM)
@@ -372,7 +383,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/libs/pmic/axp2101)
         set(link_libs ${link_libs} axp2101)
     endif()
-    
+
 endif()
 
 ## 构建app
