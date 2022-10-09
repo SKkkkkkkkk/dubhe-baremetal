@@ -7,3 +7,6 @@ set(app_src
 set(app_inc
 	${CMAKE_CURRENT_LIST_DIR}/inc
 )
+
+set(ENABLE_USE_I2C ON)
+set(ENABLE_USE_DW_APB_TIMERS ON)
