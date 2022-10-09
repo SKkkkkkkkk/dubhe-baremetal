@@ -45,3 +45,5 @@ app/cv32e40p/hello/build.sh
    1. cmake -S ../../../ -B build -DPROJECT_NAME=hello -DPROJECT_PATH=. -DCORE=A55 -DBOARD=FPGA -DBUILD_TYPE=Debug -DWHERE_TO_LOAD=ALL_IN_DDR
    
    2. ccmake build![](docs/imgs/ccmake.png)
+
+2. 添加新模块请阅读 docs/how_to_create_new_module.md.

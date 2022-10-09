@@ -2,7 +2,7 @@
 
 如下面 m3 rtos 工程案例：
 
-![](/Users/sk/Library/Application%20Support/marktext/images/2022-09-27-11-32-20-image.png)
+![](imgs/cmake rtos demo.png)
 
 目前的模块分了两类，分别位于如下目录，请注意区分：
 
