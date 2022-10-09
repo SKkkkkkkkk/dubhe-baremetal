@@ -106,15 +106,17 @@ static int i2c_read_reg(struct pmic_cfg *cfg, uint16_t reg, unsigned int len, u3
 
 inline int axp20x_i2c_write(u32 reg, u32 val)
 {
-	struct pmic_cfg *cfg = axp20x->cfg;
+	struct pmic_cfg *cfg = &axp20x->cfg;
 
+	// printf("-->%s line %d i2c bus %d\n", __func__, __LINE__, cfg->i2c_bus);
 	return i2c_write_reg(cfg, reg, 1, val);
 }
 
 inline int axp20x_i2c_read(u32 reg, u32 *val)
 {
-	struct pmic_cfg *cfg = axp20x->cfg;
+	struct pmic_cfg *cfg = &axp20x->cfg;
 
+	// printf("-->%s line %d i2c bus %d\n", __func__, __LINE__, cfg->i2c_bus);
 	return i2c_read_reg(cfg, reg, 1, val);
 }
 
@@ -127,7 +129,7 @@ static int axp20x_i2c_probe(void *i2c,
 	if (!axp20x)
 		return -1;
 
-	memcpy(axp20x->cfg, i2c, sizeof(struct pmic_cfg));
+	memcpy(&axp20x->cfg, i2c, sizeof(struct pmic_cfg));
 
 	for(int i=0; i<ARRAY_SIZE(axp20x_i2c_of_match); i++){
 		if(strcmp(axp20x_i2c_of_match[i].compatible, "x-powers,axp2101") == 0){
@@ -180,7 +182,6 @@ int axp2101_i2c_init(struct pmic_cfg *cfg)
 		return err;
 	}
 
-	printf("-->%s line %d i2c bus %d\n", __func__, __LINE__, cfg->i2c_bus);
 	err = i2c_master_init(cfg->i2c_bus);
 	if (err) {
 		printf("%s i2c_master_init err\n", __func__);

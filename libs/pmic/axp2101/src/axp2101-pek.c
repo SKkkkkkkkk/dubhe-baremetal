@@ -369,17 +369,3 @@ int axp2101_powerkey_resume(void)
 	return 0;
 }
 
-static struct of_device_id axp_match_table[] = {
-	{ .compatible = "x-powers,axp2585-pek" },
-	{ .compatible = "x-powers,axp2202-pek" },
-	{ .compatible = "x-powers,axp803-pek" },
-	{ .compatible = "x-powers,axp806-pek" },
-	{ .compatible = "x-powers,axp152-pek" },
-	{ /* sentinel */ },
-};
-
-__nouse__ static struct platform_driver axp20x_pek_driver = {
-	.probe		= axp20x_pek_probe,
-	.of_match_table = axp_match_table,
-	.name = "axp2101-pek",
-};

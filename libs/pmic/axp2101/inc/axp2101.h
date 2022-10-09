@@ -1965,7 +1965,7 @@ struct pmic_cfg{
 
 struct axp20x_dev {
 	// struct device			*dev;
-	struct pmic_cfg *cfg;
+	struct pmic_cfg cfg;
 	int				irq;
 	// struct regmap			*regmap;
 	// struct regmap_irq_chip_data	*regmap_irqc;

@@ -696,15 +696,3 @@ void axp2101_regulator_remove(void)
 	if(g_rdev_delay != NULL)
 		free(g_rdev_delay);
 }
-
-static struct of_device_id axp_regulator_id_tab[] = {
-	{ .compatible = "x-powers,axp2202-regulator" },
-	{ /* sentinel */ },
-};
-
-__nouse__ static struct platform_driver axp2101_regulator_driver = {
-	.probe	= axp2101_regulator_probe,
-	.of_match_table = axp_regulator_id_tab,
-	.name		= "axp2101-regulator",
-};
-
