@@ -44,6 +44,8 @@
 
 #ifdef CONFIG_PM
 
+extern void cpu_tz_suspend(void);
+
 #ifdef CONFIG_PM_DEBUG
 static struct arm_CMX_core_regs vault_arm_registers;
 #endif
@@ -66,6 +68,7 @@ static int __suspend_begin(enum suspend_state_t state)
 /* hibernation whole system, save user data to flash before call this func.
  * BE SUURE: all hardware has been closed and it's prcm config setted to default value.
  */
+#if 1
 static void pm_hibernation(void)
 {
 	__record_dbg_status(PM_HIBERNATION | 0);
@@ -115,9 +118,267 @@ static void pm_hibernation(void)
 
 	__record_dbg_status(PM_HIBERNATION | 0x0ff);
 }
+#endif
+
+#if 1
+__ramfunc static void cpu_sleep(void)
+{
+	__asm volatile (
+	   ".equ NVIC_SCR,                          (0xe000e000 + 0xd10)\n"
+	   ".equ NVIC_SYSTICK_CTRL,                 (0xe000e000 + 0x010)\n"
+	   ".equ NVIC_ICSR,                         (0xe000e000 + 0xd04)\n"
+	   ".equ NVIC_PEND_ACTIVE1,                 (0xe000e000 + 0x200)\n"
+	   ".equ NVIC_PEND_ACTIVE2,                 (0xe000e000 + 0x204)\n"
+
+	   /* ".fnstart\n" */
+	   /* ".cantunwind\n" */
+
+	   /* "PUSH {R0-R12, LR}\n" */
+	   "PUSH {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12}\n"
+	   "LDR R2, =NVIC_SYSTICK_CTRL\n"
+	   "LDR R5, [R2]\n"
+	   "MOV R3, R5\n"
+	   "BIC R3, #0x03\n"
+	   "STR R3, [R2]\n"
+
+	   "LDR R2, =NVIC_ICSR\n"
+	   "LDR R1, [R2]\n"
+	   "AND R1, #0x4000000\n"
+	   "ASR R1, #1\n"
+	   "STR R1, [R2]\n"
+
+	   /* switch to 24M/div */
+	   // LDR R1, =GPRCM_SYSCLK1_CTRLS          //TODO
+	   // LDR R0, [R1]
+	   // BIC R0, R0, #0x30000
+	   // ORR R0, R0, #0x10000
+	   // STR R0, [R1]
+	   // DSB
+	   // ISB
+
+	   "WFI\n"
+	   "WFI\n"
+	   "WFI\n"
+
+	   /* switch cpu clk to pll */
+	   // LDR R1, =GPRCM_SYSCLK1_CTRLS       //TODO
+	   // LDR R0, [R1]
+	   // BIC R0, R0, #0x30000
+	   // ORR R0, R0, #0x20000
+	   // STR R0, [R1]
+	   // DSB
+	   // ISB
+
+	   /* enable systick */
+	   "LDR R2, =NVIC_SYSTICK_CTRL\n"
+	   "STR R5, [R2]\n"
+
+	   /* "POP {R0-R12, PC}\n" */
+		"POP {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12}\n"
+
+	   /* ".fnend\n" */
+
+	   :
+	   :
+	   :"memory"
+	   );
+}
+#endif
+
+#if 1
+__ramfunc static void cpu_suspend(void)
+{
+	cpu_tz_suspend();
+
+	__asm volatile (
+	   ".equ NVIC_SCR,                          (0xe000e000 + 0xd10)\n"
+	   ".equ NVIC_SYSTICK_CTRL,                 (0xe000e000 + 0x010)\n"
+	   ".equ NVIC_ICSR,                         (0xe000e000 + 0xd04)\n"
+	   ".equ NVIC_PEND_ACTIVE1,                 (0xe000e000 + 0x200)\n"
+	   ".equ NVIC_PEND_ACTIVE2,                 (0xe000e000 + 0x204)\n"
+
+	   /* ".fnstart\n" */
+	   /* ".cantunwind\n" */
+
+	   "PUSH {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12}\n"
+	   "ISB\n"
+
+	   //LDR R0, =GPRCM_CPUA_BOOT_ARG         //TODO
+	   //ISB
+	   //LDR R1, [R0]
+	   //MRS R0, MSP
+	   //ISB
+	   //STR R0, [R1]
+
+	   //MRS R0, PSP
+	   //ISB
+	   //STR R0, [R1, #4]
+
+	   //MRS R0, PRIMASK
+	   //STR R0, [R1, #12]
+
+	   //MRS R0, FAULTMASK
+	   //STR R0, [R1, #16]
+
+	   //MRS R0, BASEPRI
+	   //STR R0, [R1, #20]
+
+	   //MRS R0, CONTROL
+	   //STR R0, [R1, #24]
+
+		/* set deepsleep mode */
+	    "LDR R0, =0x14\n"
+	    "LDR R1, =NVIC_SCR\n"
+	    "ISB\n"
+	    "STR R0, [R1]\n"
+
+		/* set bootflag */
+		//LDR R0, =0x429b0001                //TODO
+		//LDR R1, =GPRCM_CPUA_BOOT_FLAG
+		//ISB
+		//STR R0, [R1]
+
+		/* set resume address in thumb state */
+		//  LDR R1, =g_resume_entry     //TODO
+		//  LDR R0, [R1]
+		//  CMP R0, #0
+		//  BNE entry
+		//  LDR R0, =__resume
+		//entry:
+		//  ORR.W R0, R0, #1
+		//  LDR R1, =GPRCM_CPUA_BOOT_ADDR
+		//  ISB
+		//  STR R0, [R1]
+
+		/* go to cpu tz suspend */
+	//	"BL cpu_tz_suspend\n"
+		"NOP\n"
+
+		// /* switch to HFCLK */
+		// LDR R1, =GPRCM_SYSCLK1_CTRLS    //TODO
+		// ISB
+		// LDR R0, [R1]
+		// BIC R0, R0, #0x30000
+		// /*ORR R0, R0, #0x10000 *//*switch to LFCLK*/
+		// STR R0, [R1]
+		"DSB\n"
+		"ISB\n"
+		"NOP\n"
+		"NOP\n"
+		"NOP\n"
+
+		/* the WFE instruction will cause two kinds of CPU actions:
+		 * 1. EVNET_REGISTER = 1, WFE will clear the EVENT_REGISTER and the
+		 *	 CPU executes the next instruction.
+		 * 2. EVENT_REGISTER = 0, WFE will make the CPU go to SLEEP state.
+		 */
+		/* first time executing WFE instruction, there are some different
+		 * situations as follows:
+		 * 1. if there are interrupts pending and be cleared already,
+		 *	 the WFE will only clear the CPU EVENT_REGISTER.
+		 * 2. if there are new interrupts pending after ar400_deepsleep_lock
+		 *	 operation, the WFE will only clear the CPU EVENT_REGISTER.
+		 * 3. if the SEV/NMI/DEBUG events coming before now, WFE will only
+		 *	 clear the CPU EVENT_REGISTER.
+		 * 4. if there are no SEV/NMI/DEBUG events before and no interrupts
+		 *	 pending too, WFE wil make the CPU go to the SLEEP state.
+		 */
+		//WFE
+		//"WFI\n"
+
+		/* read the NVIC SET_PENDING_REGISTER to check whether there are
+		 *  any new pending interrupts after ar400_deepsleep_lock operation
+		 *  which make the first WFE executing failed.
+		 * 1. If ther are some new pending interrupts, jump to the RESUME_ENTRY
+		 *	 and abandon the next WFE execution.
+		 * 2. If there is no new pending interrupts, we execute WFE instruction
+		 *	 twice to ensure the CPU goes to SLEEP state successfully.
+		 */
+		"LDR R0, =NVIC_PEND_ACTIVE1\n"
+		"LDR R1, [R0]\n"
+		"LDR R0, =NVIC_PEND_ACTIVE2\n"
+		"LDR R2, [R0]\n"
+		"ORR R1, R2\n"
+		"CMP R1, #0\n"
+		"BNE __resume\n"
+		"ISB\n"
+		"NOP\n"
+		"NOP\n"
+		"NOP\n"
+
+		//WFE
+		//"WFI\n"
+		//"WFI\n"
+		//"WFI\n"
+
+		"NOP\n"
+
+		"__resume:\n"                       //TODO
+		//  /* switch cpu clk to pll */
+		//  LDR R1, =GPRCM_SYSCLK1_CTRLS
+		//  ISB
+		//  LDR R0, [R1]
+		//  BIC R0, R0, #0x30000
+		//  ORR R0, R0, #0x20000
+		//  STR R0, [R1]
+		//  DSB
+		//  ISB
+
+		/* needn't remove address */
+
+		/* remove bootflag */
+		//LDR R0, =0x429b0000           //TODO
+		//LDR R1, =GPRCM_CPUA_BOOT_FLAG
+		//ISB
+		//STR R0, [R1]
+
+		/* set normal mode */
+	    "MOV R0, 0\n"
+	    "LDR R1, =NVIC_SCR\n"
+	    "ISB\n"
+	    "STR R0, [R1]\n"
+
+		/* restore cpu contex */
+		// LDR R0, =GPRCM_CPUA_BOOT_ARG  //TODO
+		// ISB
+		// LDR R1, [R0]
+
+		// LDR R0, [R1]
+		// MSR MSP, R0
+		// ISB
+
+		// LDR R0, [R1,#4]
+		// MSR PSP, R0
+		// ISB
+
+		// LDR R0, [R1, #12]
+		// MSR PRIMASK, R0
+
+		// LDR R0, [R1, #16]
+		// MSR FAULTMASK, R0
+
+		// LDR R0, [R1, #20]
+		// MSR BASEPRI, R0
+
+		// LDR R0, [R1, #24]
+		// MSR CONTROL, R0
+		"ISB\n"
+		"NOP\n"
+
+		"POP {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12}\n"
+
+		/* ".fnend\n" */
+
+		:
+		:
+		:"memory"
+		);
+}
+#endif
 
 static void __suspend_enter(enum suspend_state_t state)
 {
+
 	PM_LOGD("--> %s line %d\n", __func__, __LINE__);
 	/* 写到无复位寄存器表明最终的位置 */
 	__record_dbg_status(PM_SUSPEND_ENTER | 5);
@@ -147,7 +408,8 @@ static void __suspend_enter(enum suspend_state_t state)
 		__record_dbg_status(PM_SUSPEND_ENTER | 8);
 		/* TODO: set system bus to low freq */
 		/* 调用汇编代码实现 */
-		__cpu_sleep(state);
+		/* __cpu_sleep(state); */
+		cpu_sleep();
 		/* 配置标识表明唤醒之前的状态 */
 		/* TODO: restore system bus to normal freq */
 		PM_LOGN("PM_MODE_SLEEP  exit\n"); /* debug info. */
@@ -160,7 +422,8 @@ static void __suspend_enter(enum suspend_state_t state)
 
 		__record_dbg_status(PM_SUSPEND_ENTER | 9);
 		/* 调用汇编代码实现 */
-		__cpu_suspend(state);
+		/* __cpu_suspend(state); */
+		cpu_suspend();
 
 		/* 配置标识表明唤醒之前的状态 */
 		PM_LOGN("PM_MODE_STANDBY  exit\n"); /* debug info. */

@@ -38,6 +38,10 @@
 extern "C" {
 #endif
 
+#define __ramvector __attribute__ ((section (".ram_vector"), aligned(256)))
+#define __ramfunc __attribute__ ((section (".ram_func"), aligned(4)))
+#define __ramdata __attribute__ ((section (".ram_data"), aligned(4)))
+
 /**
  * @brief Defined all supported low power state.
  * @note:
