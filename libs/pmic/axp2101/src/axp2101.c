@@ -286,7 +286,7 @@ void axp20x_power_off(void)
  */
 static void axp2101_dts_parse(struct axp20x_dev *axp20x)
 {
-	uint32_t val;
+	u32 val;
 
 	// "pmu_powerok_noreset"
 	axp20x_i2c_read(AXP2101_COMM_CFG, &val);
@@ -370,6 +370,9 @@ int axp20x_device_remove(struct axp20x_dev *axp20x)
 		axp20x_pm_power_off = NULL;
 		// pm_power_off = NULL;
 	}
+
+	axp20x_pek_remove();
+	axp2101_regulator_remove();
 
 	return 0;
 }

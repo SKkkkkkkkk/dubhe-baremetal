@@ -1,10 +1,13 @@
 #include "m3.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "pm.h"
 #include "mem_and_clock.h"
+#include "axp2101.h"
+#include "systimer.h"
 
 #define TEST_SLEEP          0
 #define TEST_STANDBY        1
@@ -61,6 +64,7 @@ void irq_handler1(void)
 void hardware_init_hook(void)
 {
 	/* 时钟相关 */
+	systimer_init();
 	pm_init();
 	/* 判断启动源 */
 	/* 中断相关 */
@@ -180,13 +184,27 @@ int main()
 	void task2(void* arg);
 
 	// clear_ddr();
-	// if (xTaskCreate(task1, "task1", 1024, NULL, 1, NULL) != pdPASS)
-		// while (1)
-	if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack, &xTaskBuffer) == NULL)
-		while (1);
 
-	if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
-		while (1);
-	vTaskStartScheduler();
+	struct pmic_cfg cfg;
+	strcpy(cfg.name, "axp2101");
+	cfg.reg_addr = 0x34;
+	cfg.i2c_bus = 2;
+	cfg.check_addr = 0x00;
+	cfg.check_len = 1;
+	axp2101_i2c_init(&cfg);
+
+	u32 val = 0;
+
+	while(1){
+		systimer_delay(1, IN_S);
+		axp20x_i2c_read(0x00, &val);
+		printf("0x00 = 0x%x\n", val);
+	}
+	// if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack, &xTaskBuffer) == NULL)
+		// while (1);
+
+	// if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
+		// while (1);
+	// vTaskStartScheduler();
 	return 0;
 }

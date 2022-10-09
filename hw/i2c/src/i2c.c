@@ -4,7 +4,7 @@
 #include "i2c_drv.h"
 #include "i2c_slave.h"
 // #include "systimer.h"
-#include "irq_ctrl.h"
+// #include "irq_ctrl.h"
 #include "i2c_debug.h"
 
 // #ifndef NO_SYS

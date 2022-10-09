@@ -22,6 +22,8 @@
 #include "utils_def.h"
 
 
+struct regulator_delay *g_rdev_delay;
+
 #define of_match_ptr(_ptr)  (_ptr)
 
 #define UINT8_C(x)  x
@@ -165,7 +167,7 @@ static int axp2101_set_voltage_time_sel(struct regulator_desc *desc,
 
 int regulator_enable_regmap(struct regulator_desc *desc)
 {
-    uint32_t val;
+    u32 val;
 	int ret = 0;
 
 	ret = axp20x_i2c_read(desc->enable_reg, &val);
@@ -176,7 +178,7 @@ int regulator_enable_regmap(struct regulator_desc *desc)
 
 int regulator_disable_regmap(struct regulator_desc *desc)
 {
-    uint32_t val;
+    u32 val;
 	int ret = 0;
 
 	ret = axp20x_i2c_read(desc->enable_reg, &val);
@@ -187,7 +189,7 @@ int regulator_disable_regmap(struct regulator_desc *desc)
 
 int regulator_is_enabled_regmap(struct regulator_desc *desc)
 {
-    uint32_t val = 0;
+    u32 val = 0;
     __nouse__ int ret = 0;
 
 	ret = axp20x_i2c_read(desc->enable_reg, &val);
@@ -228,7 +230,7 @@ static inline __attribute__ ((const)) int __fls(unsigned long x)
 int regulator_set_voltage_sel_regmap(struct regulator_desc *desc, unsigned sel)
 {
     int ret = 0;
-	uint32_t val = 0;
+	u32 val = 0;
 
     sel <<= ffs(desc->vsel_mask) - 1;
 
@@ -243,7 +245,7 @@ int regulator_set_voltage_sel_regmap(struct regulator_desc *desc, unsigned sel)
 
 int regulator_get_voltage_sel_regmap(struct regulator_desc *desc)
 {
-    uint32_t val = 0;
+    u32 val = 0;
     __nouse__ int ret = 0;
 
 	ret = axp20x_i2c_read(desc->vsel_reg, &val);
@@ -411,7 +413,7 @@ static unsigned int axp20x_mvolt_to_cfg(int mvolt, int min, int max, int div)
 int axp20x_set_dcdc1(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_DCDC1];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -426,7 +428,7 @@ int axp20x_set_dcdc1(unsigned int mvolt)
 int axp20x_set_dcdc2(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_DCDC2];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -443,7 +445,7 @@ int axp20x_set_dcdc2(unsigned int mvolt)
 int axp20x_set_dcdc3(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_DCDC3];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -462,7 +464,7 @@ int axp20x_set_dcdc3(unsigned int mvolt)
 int axp20x_set_dcdc4(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_DCDC4];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -479,7 +481,7 @@ int axp20x_set_dcdc4(unsigned int mvolt)
 int axp20x_set_dcdc5(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_DCDC5];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -496,7 +498,7 @@ int axp20x_set_dcdc5(unsigned int mvolt)
 int axp20x_set_aldo1(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO3];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -511,7 +513,7 @@ int axp20x_set_aldo1(unsigned int mvolt)
 int axp20x_set_aldo2(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO4];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -526,7 +528,7 @@ int axp20x_set_aldo2(unsigned int mvolt)
 int axp20x_set_aldo3(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO5];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -541,7 +543,7 @@ int axp20x_set_aldo3(unsigned int mvolt)
 int axp20x_set_aldo4(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO6];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -556,7 +558,7 @@ int axp20x_set_aldo4(unsigned int mvolt)
 int axp20x_set_bldo1(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO7];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -571,7 +573,7 @@ int axp20x_set_bldo1(unsigned int mvolt)
 int axp20x_set_bldo2(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO8];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -586,7 +588,7 @@ int axp20x_set_bldo2(unsigned int mvolt)
 int axp20x_set_dldo1(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO9];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -601,7 +603,7 @@ int axp20x_set_dldo1(unsigned int mvolt)
 int axp20x_set_dldo2(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO10];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -616,7 +618,7 @@ int axp20x_set_dldo2(unsigned int mvolt)
 int axp20x_set_cpusldo(unsigned int mvolt)
 {
 	struct regulator_desc *desc= &axp2101_regulators[AXP2101_LDO11];
-	uint32_t cfg;
+	u32 cfg;
 
 	if(mvolt == 0){
 		return regulator_disable_regmap(desc);
@@ -659,7 +661,6 @@ int axp2101_regulator_probe(void *dev, void *config)
 	__nouse__ int ret, i, nregulators;
 	u32 workmode;
 	__nouse__ u32 dval;
-	struct regulator_delay *rdev_delay;
 
 	switch (axp20x->variant) {
 	case AXP2101_ID:
@@ -673,13 +674,13 @@ int axp2101_regulator_probe(void *dev, void *config)
 	}
 
 	axp20x->rdev->desc = regulators;
-	rdev_delay = (struct regulator_delay *)malloc(sizeof(rdev_delay));
-	rdev_delay->step = 0;
+	g_rdev_delay = (struct regulator_delay *)malloc(sizeof(struct regulator_delay));
+	g_rdev_delay->step = 0;
 
 	// "regulator-final-delay-us"
-	rdev_delay->final = 0;
+	g_rdev_delay->final = 0;
 
-	axp20x->desc->reg_data = rdev_delay;
+	axp20x->desc->reg_data = g_rdev_delay;
 
 	// "x-powers,dcdc-workmode",
 	workmode = 0;
@@ -688,6 +689,12 @@ int axp2101_regulator_probe(void *dev, void *config)
 				axp20x->rdev->desc->name);
 
 	return 0;
+}
+
+void axp2101_regulator_remove(void)
+{
+	if(g_rdev_delay != NULL)
+		free(g_rdev_delay);
 }
 
 static struct of_device_id axp_regulator_id_tab[] = {

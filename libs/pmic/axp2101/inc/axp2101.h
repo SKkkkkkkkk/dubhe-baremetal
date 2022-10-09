@@ -1955,8 +1955,17 @@ struct regulator_dev {
 };
 
 //////////////////////////////////////////////////////////////////////
+struct pmic_cfg{
+    char name[128];
+    int i2c_bus;
+    int reg_addr;
+    int check_addr;
+    int check_len;
+};
+
 struct axp20x_dev {
 	// struct device			*dev;
+	struct pmic_cfg *cfg;
 	int				irq;
 	// struct regmap			*regmap;
 	// struct regmap_irq_chip_data	*regmap_irqc;
@@ -2025,22 +2034,8 @@ static inline int axp20x_read_variable_width(unsigned int reg, unsigned int widt
 	return result;
 }
 
-static inline int axp20x_i2c_write(uint32_t reg, uint32_t val)
-{
-	__nouse__ unsigned int result = 0;
-	__nouse__ int err;
-
-	return result;
-}
-
-static inline int axp20x_i2c_read(uint32_t reg, uint32_t *val)
-{
-	__nouse__ unsigned int result = 0;
-	__nouse__ int err;
-
-	return result;
-}
-
+int axp20x_i2c_write(u32 reg, u32 val);
+int axp20x_i2c_read(u32 reg, u32 *val);
 /**
  * axp20x_match_device(): Setup axp20x variant related fields
  *
@@ -2073,8 +2068,10 @@ int axp20x_device_probe(struct axp20x_dev *axp20x);
 int axp20x_device_remove(struct axp20x_dev *axp20x);
 
 int axp20x_pek_probe(void *pdev, void *config);
+void axp20x_pek_remove(void);
 
 int axp2101_regulator_probe(void *dev, void *config);
+void axp2101_regulator_remove(void);
 
 int axp20x_set_dcdc1(unsigned int mvolt);
 int axp20x_set_dcdc2(unsigned int mvolt);
@@ -2095,4 +2092,6 @@ int axp20x_set_cpusldo(unsigned int mvolt);
 void axp20x_power_off(void);
 int axp2101_powerkey_suspend(void);
 
+int axp2101_i2c_init(struct pmic_cfg *cfg);
+void axp2101_i2c_exit(struct pmic_cfg *cfg);
 #endif /* __LINUX_MFD_AXP20X_H */

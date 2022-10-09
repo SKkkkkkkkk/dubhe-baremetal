@@ -31,17 +31,19 @@
 #define axp2101_VBAT_H          (0x34)
 #define axp2101_INTSTS2         (0x49)
 
+struct axp20x_pek *g_axp20x_pek;
+
 struct pk_dts {
-	uint32_t pmu_powkey_off_time;
-	uint32_t pmu_powkey_off_func;
-	uint32_t pmu_powkey_off_en;
-	uint32_t pmu_powkey_off_delay_time;
-	uint32_t pmu_powkey_long_time;
-	uint32_t pmu_powkey_on_time;
-	uint32_t pmu_pwrok_time;
-	uint32_t pmu_pwrnoe_time;
-	uint32_t pmu_powkey_wakeup_rising;
-	uint32_t pmu_powkey_wakeup_falling;
+	u32 pmu_powkey_off_time;
+	u32 pmu_powkey_off_func;
+	u32 pmu_powkey_off_en;
+	u32 pmu_powkey_off_delay_time;
+	u32 pmu_powkey_long_time;
+	u32 pmu_powkey_on_time;
+	u32 pmu_pwrok_time;
+	u32 pmu_pwrnoe_time;
+	u32 pmu_powkey_wakeup_rising;
+	u32 pmu_powkey_wakeup_falling;
 };
 
 struct axp20x_pek {
@@ -200,7 +202,7 @@ static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 {
 	__nouse__ struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
 	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	uint32_t val = 0;
+	u32 val = 0;
 
 	axp20x_i2c_read(axp2101_PONLEVEL, &val);
 	if (pk_dts->pmu_powkey_on_time < 128)
@@ -294,21 +296,20 @@ static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek)
 
 int axp20x_pek_probe(void *pdev, void *config)
 {
-	__nouse__ struct axp20x_pek *axp20x_pek;
 	__nouse__ struct axp20x_dev *axp20x = (struct axp20x_dev *)pdev;
 
-	axp20x_pek = (struct axp20x_pek *)malloc(sizeof(struct axp20x_pek));
-	if (!axp20x_pek)
+	g_axp20x_pek = (struct axp20x_pek *)malloc(sizeof(struct axp20x_pek));
+	if (!g_axp20x_pek)
 		return -1;
 
-	axp20x_pek->axp20x = axp20x;
+	g_axp20x_pek->axp20x = axp20x;
 
 	// if (!axp20x->irq) {
 		// pr_err("axp2101-pek can not register without irq\n");
 		// return -1;
 	// }
 
-	axp20x_dts_param_set(axp20x_pek);
+	axp20x_dts_param_set(g_axp20x_pek);
 	// error = devm_request_any_context_irq(&pdev->dev, axp20x_pek->irq_dbr,
 						 // axp20x_pek_irq, 0,
 						 // "axp20x-pek-dbr", idev);
@@ -320,9 +321,15 @@ int axp20x_pek_probe(void *pdev, void *config)
 	return 0;
 }
 
+void axp20x_pek_remove(void)
+{
+	if(g_axp20x_pek != NULL)
+		free(g_axp20x_pek);
+}
+
 int axp2101_powerkey_suspend(void)
 {
-	uint32_t val = 0;
+	u32 val = 0;
 
 	// SLEEP enable
 	axp20x_i2c_write(AXP2101_SLEEP_CFG, 0x01);
