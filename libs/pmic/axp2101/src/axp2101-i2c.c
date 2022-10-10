@@ -108,7 +108,7 @@ inline int axp20x_i2c_write(u32 reg, u32 val)
 {
 	struct pmic_cfg *cfg = &axp20x->cfg;
 
-	// printf("-->%s line %d i2c bus %d\n", __func__, __LINE__, cfg->i2c_bus);
+	// printf("-->%s line %d i2c bus %d reg 0x%x val 0x%x\n", __func__, __LINE__, cfg->i2c_bus, reg, val);
 	return i2c_write_reg(cfg, reg, 1, val);
 }
 

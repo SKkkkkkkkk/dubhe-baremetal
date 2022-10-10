@@ -2091,6 +2091,7 @@ int axp20x_set_cpusldo(unsigned int mvolt);
 
 void axp20x_power_off(void);
 int axp2101_powerkey_suspend(void);
+int axp2101_powerkey_resume(void);
 
 int axp2101_i2c_init(struct pmic_cfg *cfg);
 void axp2101_i2c_exit(struct pmic_cfg *cfg);

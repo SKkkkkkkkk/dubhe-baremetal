@@ -332,16 +332,9 @@ int axp2101_powerkey_suspend(void)
 	u32 val = 0;
 
 	// SLEEP enable
-	axp20x_i2c_write(AXP2101_SLEEP_CFG, 0x01);
-
-	// IRQ Pin low to Wakeup
 	axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
-	val |= 0x10;
+	val |= 0x01;
 	axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
-
-	// POWERON Short Long IRQ
-	val = 0x0c;
-	axp20x_i2c_write(AXP2101_INTEN2, val);
 
 	// close voltage 80H 90H 91H
 
@@ -360,11 +353,35 @@ int axp2101_powerkey_suspend(void)
 	axp20x_set_dldo2(0);
 	axp20x_set_cpusldo(0);
 
+	// IRQ Pin low to Wakeup
+	axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
+	val |= 0x10;
+	axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
+
+	// POWERON Short Long IRQ
+	val = 0x0c;
+	axp20x_i2c_write(AXP2101_INTEN2, val);
+
 	return 0;
 }
 
 int axp2101_powerkey_resume(void)
 {
+
+	axp20x_set_dcdc1(1200);
+	axp20x_set_dcdc2(1200);
+	axp20x_set_dcdc3(1200);
+	axp20x_set_dcdc4(1200);
+	axp20x_set_dcdc5(1200);
+	axp20x_set_aldo1(1200);
+	axp20x_set_aldo2(1200);
+	axp20x_set_aldo3(1200);
+	axp20x_set_aldo4(1200);
+	axp20x_set_bldo1(1200);
+	axp20x_set_bldo2(1200);
+	axp20x_set_dldo1(1200);
+	axp20x_set_dldo2(1200);
+	axp20x_set_cpusldo(1200);
 
 	return 0;
 }

@@ -171,7 +171,7 @@ int regulator_enable_regmap(struct regulator_desc *desc)
 	int ret = 0;
 
 	ret = axp20x_i2c_read(desc->enable_reg, &val);
-	val |= desc->vsel_mask;
+	val |= desc->enable_mask;
 	ret = axp20x_i2c_write(desc->enable_reg, val);
 	return ret;
 }
@@ -182,7 +182,7 @@ int regulator_disable_regmap(struct regulator_desc *desc)
 	int ret = 0;
 
 	ret = axp20x_i2c_read(desc->enable_reg, &val);
-	val &= ~desc->vsel_mask;
+	val &= ~desc->enable_mask;
 	ret = axp20x_i2c_write(desc->enable_reg, val);
 	return ret;
 }
@@ -232,7 +232,7 @@ int regulator_set_voltage_sel_regmap(struct regulator_desc *desc, unsigned sel)
     int ret = 0;
 	u32 val = 0;
 
-    sel <<= ffs(desc->vsel_mask) - 1;
+    // sel <<= ffs(desc->vsel_mask) - 1;
 
 	ret = axp20x_i2c_read(desc->vsel_reg, &val);
 	val &= ~desc->vsel_mask;
