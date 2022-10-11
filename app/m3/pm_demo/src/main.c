@@ -14,6 +14,13 @@
 #define TEST_STANDBY        1
 #define TEST_HIBERNATION    0
 #define STACK_SIZE			1024
+#define Interrupt79_IRQn    79
+#define GPIO0				0x410A0000UL
+
+#define KEY_EINT_PIN                   10
+#define KEY_EINT_PIN_GROUP             (KEY_EINT_PIN/32)
+#define KEY_EINT_PIN_NUM               (KEY_EINT_PIN%32)
+
 #define ROUND_UP(x, align) (((int) (x) + (align - 1)) & ~(align - 1))
 #define ROUND_DOWN(x, align) ((int)(x) & ~(align - 1))
 
@@ -59,6 +66,22 @@ void irq_handler1(void)
 {
 	count++;
 	printf("hello world in irq 1. %d\n", count);
+	return;
+}
+
+void irq_handler_gpio(void)
+{
+	uint32_t intstatus = *((uint32_t *)(GPIO0 + 0x40));
+
+	count++;
+
+	if(intstatus&(1<<KEY_EINT_PIN_NUM)){
+		gpio_clear_interrput(KEY_EINT_PIN_GROUP, KEY_EINT_PIN_NUM);
+		printf("gpio in irq 79. %d\n", count);
+	}else{
+		printf("irq is not 79\n");
+	}
+
 	return;
 }
 
@@ -176,6 +199,9 @@ int main()
 	NVIC_EnableIRQ(Interrupt1_IRQn);
 	NVIC_SetPendingIRQ(Interrupt1_IRQn);
 
+	NVIC_SetVector(Interrupt79_IRQn, (uintptr_t)irq_handler_gpio);
+	NVIC_EnableIRQ(Interrupt79_IRQn);
+
 	hardware_init_hook();
 
 	pm_register_ops(PM_DEV);
@@ -186,20 +212,24 @@ int main()
 
 	// clear_ddr();
 
-	pin_set_iomux(GROUP_GPIO0, 10, 3);
-	pin_set_iomux(GROUP_GPIO0, 11, 3);
+	pin_set_iomux(KEY_EINT_PIN_GROUP, KEY_EINT_PIN, 3);
+	pin_set_iomux(KEY_EINT_PIN_GROUP, 11, 3);
 
 	gpio_init_config_t gpio_init_config = {
-	    .group = GROUP_GPIO0,
-	    .pin = 10,
+	    .group = KEY_EINT_PIN_GROUP,
+	    .pin = KEY_EINT_PIN,
 	    .gpio_control_mode = Software_Mode,
-	    .gpio_mode = GPIO_Output_Mode
+		.gpio_mode = GPIO_Falling_Int_Mode,
+		// .gpio_mode = GPIO_Input_Mode,
 	};
 	gpio_init(&gpio_init_config);
 
 	gpio_init_config.pin = 11;
 	gpio_init(&gpio_init_config);
 
+	__nouse__ u32 val = 0;
+	__nouse__ u32 count = 0;
+#if 0
 	struct pmic_cfg cfg;
 	strcpy(cfg.name, "axp2101");
 	cfg.reg_addr = 0x34;
@@ -208,8 +238,6 @@ int main()
 	cfg.check_len = 1;
 	axp2101_i2c_init(&cfg);
 
-	u32 val = 0;
-	u32 count = 0;
 	axp20x_i2c_write(AXP2101_INTEN1, 0);
 	axp20x_i2c_write(AXP2101_INTEN2, 0);
 	axp20x_i2c_write(AXP2101_INTEN3, 0);
@@ -221,8 +249,10 @@ int main()
 	printf("AXP2101_INTEN3 = 0x%x\n", val);
 	axp2101_powerkey_suspend();
 	// axp2101_powerkey_resume();
+#endif
 
 	while(1){
+#if 0
 		systimer_delay(1, IN_S);
 		axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
 		printf("AXP2101_SLEEP_CFG = 0x%x\n", val);
@@ -261,12 +291,35 @@ int main()
 			printf("//////////count = %d/////////////\n", count);
 			count = 0;
 		}
+#endif
 		// gpio_write_pin(GROUP_GPIO0, 10, GPIO_PIN_SET);
 		// gpio_write_pin(GROUP_GPIO0, 11, GPIO_PIN_SET);
 		// systimer_delay(500, IN_US);
 		// gpio_write_pin(GROUP_GPIO0, 10, GPIO_PIN_RESET);
 		// gpio_write_pin(GROUP_GPIO0, 11, GPIO_PIN_RESET);
 		// systimer_delay(500, IN_US);
+
+		val = gpio_read_pin(KEY_EINT_PIN_GROUP, KEY_EINT_PIN);
+		printf("gpio%d = %d\n", KEY_EINT_PIN, val);
+		// val = gpio_read_pin(GROUP_GPIO0, 11);
+		// printf("gpio11 = %d\n", val);
+		// systimer_delay(1, IN_S);
+
+		val = NVIC->ISER[0];
+		printf("ISER[0] = 0x%08x\n", val);
+		val = NVIC->ISER[(Interrupt79_IRQn >> 5UL)];
+		printf("ISER[%d] = 0x%08x\n", Interrupt79_IRQn >> 5UL, val);
+
+		val = NVIC->ISPR[0];
+		printf("ISPR[0] = 0x%08x\n", val);
+		val = NVIC->ISPR[(Interrupt79_IRQn >> 5UL)];
+		printf("ISPR[%d] = 0x%08x\n",Interrupt79_IRQn >> 5UL, val);
+
+		val = NVIC->IP[0];
+		printf("IP[0] = 0x%x\n", val);
+		val = NVIC->IP[Interrupt79_IRQn];
+		printf("IP[%d] = 0x%x\n", Interrupt79_IRQn, val);
+		systimer_delay(2, IN_S);
 	}
 	// if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack, &xTaskBuffer) == NULL)
 		// while (1);
