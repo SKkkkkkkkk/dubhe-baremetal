@@ -52,7 +52,8 @@ static uint8_t          _wl_touch;
 
 static int _pm_wake_unlock(struct wakelock *wl, enum pm_wakelock_t type);
 
-static uint32_t _wakelock_update(void) {
+static uint32_t _wakelock_update(void)
+{
     extern uint32_t _wl_timer_expires;
 
     uint32_t          ret     = 0;
@@ -65,7 +66,8 @@ static uint32_t _wakelock_update(void) {
     uint32_t          ms, update_flg = 0;
 
     flags = arch_irq_save();
-    list_for_each_safe(pos, n, head) {
+    list_for_each_safe(pos, n, head)
+    {
         wl = wl_to_device(pos);
         if (wl->ref) {
             ret = 2;
@@ -111,7 +113,8 @@ out:
     return ret;
 }
 
-static void _wakelock_timer_cb(void *arg) {
+static void _wakelock_timer_cb(void *arg)
+{
     unsigned long flags;
 
     PM_LOGD("%s ref:%d\n", __func__, _wl_timer_arg->ref);
@@ -127,7 +130,8 @@ static void _wakelock_timer_cb(void *arg) {
     _wakelock_update();
 }
 
-int pm_wake_lock(struct wakelock *wl) {
+int pm_wake_lock(struct wakelock *wl)
+{
     int ret = __pm_wake_lock(wl, PM_WKL_WAIT_FOREVER, 0);
 
     _wakelock_update();
@@ -135,7 +139,8 @@ int pm_wake_lock(struct wakelock *wl) {
     return ret;
 }
 
-int pm_wake_lock_timeout(struct wakelock *wl, uint32_t timeout_ms) {
+int pm_wake_lock_timeout(struct wakelock *wl, uint32_t timeout_ms)
+{
     int ret;
 
     if (timeout_ms == 0) {
@@ -148,7 +153,8 @@ int pm_wake_lock_timeout(struct wakelock *wl, uint32_t timeout_ms) {
     return ret;
 }
 
-static int _pm_wake_unlock(struct wakelock *wl, enum pm_wakelock_t type) {
+static int _pm_wake_unlock(struct wakelock *wl, enum pm_wakelock_t type)
+{
     int               ret = 0;
     struct wakelock  *_wl = NULL;
     struct list_head *list;
@@ -162,7 +168,8 @@ static int _pm_wake_unlock(struct wakelock *wl, enum pm_wakelock_t type) {
 
     flags = arch_irq_save();
 
-    list_for_each(list, head) {
+    list_for_each(list, head)
+    {
         _wl = wl_to_device(list);
         if (_wl == wl) break;
     }
@@ -189,11 +196,13 @@ out:
     return ret;
 }
 
-int pm_wake_unlock(struct wakelock *wl) {
+int pm_wake_unlock(struct wakelock *wl)
+{
     return _pm_wake_unlock(wl, PM_WKL_WAIT_FOREVER);
 }
 
-void pm_wakelocks_touch(void) {
+void pm_wakelocks_touch(void)
+{
     _wl_touch = 1;
     OS_SemaphoreWait(&wakelocks_wait, 0);
     OS_SemaphoreRelease(&wakelocks_wait);
@@ -203,7 +212,8 @@ uint32_t pm_wakelocks_is_touched(void) { return _wl_touch; }
 
 uint32_t pm_wakelocks_is_active(void) { return !_wl_null || _wl_touch; }
 
-uint32_t pm_wakelocks_wait(uint32_t timeout) {
+uint32_t pm_wakelocks_wait(uint32_t timeout)
+{
     uint32_t ret = 0;
 
     while (!_wl_null) {
@@ -219,13 +229,15 @@ uint32_t pm_wakelocks_wait(uint32_t timeout) {
     return ret;
 }
 
-void pm_wakelocks_init(void) {
+void pm_wakelocks_init(void)
+{
     OS_SemaphoreCreate(&wakelocks_wait, 0, OS_SEMAPHORE_MAX_COUNT);
     OS_TimerCreate(&_wl_timer, OS_TIMER_ONCE, _wakelock_timer_cb, NULL,
                    OS_WAIT_FOREVER);
 }
 
-void pm_wakelocks_deinit(void) {
+void pm_wakelocks_deinit(void)
+{
     OS_TimerDelete(&_wl_timer);
     OS_SemaphoreDelete(&wakelocks_wait);
 }

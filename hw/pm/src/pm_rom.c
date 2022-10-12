@@ -63,7 +63,8 @@ __ramdata struct platform_suspend_ops suspend_ops;
 
 static volatile int user_sel_power_mode = PM_MODE_ON;
 
-static int valid_state(enum suspend_state_t state) {
+static int valid_state(enum suspend_state_t state)
+{
     if (user_sel_power_mode == PM_MODE_ON) return 0;
 
     return (user_sel_power_mode == state);
@@ -79,7 +80,8 @@ int pm_mode_platform_config =
  * @param select:
  *        @arg select->The selected modes set.
  */
-void pm_mode_platform_select(unsigned int select) {
+void pm_mode_platform_select(unsigned int select)
+{
     pm_mode_platform_config = select;
     if (!(select &
           (PM_SUPPORT_SLEEP | PM_SUPPORT_STANDBY | PM_SUPPORT_HIBERNATION))) {
@@ -95,7 +97,8 @@ uint32_t pm_debug_dump_addr[ PM_DEBUG_DUMP_NUM ][ 2 ];
 /**
  * @brief Set dump addr and len for debug.
  */
-void pm_set_dump_addr(uint32_t addr, uint32_t len, uint32_t idx) {
+void pm_set_dump_addr(uint32_t addr, uint32_t len, uint32_t idx)
+{
     if (idx >= PM_DEBUG_DUMP_NUM) {
         PM_LOGE("only support %d dump\n", PM_DEBUG_DUMP_NUM);
         return;
@@ -111,7 +114,8 @@ static unsigned long suspend_test_start_time;
 
 void suspend_test_start(void) { suspend_test_start_time = ktime_get(); }
 
-void suspend_test_finish(const char *label) {
+void suspend_test_finish(const char *label)
+{
     long     nj = ktime_get() - suspend_test_start_time;
     unsigned msec;
 
@@ -119,7 +123,8 @@ void suspend_test_finish(const char *label) {
     PM_LOGN("%s took %d ms\n", label, msec);
 }
 
-int suspend_test(int level) {
+int suspend_test(int level)
+{
     if (pm_test_level == level) {
         PM_LOGD("suspend debug:%d Return.\n", level);
         return 1;
@@ -132,12 +137,14 @@ int suspend_test(int level) {
  * @param level:
  *        @arg level->Suspend will exit when run up to setted level.
  */
-void pm_set_test_level(enum suspend_test_level_t level) {
+void pm_set_test_level(enum suspend_test_level_t level)
+{
     pm_test_level = level;
 }
 
 static void dpm_show_time(ktime_t starttime, enum suspend_state_t state,
-                          char *info) {
+                          char *info)
+{
     ktime_t calltime;
 
     calltime = ktime_get();
@@ -156,7 +163,8 @@ static int pm_exit_latency;  /* in US */
 
 struct suspend_stats suspend_stats;
 
-void parse_dpm_list(unsigned int idx) {
+void parse_dpm_list(unsigned int idx)
+{
     struct list_head  *list;
     struct soc_device *dev;
     struct list_head  *head;
@@ -169,7 +177,8 @@ void parse_dpm_list(unsigned int idx) {
         return;
 
     PM_LOGD("(%p)", head);
-    list_for_each(list, head) {
+    list_for_each(list, head)
+    {
         dev = to_device(list, idx);
         PM_LOGD("-->%s(%p)", dev->name, dev);
     }
@@ -184,14 +193,16 @@ static unsigned int initcall_debug_delay_us = 0;
  * @param ms:
  *        @arg ms->The delayed ms between two devices.
  */
-void pm_set_debug_delay_ms(unsigned int ms) {
+void pm_set_debug_delay_ms(unsigned int ms)
+{
     initcall_debug_delay_us = ms * 1000;
 }
 
 /**
  * check if any wake-up interrupts are pending
  */
-int check_wakeup_irqs(void) {
+int check_wakeup_irqs(void)
+{
     return 0; // pm_check_wakeup_irqs();  //TODO
 }
 
@@ -202,7 +213,8 @@ int check_wakeup_irqs(void) {
  * Prevent device drivers from receiving interrupts and call the "noirq" suspend
  * handlers for all non-sysdev devices.
  */
-int dpm_suspend_noirq(enum suspend_state_t state) {
+int dpm_suspend_noirq(enum suspend_state_t state)
+{
     int                wakeup;
     struct soc_device *dev       = NULL;
     ktime_t            starttime = ktime_get();
@@ -257,7 +269,8 @@ int dpm_suspend_noirq(enum suspend_state_t state) {
  * dpm_suspend - Execute "suspend" callbacks for all devices.
  * @state: PM transition of the system being carried out.
  */
-int dpm_suspend(enum suspend_state_t state) {
+int dpm_suspend(enum suspend_state_t state)
+{
     struct soc_device *dev       = NULL;
     ktime_t            starttime = ktime_get();
     int                error     = 0;
@@ -303,7 +316,8 @@ int dpm_suspend(enum suspend_state_t state) {
  * Call the "noirq" resume handlers for all devices in dpm_noirq_list and
  * enable device drivers to receive interrupts.
  */
-void dpm_resume_noirq(enum suspend_state_t state) {
+void dpm_resume_noirq(enum suspend_state_t state)
+{
     struct soc_device *dev;
     ktime_t            starttime = ktime_get();
     int                error;
@@ -335,7 +349,8 @@ void dpm_resume_noirq(enum suspend_state_t state) {
  * Execute the appropriate "resume" callback for all devices whose status
  * indicates that they are suspended.
  */
-void dpm_resume(enum suspend_state_t state) {
+void dpm_resume(enum suspend_state_t state)
+{
     struct soc_device *dev;
     ktime_t            starttime = ktime_get();
     int                error;
@@ -367,7 +382,8 @@ void dpm_resume(enum suspend_state_t state) {
  *
  * This function should be called after devices have been suspended.
  */
-static int suspend_enter(enum suspend_state_t state) {
+static int suspend_enter(enum suspend_state_t state)
+{
     int wakeup = 0;
     int error;
 
@@ -447,7 +463,8 @@ Platform_finish:
  * suspend_devices_and_enter - Suspend devices and enter system sleep state.
  * @state: System sleep state to enter.
  */
-int suspend_devices_and_enter(enum suspend_state_t state) {
+int suspend_devices_and_enter(enum suspend_state_t state)
+{
     int error;
 
     __record_dbg_status(PM_EARLY_SUSPEND);
@@ -505,7 +522,8 @@ Close:
  *        @arg dev->Device will be registered.
  * @retval  0 if success or other if failed.
  */
-int pm_register_ops(struct soc_device *dev) {
+int pm_register_ops(struct soc_device *dev)
+{
     struct list_head  *hd;
     struct soc_device *dev_c;
     unsigned long      flags;
@@ -544,7 +562,8 @@ int pm_register_ops(struct soc_device *dev) {
                     dev->name);
             return -1;
         }
-        list_for_each(hd, &dpm_list) {
+        list_for_each(hd, &dpm_list)
+        {
             dev_c = to_device(hd, PM_OP_NORMAL);
             if (dev_c == dev) {
                 goto next;
@@ -564,7 +583,8 @@ next:
                     dev->name);
             return -1;
         }
-        list_for_each(hd, &dpm_late_early_list) {
+        list_for_each(hd, &dpm_late_early_list)
+        {
             dev_c = to_device(hd, PM_OP_NOIRQ);
             if (dev_c == dev) {
                 return -1;
@@ -590,7 +610,8 @@ next:
  *        @arg dev->Device will be unregistered.
  * @retval  0 if success or other if failed.
  */
-int pm_unregister_ops(struct soc_device *dev) {
+int pm_unregister_ops(struct soc_device *dev)
+{
     unsigned long flags;
 
     if (!dev) return -EINVAL;
@@ -634,7 +655,8 @@ int pm_unregister_ops(struct soc_device *dev) {
 }
 
 void pm_set_suspend_resume_latency(unsigned int enter_lat,
-                                   unsigned int exit_lat) {
+                                   unsigned int exit_lat)
+{
     unsigned long flags;
 
     flags            = PM_IRQ_SAVE();
@@ -647,7 +669,8 @@ unsigned int pm_get_suspend_latency(void) { return pm_enter_latency; }
 
 unsigned int pm_get_resume_latency(void) { return pm_exit_latency; }
 
-unsigned int pm_get_suspend_resume_latency(void) {
+unsigned int pm_get_suspend_resume_latency(void)
+{
     return pm_enter_latency + pm_exit_latency;
 }
 
@@ -656,7 +679,8 @@ void pm_set_resume_entry(uint32_t entry) { g_resume_entry = entry; }
 void pm_select_mode(enum suspend_state_t state) { user_sel_power_mode = state; }
 
 /** @brief Show suspend statistic info. */
-void pm_stats_show(void) {
+void pm_stats_show(void)
+{
     /* PM_LOGN("suspend state:\n" */
     /* "  success:%d\n" */
     /* "  fail:%d\n" */

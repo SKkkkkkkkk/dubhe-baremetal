@@ -38,7 +38,8 @@ __ramdata StaticTask_t TimerTaskTCB;
 
 void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
                                    StackType_t  **ppxIdleTaskStackBuffer,
-                                   uint32_t      *pulIdleTaskStackSize) {
+                                   uint32_t      *pulIdleTaskStackSize)
+{
     *ppxIdleTaskTCBBuffer   = &IdleTaskTCB;
     *ppxIdleTaskStackBuffer = IdleTaskStack;
     *pulIdleTaskStackSize   = configMINIMAL_STACK_SIZE;
@@ -46,26 +47,30 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
 
 void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
                                     StackType_t  **ppxTimerTaskStackBuffer,
-                                    uint32_t      *pulTimerTaskStackSize) {
+                                    uint32_t      *pulTimerTaskStackSize)
+{
     *ppxTimerTaskTCBBuffer   = &TimerTaskTCB;
     *ppxTimerTaskStackBuffer = TimerTaskStack;
     *pulTimerTaskStackSize   = configTIMER_TASK_STACK_DEPTH;
 }
 
-__ramfunc void irq_handler0(void) {
+__ramfunc void irq_handler0(void)
+{
     count++;
     // printf("hello world in irq 0. %d\n", count);
     *(uint32_t *) (__EXTERNAL_RAM_BASE + 4) = count;
     return;
 }
 
-void irq_handler1(void) {
+void irq_handler1(void)
+{
     count++;
     printf("hello world in irq 1. %d\n", count);
     return;
 }
 
-void irq_handler_gpio(void) {
+void irq_handler_gpio(void)
+{
     uint32_t intstatus = *((uint32_t *) (GPIO0 + 0x40));
 
     count++;
@@ -80,7 +85,8 @@ void irq_handler_gpio(void) {
     return;
 }
 
-void hardware_init_hook(void) {
+void hardware_init_hook(void)
+{
     /* 时钟相关 */
     systimer_init();
     pm_init();
@@ -89,12 +95,14 @@ void hardware_init_hook(void) {
     /* RTC相关 */
 }
 
-static int pm_suspend(struct soc_device *dev, enum suspend_state_t state) {
+static int pm_suspend(struct soc_device *dev, enum suspend_state_t state)
+{
     printf("--> %s.\n", __func__);
     return 0;
 }
 
-static int pm_resume(struct soc_device *dev, enum suspend_state_t state) {
+static int pm_resume(struct soc_device *dev, enum suspend_state_t state)
+{
     printf("--> %s.\n", __func__);
     return 0;
 }
@@ -113,13 +121,14 @@ static struct soc_device pm_dev = {
 
 #define PM_DEV (&pm_dev)
 
-static int pm_suspend_noirq(struct soc_device   *dev,
-                            enum suspend_state_t state) {
+static int pm_suspend_noirq(struct soc_device *dev, enum suspend_state_t state)
+{
     printf("--> %s.\n", __func__);
     return 0;
 }
 
-static int pm_resume_noirq(struct soc_device *dev, enum suspend_state_t state) {
+static int pm_resume_noirq(struct soc_device *dev, enum suspend_state_t state)
+{
     printf("--> %s.\n", __func__);
     return 0;
 }
@@ -138,7 +147,8 @@ static struct soc_device pm_noirq_dev = {
 
 #define PM_NOIRQ_DEV (&pm_noirq_dev)
 
-__ramfunc static inline void _mdelay(unsigned long msec) {
+__ramfunc static inline void _mdelay(unsigned long msec)
+{
 #define udelay(x)                \
     {                            \
         unsigned xx = x;         \
@@ -150,7 +160,8 @@ __ramfunc static inline void _mdelay(unsigned long msec) {
         udelay(500);
 }
 
-__ramfunc void clear_ddr(void) {
+__ramfunc void clear_ddr(void)
+{
     extern int __bss_end__[];
     int        i    = 0;
     int        size = (uint32_t) __bss_end__ - __EXTERNAL_RAM_BASE;
@@ -173,7 +184,8 @@ __ramfunc void clear_ddr(void) {
     }
 }
 
-int main() {
+int main()
+{
     memcpy(__VECTOR_TABLE_IN_SRAM, __VECTOR_TABLE,
            sizeof(__VECTOR_TABLE_IN_SRAM));
     __DSB();

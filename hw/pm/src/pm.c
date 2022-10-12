@@ -74,7 +74,8 @@ __ramdata unsigned int g_systick;
 
 static uint32_t _pm_tmo = OS_WAIT_FOREVER;
 
-static int __suspend_begin(enum suspend_state_t state) {
+static int __suspend_begin(enum suspend_state_t state)
+{
     PM_LOGD("--> %s line %d\n", __func__, __LINE__);
     /* set SEVONPEND flag */
     SCB->SCR = 0x10;
@@ -87,7 +88,8 @@ static int __suspend_begin(enum suspend_state_t state) {
  * value.
  */
 #if 1
-static void pm_hibernation(void) {
+static void pm_hibernation(void)
+{
     __record_dbg_status(PM_HIBERNATION | 0);
 
     /* step 1 & 2 has been done when wlan sys poweroff */
@@ -138,7 +140,8 @@ static void pm_hibernation(void) {
 #endif
 
 #if 1
-__ramfunc static void cpu_sleep(void) {
+__ramfunc static void cpu_sleep(void)
+{
 
     /* disable systick */
     g_value = REG32(NVIC_SYSTICK_CTRL);
@@ -185,7 +188,8 @@ __ramfunc static void cpu_sleep(void) {
 #endif
 
 #if 1
-__ramfunc static void cpu_suspend(void) {
+__ramfunc static void cpu_suspend(void)
+{
     cpu_tz_suspend();
 
     asm volatile("mrs %0, MSP" : "=r"(g_value));
@@ -396,7 +400,8 @@ __ramfunc static void cpu_suspend(void) {
 }
 #endif
 
-static void __suspend_enter(enum suspend_state_t state) {
+static void __suspend_enter(enum suspend_state_t state)
+{
 
     PM_LOGD("--> %s line %d\n", __func__, __LINE__);
     /* 写到无复位寄存器表明最终的位置 */
@@ -454,14 +459,16 @@ static void __suspend_enter(enum suspend_state_t state) {
     __record_dbg_status(PM_SUSPEND_ENTER | 0xb);
 }
 
-static void __suspend_end(enum suspend_state_t state) {
+static void __suspend_end(enum suspend_state_t state)
+{
     PM_LOGD("--> %s line %d\n", __func__, __LINE__);
     /* clear SEVONPEND flag */
     SCB->SCR = 0x0;
 }
 
 #ifdef CONFIG_PM_DEBUG
-void pm_dump_regs(unsigned int flag) {
+void pm_dump_regs(unsigned int flag)
+{
     if (flag & 1 << 0) { /* cpu */
         int i, j;
 
@@ -499,7 +506,8 @@ void pm_dump_regs(unsigned int flag) {
  * @note not use printf for this fun is called very earlier.
  * @retval  0 if success or other if failed.
  */
-int pm_init(void) {
+int pm_init(void)
+{
 
     /* 配置打印级别 */
 
@@ -526,7 +534,8 @@ int pm_init(void) {
 /**
  * @brief Set a magin to synchronize with net.
  */
-void pm_set_sync_magic(void) {
+void pm_set_sync_magic(void)
+{
     PM_SetCPUBootArg(PM_SYNC_MAGIC); /* set flag to notify net to run */
 }
 
@@ -536,7 +545,8 @@ void pm_set_sync_magic(void) {
  *        @arg state->The lowpower mode will enter.
  * @retval  0 if success or other if failed.
  */
-static int _pm_enter_mode(enum suspend_state_t state) {
+static int _pm_enter_mode(enum suspend_state_t state)
+{
     int                  err, record;
     enum suspend_state_t state_use = state;
 
@@ -584,7 +594,8 @@ static uint32_t _pm_state = PM_MODE_ON;
 
 enum suspend_state_t pm_get_mode(void) { return _pm_state; }
 
-int pm_enter_mode_timeout(enum suspend_state_t state, uint32_t tmo) {
+int pm_enter_mode_timeout(enum suspend_state_t state, uint32_t tmo)
+{
     int ret;
 
     if (state < PM_MODE_SLEEP) return 0;
@@ -616,22 +627,26 @@ int pm_enter_mode_timeout(enum suspend_state_t state, uint32_t tmo) {
     return ret;
 }
 
-int pm_enter_mode(enum suspend_state_t state) {
+int pm_enter_mode(enum suspend_state_t state)
+{
     return pm_enter_mode_timeout(state, OS_WAIT_FOREVER);
 }
 
-void pm_suspend_abort(void) {
+void pm_suspend_abort(void)
+{
     _pm_tmo = 0;
 #ifdef CONFIG_PM_WAKELOCKS
 #endif
 }
 
-void pm_start(void) {
+void pm_start(void)
+{
 #ifdef CONFIG_PM_WAKELOCKS
 #endif
 }
 
-void pm_stop(void) {
+void pm_stop(void)
+{
 #ifdef CONFIG_PM_WAKELOCKS
 #endif
 }

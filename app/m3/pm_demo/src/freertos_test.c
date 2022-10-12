@@ -15,7 +15,8 @@
 static SemaphoreHandle_t pmSemaphore;
 int32_t                  arg_flag = 1;
 
-void task1(void *arg) {
+void task1(void *arg)
+{
     pmSemaphore = xSemaphoreCreateBinary();
 
     while (1) {
@@ -61,14 +62,16 @@ void task1(void *arg) {
     }
 }
 
-void single_func(void) {
+void single_func(void)
+{
     printf("task2\n");
     vTaskDelay(1000);
     /* if(test_count++ < 1) */
     xSemaphoreGive(pmSemaphore);
 }
 
-void task2(void *arg) {
+void task2(void *arg)
+{
     /* int32_t test_count = 0; */
 
     while (1) {

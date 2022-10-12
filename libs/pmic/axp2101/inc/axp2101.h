@@ -1673,8 +1673,10 @@ struct regmap_range {
     unsigned int range_max;
 };
 
-#define regmap_reg_range(low, high) \
-    { .range_min = low, .range_max = high, }
+#define regmap_reg_range(low, high)          \
+    {                                        \
+        .range_min = low, .range_max = high, \
+    }
 
 struct regmap_access_table {
     const struct regmap_range *yes_ranges;
@@ -2008,7 +2010,8 @@ struct axp288_extcon_pdata {
 
 /* generic helper function for reading 9-16 bit wide regs */
 static inline int axp20x_read_variable_width(unsigned int reg,
-                                             unsigned int width) {
+                                             unsigned int width)
+{
     __nouse__ unsigned int reg_val, result = 0;
     __nouse__ int          err;
 

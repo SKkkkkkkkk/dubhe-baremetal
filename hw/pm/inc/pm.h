@@ -332,7 +332,8 @@ static inline int  pm_register_ops(struct soc_device *dev) { return 0; }
 static inline int  pm_unregister_ops(struct soc_device *dev) { return 0; }
 static inline void pm_set_sync_magic(void) { ; }
 static inline int  pm_enter_mode_timeout(enum suspend_state_t state,
-                                         uint32_t             tmo) {
+                                         uint32_t             tmo)
+{
     return 0;
 }
 static inline int  pm_enter_mode(enum suspend_state_t state) { return 0; }
@@ -347,17 +348,20 @@ static inline void pm_stats_show(void) { ; }
 static inline void pm_mode_platform_select(unsigned int select) { ; }
 static inline int
     pm_register_wlan_power_onoff(pm_module_power_onoff wlan_power_cb,
-                                 unsigned int          select) {
+                                 unsigned int          select)
+{
     return 0;
 }
 static inline int pm_register_bt_power_onoff(pm_module_power_onoff bt_power_cb,
-                                             unsigned int          select) {
+                                             unsigned int          select)
+{
     return 0;
 }
 static inline void pm_unregister_bt_power_onoff(void) { ; }
 static inline int
     pm_register_ble_power_onoff(pm_module_power_onoff ble_power_cb,
-                                unsigned int          select) {
+                                unsigned int          select)
+{
     return 0;
 }
 static inline void pm_unregister_ble_power_onoff(void) { ; }

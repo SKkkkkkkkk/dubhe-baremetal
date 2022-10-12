@@ -73,7 +73,8 @@ static const struct axp20x_time shutdown_time[] = {
 };
 #endif
 
-static int axp_powerkey_dt_parse(struct pk_dts *pk_dts) {
+static int axp_powerkey_dt_parse(struct pk_dts *pk_dts)
+{
 
     pk_dts->pmu_powkey_off_time       = 6000;
     pk_dts->pmu_powkey_off_func       = 0;
@@ -175,7 +176,8 @@ static ssize_t axp20x_store_ext_attr(struct device *dev,
 }
 #endif
 
-__nouse__ static int axp20x_pek_irq(int irq, void *pwr) {
+__nouse__ static int axp20x_pek_irq(int irq, void *pwr)
+{
 #if 0
 	struct input_dev *idev = pwr;
 	struct axp20x_pek *axp20x_pek = input_get_drvdata(idev);
@@ -195,7 +197,8 @@ __nouse__ static int axp20x_pek_irq(int irq, void *pwr) {
     return 0;
 }
 
-static int axp2201_config_set(struct axp20x_pek *axp20x_pek) {
+static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
+{
     __nouse__ struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
     struct pk_dts               *pk_dts     = &axp20x_pek->pk_dts;
     u32                          val        = 0;
@@ -272,7 +275,8 @@ static int axp2201_config_set(struct axp20x_pek *axp20x_pek) {
     return 0;
 }
 
-static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek) {
+static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek)
+{
     struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
 
     if (!axp_powerkey_dt_parse(&axp20x_pek->pk_dts)) {
@@ -286,7 +290,8 @@ static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek) {
     }
 }
 
-int axp20x_pek_probe(void *pdev, void *config) {
+int axp20x_pek_probe(void *pdev, void *config)
+{
     __nouse__ struct axp20x_dev *axp20x = (struct axp20x_dev *) pdev;
 
     g_axp20x_pek = (struct axp20x_pek *) malloc(sizeof(struct axp20x_pek));
@@ -311,11 +316,13 @@ int axp20x_pek_probe(void *pdev, void *config) {
     return 0;
 }
 
-void axp20x_pek_remove(void) {
+void axp20x_pek_remove(void)
+{
     if (g_axp20x_pek != NULL) free(g_axp20x_pek);
 }
 
-int axp2101_powerkey_suspend(void) {
+int axp2101_powerkey_suspend(void)
+{
     u32 val = 0;
 
     // SLEEP enable
@@ -352,7 +359,8 @@ int axp2101_powerkey_suspend(void) {
     return 0;
 }
 
-int axp2101_powerkey_resume(void) {
+int axp2101_powerkey_resume(void)
+{
 
     axp20x_set_dcdc1(1200);
     axp20x_set_dcdc2(1200);

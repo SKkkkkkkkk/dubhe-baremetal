@@ -140,7 +140,8 @@ static uint8_t axp2101_regaddrs[] = {
     /* [AXP210X_REG_IRQMASK] = 0x21, */
 };
 
-static int axp210x_read_vbat(union power_supply_propval *val) {
+static int axp210x_read_vbat(union power_supply_propval *val)
+{
     uint8_t  data[ 2 ];
     uint16_t vtemp[ 3 ], tempv;
     int      ret = 0;
@@ -179,7 +180,8 @@ static int axp210x_read_vbat(union power_supply_propval *val) {
 }
 
 /* read temperature */
-static int axp210x_read_temp(union power_supply_propval *val) {
+static int axp210x_read_temp(union power_supply_propval *val)
+{
     uint8_t data[ 2 ];
     int     ret = 0;
     ret = axp210x_info->read(axp210x_info->regaddrs[ AXP210X_REG_TM ], data, 2);
@@ -189,7 +191,8 @@ static int axp210x_read_temp(union power_supply_propval *val) {
     return 0;
 }
 
-static int axp210x_param_in_ram(void) {
+static int axp210x_param_in_ram(void)
+{
     uint8_t data[ 2 ];
 
     axp210x_info->read(axp210x_info->regaddrs[ AXP210X_REG_CONFIG ], data, 1);
@@ -199,7 +202,8 @@ static int axp210x_param_in_ram(void) {
         return false;
 }
 
-static int axp210x_read_soc(union power_supply_propval *val) {
+static int axp210x_read_soc(union power_supply_propval *val)
+{
     uint8_t data[ 2 ];
 #ifdef DONOT_Correction
     static long int lasttime;
@@ -271,7 +275,8 @@ static int axp210x_read_soc(union power_supply_propval *val) {
     return 0;
 }
 
-static int axp210x_read_time2empty(union power_supply_propval *val) {
+static int axp210x_read_time2empty(union power_supply_propval *val)
+{
     uint8_t  data[ 2 ];
     uint16_t ttemp[ 3 ], tempt;
     int      ret = 0;
@@ -303,7 +308,8 @@ static int axp210x_read_time2empty(union power_supply_propval *val) {
     return 0;
 }
 
-static int axp210x_read_vbus_state(union power_supply_propval *val) {
+static int axp210x_read_vbus_state(union power_supply_propval *val)
+{
     int     ret = 0;
     uint8_t data;
 
@@ -316,7 +322,8 @@ static int axp210x_read_vbus_state(union power_supply_propval *val) {
     return ret;
 }
 
-static int axp210x_read_time2full(union power_supply_propval *val) {
+static int axp210x_read_time2full(union power_supply_propval *val)
+{
     uint8_t  data[ 2 ];
     uint16_t ttemp[ 3 ], tempt;
     int      ret = 0;
@@ -348,7 +355,8 @@ static int axp210x_read_time2full(union power_supply_propval *val) {
     return 0;
 }
 
-static int axp210x_read_lowsocth(union power_supply_propval *val) {
+static int axp210x_read_lowsocth(union power_supply_propval *val)
+{
     uint8_t data[ 2 ];
     int     ret = 0;
     ret = axp210x_info->read(axp210x_info->regaddrs[ AXP210X_REG_LOWSOC ], data,
@@ -359,7 +367,8 @@ static int axp210x_read_lowsocth(union power_supply_propval *val) {
     return 0;
 }
 
-static int axp210x_set_lowsocth(uint8_t val) {
+static int axp210x_set_lowsocth(uint8_t val)
+{
     int     ret = 0;
     uint8_t data[ 2 ];
 
@@ -378,7 +387,8 @@ static int axp210x_set_lowsocth(uint8_t val) {
     return 0;
 }
 
-static int axp210x_reset_gauge(void) {
+static int axp210x_reset_gauge(void)
+{
     int     ret = 0;
     uint8_t data[ 2 ];
 
@@ -399,7 +409,8 @@ static int axp210x_reset_gauge(void) {
     return 0;
 }
 
-static int axp210x_reset_mcu(void) {
+static int axp210x_reset_mcu(void)
+{
     int     ret = 0;
     uint8_t data[ 2 ];
 
@@ -418,7 +429,8 @@ static int axp210x_reset_mcu(void) {
     return 0;
 }
 
-int axp210x_model_update(void) {
+int axp210x_model_update(void)
+{
     int     ret = 0;
     uint8_t data[ 2 ];
     uint8_t para[ axp210x_info->data.model_size ];
@@ -511,7 +523,8 @@ UPDATE_ERR:
     return ret;
 }
 
-static bool axp210x_model_update_check(void) {
+static bool axp210x_model_update_check(void)
+{
     int     ret = 0;
     uint8_t data[ 2 ];
     ret = axp210x_info->read(axp210x_info->regaddrs[ AXP210X_REG_CONFIG ], data,
@@ -596,7 +609,8 @@ CHECK_ERR:
     return false;
 }
 
-static int axp210x_reg_update(void) {
+static int axp210x_reg_update(void)
+{
     int     ret = 0;
     uint8_t data[ 2 ];
 
@@ -645,7 +659,8 @@ static int axp210x_reg_update(void) {
 
 static int axp210x_usb_ac_get_property(struct power_supply        *psy,
                                        enum power_supply_property  psp,
-                                       union power_supply_propval *val) {
+                                       union power_supply_propval *val)
+{
     int ret = 0;
 
     switch (psp) {
@@ -661,7 +676,8 @@ static int axp210x_usb_ac_get_property(struct power_supply        *psy,
 }
 
 static int axp210x_get_bat_status(struct power_supply        *psy,
-                                  union power_supply_propval *val) {
+                                  union power_supply_propval *val)
+{
     uint8_t data[ 2 ];
     int     ret;
 
@@ -716,7 +732,8 @@ static int axp210x_get_bat_status(struct power_supply        *psy,
 
 static int axp210x_get_property(struct power_supply        *psy,
                                 enum power_supply_property  psp,
-                                union power_supply_propval *val) {
+                                union power_supply_propval *val)
+{
     int                         ret = 0;
     struct axp210x_device_info *di  = power_supply_get_drvdata(psy);
 
@@ -787,7 +804,8 @@ static int axp210x_get_property(struct power_supply        *psy,
 
 static int axp210x_set_property(struct power_supply              *psy,
                                 enum power_supply_property        psp,
-                                const union power_supply_propval *val) {
+                                const union power_supply_propval *val)
+{
     int ret = 0;
 
     if (psp != POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN)
@@ -800,7 +818,8 @@ static int axp210x_set_property(struct power_supply              *psy,
 }
 
 static int axp210x_writeable(struct power_supply       *psy,
-                             enum power_supply_property psp) {
+                             enum power_supply_property psp)
+{
     int ret = 0;
 
     if (psp != POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN)
@@ -811,7 +830,8 @@ static int axp210x_writeable(struct power_supply       *psy,
     return ret;
 }
 
-static int axp210x_register_battery(struct axp210x_device_info *di) {
+static int axp210x_register_battery(struct axp210x_device_info *di)
+{
     int                        ret = 0;
     struct power_supply_desc  *psy_desc;
     struct power_supply_desc  *usb_desc, *ac_desc;
@@ -891,7 +911,8 @@ err1:
     return ret;
 }
 
-void axp210x_teardown_battery(struct axp210x_device_info *di) {
+void axp210x_teardown_battery(struct axp210x_device_info *di)
+{
     if (di->bat) power_supply_unregister(di->bat);
 
     if (di->ac) power_supply_unregister(di->ac);
@@ -899,7 +920,8 @@ void axp210x_teardown_battery(struct axp210x_device_info *di) {
     if (di->usb) power_supply_unregister(di->usb);
 }
 
-int axp210x_init_chip(struct axp210x_device_info *di) {
+int axp210x_init_chip(struct axp210x_device_info *di)
+{
     int ret = 0;
 
     if (di == NULL) {
@@ -936,7 +958,8 @@ int axp210x_init_chip(struct axp210x_device_info *di) {
     return ret;
 }
 
-static irqreturn_t axp210x_irq_handler_usb_in(int irq, void *data) {
+static irqreturn_t axp210x_irq_handler_usb_in(int irq, void *data)
+{
     unsigned int                value = 0;
     struct axp210x_device_info *di    = data;
 
@@ -952,7 +975,8 @@ static irqreturn_t axp210x_irq_handler_usb_in(int irq, void *data) {
     return IRQ_HANDLED;
 }
 
-static irqreturn_t axp210x_irq_handler_usb_out(int irq, void *data) {
+static irqreturn_t axp210x_irq_handler_usb_out(int irq, void *data)
+{
     u32                         value = 0;
     struct axp210x_device_info *di    = data;
 
@@ -968,7 +992,8 @@ static irqreturn_t axp210x_irq_handler_usb_out(int irq, void *data) {
     return IRQ_HANDLED;
 }
 
-static irqreturn_t axp210x_irq_handler_thread(int irq, void *data) {
+static irqreturn_t axp210x_irq_handler_thread(int irq, void *data)
+{
     int                         ret = 0;
     struct irq_desc            *id  = irq_to_desc(irq);
     struct axp210x_device_info *di  = data;
@@ -1039,7 +1064,8 @@ static irqreturn_t axp210x_irq_handler_thread(int irq, void *data) {
     return IRQ_HANDLED;
 }
 
-static int axp210x_read(uint8_t regaddr, uint8_t *regdata, uint8_t bytenum) {
+static int axp210x_read(uint8_t regaddr, uint8_t *regdata, uint8_t bytenum)
+{
     int            ret, i;
     struct regmap *regmap = axp210x_info->regmap;
 
@@ -1062,7 +1088,8 @@ static int axp210x_read(uint8_t regaddr, uint8_t *regdata, uint8_t bytenum) {
     return 0;
 }
 
-static int axp210x_write(uint8_t regaddr, uint8_t *regdata, uint8_t bytenum) {
+static int axp210x_write(uint8_t regaddr, uint8_t *regdata, uint8_t bytenum)
+{
     int            ret, i;
     struct regmap *regmap = axp210x_info->regmap;
 
@@ -1123,7 +1150,8 @@ struct file_operations axp210x_file_ops = {
 */
 
 #if ((defined DONOT_Correction) || (defined POLL_READ))
-static void timer_handler(unsigned long arg) {
+static void timer_handler(unsigned long arg)
+{
     int                        ret = 0;
     union power_supply_propval val;
     printk("%s: timer_handler work!\n", __FUNCTION__);
@@ -1151,7 +1179,8 @@ static void timer_handler(unsigned long arg) {
            axp210x_info->regcache.vbat);
 }
 
-static int thread_dosomthing(void *data) {
+static int thread_dosomthing(void *data)
+{
     set_freezable();
 
     while (!kthread_should_stop()) {
@@ -1166,7 +1195,8 @@ static int thread_dosomthing(void *data) {
 
 #if (AXP2101_DEBUG)
 static ssize_t register_read(struct class *class, struct class_attribute *attr,
-                             const char *buf, size_t count) {
+                             const char *buf, size_t count)
+{
     int     address = 0;
     uint8_t value   = 0;
     int     ret     = 0;
@@ -1183,7 +1213,8 @@ static ssize_t register_read(struct class *class, struct class_attribute *attr,
 }
 
 static ssize_t register_write(struct class *class, struct class_attribute *attr,
-                              const char *buf, size_t count) {
+                              const char *buf, size_t count)
+{
     int         address = 0;
     uint8_t     value   = 0;
     int         ret     = 0;
@@ -1249,11 +1280,13 @@ static struct axp_interrupts axp_charger_irq[] = {
                                       axp210x_irq_handler_thread},
 };
 
-static void axp_set_charger_info(struct axp210x_device_info *di) {
+static void axp_set_charger_info(struct axp210x_device_info *di)
+{
     axp210x_info = di;
 }
 
-static void axp2101_charger_sysconfig(struct axp210x_device_info *di) {
+static void axp2101_charger_sysconfig(struct axp210x_device_info *di)
+{
     struct regmap          *regmap = di->regmap;
     struct axp_config_info *dinfo  = &di->dts_info;
     uint8_t                 value;
@@ -1292,7 +1325,8 @@ static void axp2101_charger_sysconfig(struct axp210x_device_info *di) {
 static uint32_t iin_lim_tbl[] = {100, 500, 900, 1000, 1500, 2000};
 
 int axp2101_charger_dt_parse(struct device_node     *node,
-                             struct axp_config_info *axp_config) {
+                             struct axp_config_info *axp_config)
+{
     if (!of_device_is_available(node)) {
         pr_err("%s: failed\n", __func__);
         return -1;
@@ -1411,7 +1445,8 @@ int axp2101_charger_dt_parse(struct device_node     *node,
     return 0;
 }
 
-static void axp2101_parse_device_tree(struct axp210x_device_info *di) {
+static void axp2101_parse_device_tree(struct axp210x_device_info *di)
+{
     int                     ret;
     uint32_t                prop = 0, i;
     struct axp_config_info *cfg;
@@ -1500,7 +1535,8 @@ static void axp2101_parse_device_tree(struct axp210x_device_info *di) {
     }
 }
 
-static void battery_set_full(int *rs) {
+static void battery_set_full(int *rs)
+{
     static ktime_t l_time;
 
     if (ktime_ms_delta(ktime_get(), l_time) > MSEC_PER_SEC) {
@@ -1510,7 +1546,8 @@ static void battery_set_full(int *rs) {
     l_time = ktime_get();
 }
 
-static void battery_chk_online_v1(struct work_struct *work) {
+static void battery_chk_online_v1(struct work_struct *work)
+{
     int                         ret;
     uint8_t                     data[ 2 ] = {0};
     static ktime_t              s_chg     = {.tv64 = 0};
@@ -1606,7 +1643,8 @@ err_read:
     schedule_delayed_work(&di->bat_chk, msecs_to_jiffies(500));
 }
 
-static void battery_chk_online(struct work_struct *work) {
+static void battery_chk_online(struct work_struct *work)
+{
     int                         ret;
     static int                  cnt;
     static int                  rst[ 3 ]  = {1, 1, 1};
@@ -1718,7 +1756,8 @@ err_read:
  * is not get battery config parameter from dts,
  * then it use the default config.
  */
-static int axp2101_get_param(struct axp210x_device_info *di) {
+static int axp2101_get_param(struct axp210x_device_info *di)
+{
     struct device_node *n_para, *r_para;
     const char         *pparam;
     int                 cnt;
@@ -1757,7 +1796,8 @@ e_n_para:
     return -ENODATA;
 }
 
-static void axp2101_icchg_set(struct axp210x_device_info *di, int mA) {
+static void axp2101_icchg_set(struct axp210x_device_info *di, int mA)
+{
     if (mA <= 200)
         mA = mA / 25;
     else
@@ -1768,7 +1808,8 @@ static void axp2101_icchg_set(struct axp210x_device_info *di, int mA) {
 }
 
 static ssize_t charger_show(struct device *dev, struct device_attribute *attr,
-                            char *buf) {
+                            char *buf)
+{
     struct power_supply        *ps = dev_get_drvdata(dev);
     struct axp210x_device_info *di = power_supply_get_drvdata(ps);
 
@@ -1776,7 +1817,8 @@ static ssize_t charger_show(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t charger_store(struct device *dev, struct device_attribute *attr,
-                             const char *buf, size_t count) {
+                             const char *buf, size_t count)
+{
     struct power_supply        *ps = dev_get_drvdata(dev);
     struct axp210x_device_info *di = power_supply_get_drvdata(ps);
     long                        val;
@@ -1800,7 +1842,8 @@ static ssize_t charger_store(struct device *dev, struct device_attribute *attr,
 
 DEVICE_ATTR_RW(charger);
 
-static int axp210x_chip_id(struct axp210x_device_info *di) {
+static int axp210x_chip_id(struct axp210x_device_info *di)
+{
     int ret;
     u8  data;
 
@@ -1824,7 +1867,8 @@ static int axp210x_chip_id(struct axp210x_device_info *di) {
     return -ENODEV;
 }
 
-static int axp2101_charger_probe(struct platform_device *pdev) {
+static int axp2101_charger_probe(struct platform_device *pdev)
+{
     int                         ret = 0;
     int                         i   = 0, irq;
     struct axp210x_device_info *di;
@@ -1936,7 +1980,8 @@ err:
     return ret;
 }
 
-static int axp2101_charger_remove(struct platform_device *pdev) {
+static int axp2101_charger_remove(struct platform_device *pdev)
+{
     axp210x_alway("==============AXP2101 unegister==============\n");
 #if ((defined DONOT_Correction) || (defined POLL_READ))
     kthread_stop(axp210x_info->poll_read);
@@ -1952,14 +1997,16 @@ static int axp2101_charger_remove(struct platform_device *pdev) {
     return 0;
 }
 
-static inline void axp2101_irq_set(unsigned int irq, bool enable) {
+static inline void axp2101_irq_set(unsigned int irq, bool enable)
+{
     if (enable)
         enable_irq(irq);
     else
         disable_irq(irq);
 }
 
-static void axp2101_virq_dts_set(struct axp210x_device_info *di, bool enable) {
+static void axp2101_virq_dts_set(struct axp210x_device_info *di, bool enable)
+{
     struct axp_config_info *dts_info = &di->dts_info;
 
     if (!dts_info->wakeup_usb_in)
@@ -1995,7 +2042,8 @@ static void axp2101_virq_dts_set(struct axp210x_device_info *di, bool enable) {
                         enable);
 }
 
-static void axp2101_shutdown(struct platform_device *p) {
+static void axp2101_shutdown(struct platform_device *p)
+{
     struct axp210x_device_info *di = platform_get_drvdata(p);
 
     /*
@@ -2008,7 +2056,8 @@ static void axp2101_shutdown(struct platform_device *p) {
     axp2101_icchg_set(di, di->dts_info.pmu_shutdown_chgcur);
 }
 
-static int axp2101_suspend(struct platform_device *p, pm_message_t state) {
+static int axp2101_suspend(struct platform_device *p, pm_message_t state)
+{
     struct axp210x_device_info *di = platform_get_drvdata(p);
 
     if (!di->stat.charger_disable)
@@ -2020,7 +2069,8 @@ static int axp2101_suspend(struct platform_device *p, pm_message_t state) {
     return 0;
 }
 
-static int axp2101_resume(struct platform_device *p) {
+static int axp2101_resume(struct platform_device *p)
+{
     struct axp210x_device_info *di = platform_get_drvdata(p);
 
     if (!di->stat.charger_disable)

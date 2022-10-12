@@ -69,7 +69,8 @@
 
 extern struct platform_suspend_ops suspend_ops;
 
-static __always_inline void __record_dbg_status(int val) {
+static __always_inline void __record_dbg_status(int val)
+{
     // __set_last_record_step(val);
     dsb();
     isb();

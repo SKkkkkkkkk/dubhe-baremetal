@@ -40,7 +40,8 @@
 #define IRQMASK_REG_NAME_W "primask"
 
 /* Save the current interrupt enable state and disable IRQ */
-static __always_inline unsigned long arch_irq_save(void) {
+static __always_inline unsigned long arch_irq_save(void)
+{
     unsigned long flags;
 
     __asm volatile("mrs	%0, " IRQMASK_REG_NAME_R "\n"
@@ -52,7 +53,8 @@ static __always_inline unsigned long arch_irq_save(void) {
 }
 
 /* Restore saved IRQ state */
-static __always_inline void arch_irq_restore(unsigned long flags) {
+static __always_inline void arch_irq_restore(unsigned long flags)
+{
     __asm volatile("msr	" IRQMASK_REG_NAME_W ", %0"
                    :
                    : "r"(flags)
@@ -60,7 +62,8 @@ static __always_inline void arch_irq_restore(unsigned long flags) {
 }
 
 /* Get the current interrupt enable state */
-static __always_inline unsigned long arch_irq_get_flags(void) {
+static __always_inline unsigned long arch_irq_get_flags(void)
+{
     unsigned long flags;
 
     __asm volatile("mrs	%0, " IRQMASK_REG_NAME_R "\n"

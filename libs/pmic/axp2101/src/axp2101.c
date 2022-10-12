@@ -150,9 +150,9 @@ static struct resource axp2101_pek_resources[] = {
 
 static struct mfd_cell axp2101_cells[] = {
     /*{
-.name		= "axp2101-gpio",
-.of_compatible	= "x-powers,axp2101-gpio",
-}, */
+      .name		= "axp2101-gpio",
+      .of_compatible	= "x-powers,axp2101-gpio",
+      }, */
     {
         .name          = "axp2101-pek",
         .num_resources = ARRAY_SIZE(axp2101_pek_resources),
@@ -270,7 +270,8 @@ static struct mfd_cell axp2101_cells[] = {
 };
 /*----------------------*/
 static struct axp20x_dev *axp20x_pm_power_off;
-void                      axp20x_power_off(void) {
+void                      axp20x_power_off(void)
+{
     if (axp20x_pm_power_off->variant == AXP2101_ID)
         axp20x_i2c_write(AXP2101_COMM_CFG, AXP20X_OFF);
 
@@ -281,7 +282,8 @@ void                      axp20x_power_off(void) {
 /*
  * axp2101_dts_parse - axp2101 device tree parse
  */
-static void axp2101_dts_parse(struct axp20x_dev *axp20x) {
+static void axp2101_dts_parse(struct axp20x_dev *axp20x)
+{
     u32 val;
 
     // "pmu_powerok_noreset"
@@ -312,7 +314,8 @@ static void axp2101_dts_parse(struct axp20x_dev *axp20x) {
     axp20x_i2c_write(AXP2101_PWR_TIME_CTRL, val);
 }
 
-int axp20x_match_device(struct axp20x_dev *axp20x) {
+int axp20x_match_device(struct axp20x_dev *axp20x)
+{
 
     switch (axp20x->variant) {
     case AXP2101_ID:
@@ -331,7 +334,8 @@ int axp20x_match_device(struct axp20x_dev *axp20x) {
     return 0;
 }
 
-int axp20x_device_probe(struct axp20x_dev *axp20x) {
+int axp20x_device_probe(struct axp20x_dev *axp20x)
+{
     __nouse__ int ret;
 
     /*
@@ -356,7 +360,8 @@ int axp20x_device_probe(struct axp20x_dev *axp20x) {
     return 0;
 }
 
-int axp20x_device_remove(struct axp20x_dev *axp20x) {
+int axp20x_device_remove(struct axp20x_dev *axp20x)
+{
     if (axp20x == axp20x_pm_power_off) {
         axp20x_pm_power_off = NULL;
         // pm_power_off = NULL;

@@ -43,7 +43,8 @@ static struct of_device_id axp20x_i2c_of_match[] = {
     {},
 };
 
-static int i2c_write_reg(struct pmic_cfg *cfg, uint16_t reg, u32 len, u32 val) {
+static int i2c_write_reg(struct pmic_cfg *cfg, uint16_t reg, u32 len, u32 val)
+{
     i2c_msg msgs;
     int     ret  = 0;
     uint8_t tmp8 = 0;
@@ -74,7 +75,8 @@ static int i2c_write_reg(struct pmic_cfg *cfg, uint16_t reg, u32 len, u32 val) {
 }
 
 static int i2c_read_reg(struct pmic_cfg *cfg, uint16_t reg, unsigned int len,
-                        u32 *val) {
+                        u32 *val)
+{
     i2c_msg msgs;
     int     ret = 0;
     uint8_t tmp[ 2 ];
@@ -102,7 +104,8 @@ static int i2c_read_reg(struct pmic_cfg *cfg, uint16_t reg, unsigned int len,
     return 0;
 }
 
-inline int axp20x_i2c_write(u32 reg, u32 val) {
+inline int axp20x_i2c_write(u32 reg, u32 val)
+{
     struct pmic_cfg *cfg = &axp20x->cfg;
 
     // printf("-->%s line %d i2c bus %d reg 0x%x val 0x%x\n", __func__,
@@ -110,14 +113,16 @@ inline int axp20x_i2c_write(u32 reg, u32 val) {
     return i2c_write_reg(cfg, reg, 1, val);
 }
 
-inline int axp20x_i2c_read(u32 reg, u32 *val) {
+inline int axp20x_i2c_read(u32 reg, u32 *val)
+{
     struct pmic_cfg *cfg = &axp20x->cfg;
 
     // printf("-->%s line %d i2c bus %d\n", __func__, __LINE__, cfg->i2c_bus);
     return i2c_read_reg(cfg, reg, 1, val);
 }
 
-static int axp20x_i2c_probe(void *i2c, void *id) {
+static int axp20x_i2c_probe(void *i2c, void *id)
+{
     __nouse__ int ret;
 
     axp20x = malloc(sizeof(struct axp20x_dev));
@@ -139,7 +144,8 @@ static int axp20x_i2c_probe(void *i2c, void *id) {
     return axp20x_device_probe(axp20x);
 }
 
-static int axp20x_i2c_remove(void *i2c) {
+static int axp20x_i2c_remove(void *i2c)
+{
     axp20x_device_remove(axp20x);
 
     if (axp20x != NULL) free(axp20x);
@@ -147,7 +153,8 @@ static int axp20x_i2c_remove(void *i2c) {
     return 0;
 }
 
-static int pmic_check(struct pmic_cfg *cfg) {
+static int pmic_check(struct pmic_cfg *cfg)
+{
     int           ret = 0;
     unsigned char buf[ 2 ];
     // unsigned short id = 0;
@@ -163,7 +170,8 @@ static int pmic_check(struct pmic_cfg *cfg) {
     return ret;
 }
 
-int axp2101_i2c_init(struct pmic_cfg *cfg) {
+int axp2101_i2c_init(struct pmic_cfg *cfg)
+{
     int err = 0;
 
     if (cfg == NULL) {
@@ -196,7 +204,8 @@ int axp2101_i2c_init(struct pmic_cfg *cfg) {
     return err;
 }
 
-void axp2101_i2c_exit(struct pmic_cfg *cfg) {
+void axp2101_i2c_exit(struct pmic_cfg *cfg)
+{
     i2c_master_deinit(cfg->i2c_bus);
     axp20x_i2c_remove(NULL);
 }
