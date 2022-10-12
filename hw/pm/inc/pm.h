@@ -38,9 +38,9 @@
 extern "C" {
 #endif
 
-#define __ramvector __attribute__ ((section (".ram_vector"), aligned(256)))
-#define __ramfunc __attribute__ ((section (".ram_func"), aligned(4)))
-#define __ramdata __attribute__ ((section (".ram_data"), aligned(4)))
+#define __ramvector __attribute__((section(".ram_vector"), aligned(256)))
+#define __ramfunc   __attribute__((section(".ram_func"), aligned(4)))
+#define __ramdata   __attribute__((section(".ram_data"), aligned(4)))
 
 /**
  * @brief Defined all supported low power state.
@@ -55,42 +55,42 @@ extern "C" {
  *         network can work normally and can wakeup system by received data from
  *         network. Also some special wakeup sources like wakeup timer or IO can
  *         wakeup system if you set this wakeup sources properly.
- *       PM_MODE_HIBERNATION is used for some special wakeup sources to wakeup system.
- *         System will restartup when wakeup. In this mode CPU and all devices
+ *       PM_MODE_HIBERNATION is used for some special wakeup sources to wakeup
+ * system. System will restartup when wakeup. In this mode CPU and all devices
  *         has been powered off beside network. Only some special wakeup sources
  *         can startup system, and can get wakeup event at startup.
  */
 enum suspend_state_t {
-	PM_MODE_ON              = 0,
-	PM_MODE_SLEEP           = 1,
-	PM_MODE_STANDBY         = 2,
-	PM_MODE_HIBERNATION     = 3,
-	PM_MODE_MAX             = 4,
+    PM_MODE_ON          = 0,
+    PM_MODE_SLEEP       = 1,
+    PM_MODE_STANDBY     = 2,
+    PM_MODE_HIBERNATION = 3,
+    PM_MODE_MAX         = 4,
 };
 
-#define PM_MODE_MAGIC           (0x7FF20000)
+#define PM_MODE_MAGIC          (0x7FF20000)
 
 /** @brief Platform pm mode support. */
-#define PM_SUPPORT_SLEEP        (1<<PM_MODE_SLEEP)
-#define PM_SUPPORT_STANDBY      (1<<PM_MODE_STANDBY)
-#define PM_SUPPORT_HIBERNATION  (1<<PM_MODE_HIBERNATION)
+#define PM_SUPPORT_SLEEP       (1 << PM_MODE_SLEEP)
+#define PM_SUPPORT_STANDBY     (1 << PM_MODE_STANDBY)
+#define PM_SUPPORT_HIBERNATION (1 << PM_MODE_HIBERNATION)
 
 /** @brief Suspend test levels. */
 enum suspend_test_level_t {
-	TEST_NONE,              /* keep first */
-	TEST_CORE,
-	TEST_PLATFORM,
-	TEST_DEVICES,
-	__TEST_AFTER_LAST       /* keep last */
+    TEST_NONE, /* keep first */
+    TEST_CORE,
+    TEST_PLATFORM,
+    TEST_DEVICES,
+    __TEST_AFTER_LAST /* keep last */
 };
 
 /** @brief Wlan power on/off callback. */
 typedef int (*pm_module_power_onoff)(unsigned int enable);
 
 enum pm_op_t {
-	PM_OP_NORMAL = 0,
-	PM_OP_NOIRQ,
-	PM_OP_NUM,
+    PM_OP_NORMAL = 0,
+    PM_OP_NOIRQ,
+    PM_OP_NUM,
 };
 
 struct soc_device;
@@ -110,16 +110,16 @@ struct soc_device;
  *  2. Resume device to work mode.
  */
 struct soc_device_driver {
-	const char *name;               /* name of the device driver. */
-	unsigned int enter_latency;     /* in US */
-	unsigned int exit_latency;      /* in US */
-	/*const struct soc_device *dev;*/
+    const char  *name;          /* name of the device driver. */
+    unsigned int enter_latency; /* in US */
+    unsigned int exit_latency;  /* in US */
+    /*const struct soc_device *dev;*/
 
-	int (*suspend)(struct soc_device *dev, enum suspend_state_t state);
-	int (*resume)(struct soc_device *dev, enum suspend_state_t state);
+    int (*suspend)(struct soc_device *dev, enum suspend_state_t state);
+    int (*resume)(struct soc_device *dev, enum suspend_state_t state);
 
-	int (*suspend_noirq)(struct soc_device *dev, enum suspend_state_t state);
-	int (*resume_noirq)(struct soc_device *dev, enum suspend_state_t state);
+    int (*suspend_noirq)(struct soc_device *dev, enum suspend_state_t state);
+    int (*resume_noirq)(struct soc_device *dev, enum suspend_state_t state);
 };
 
 /**
@@ -129,23 +129,25 @@ struct soc_device_driver {
  *   describing devices and how they are wired.
  */
 struct soc_device {
-	struct list_head node[PM_OP_NUM];
-	unsigned int ref;
+    struct list_head node[ PM_OP_NUM ];
+    unsigned int     ref;
 
-	const char *name;               /* initial name of the device */
+    const char *name; /* initial name of the device */
 
-	const struct soc_device_driver *driver; /* which driver has allocated this device */
-	void *platform_data;                    /* Platform specific data, device core doesn't touch it */
+    const struct soc_device_driver
+         *driver;        /* which driver has allocated this device */
+    void *platform_data; /* Platform specific data, device core doesn't touch it
+                          */
 };
 
 #ifdef CONFIG_PM_WAKELOCKS
 
-#define WAKELOCKS_DEF_SUSPEND_TO_MIN    200
+#define WAKELOCKS_DEF_SUSPEND_TO_MIN 200
 
 enum pm_wakelock_t {
-	PM_WKL_WAIT_FOREVER = 0,
-	PM_WKL_WAIT_TIMEOUT,
-	PM_WKL_WAIT_NUM,
+    PM_WKL_WAIT_FOREVER = 0,
+    PM_WKL_WAIT_TIMEOUT,
+    PM_WKL_WAIT_NUM,
 };
 
 /**
@@ -159,13 +161,13 @@ enum pm_wakelock_t {
  *       if any of wakelocks active.
  */
 struct wakelock {
-	char                    *name;
+    char *name;
 
-	/* pm core use, keep 0 when first used */
-	struct list_head        node;
-	uint32_t                expires;
-	uint16_t                ref;
-	uint16_t                reserve;
+    /* pm core use, keep 0 when first used */
+    struct list_head node;
+    uint32_t         expires;
+    uint16_t         ref;
+    uint16_t         reserve;
 };
 #endif
 
@@ -275,14 +277,15 @@ extern void pm_mode_platform_select(unsigned int select);
  */
 extern int pm_check_wakeup_irqs(void);
 
-extern void pm_set_suspend_resume_latency(unsigned int enter_lat, unsigned int exit_lat);
+extern void         pm_set_suspend_resume_latency(unsigned int enter_lat,
+                                                  unsigned int exit_lat);
 extern unsigned int pm_get_suspend_latency(void);
 extern unsigned int pm_get_resume_latency(void);
 extern unsigned int pm_get_suspend_resume_latency(void);
 
-extern int pm_test(void);
+extern int  pm_test(void);
 extern void pm_set_debug_mask(uint16_t debug_mask);
-void pm_standby_sram_retention_only(uint32_t sramN);
+void        pm_standby_sram_retention_only(uint32_t sramN);
 
 #ifdef CONFIG_PM_WAKELOCKS
 /**
@@ -323,27 +326,40 @@ int pm_wake_lock_timeout(struct wakelock *wl, uint32_t timeout);
 void pm_wakelocks_show(void);
 #endif
 
-#else /* CONFIG_PM */
+#else  /* CONFIG_PM */
 
-static inline int pm_register_ops(struct soc_device *dev) { return 0; }
-static inline int pm_unregister_ops(struct soc_device *dev) { return 0; }
+static inline int  pm_register_ops(struct soc_device *dev) { return 0; }
+static inline int  pm_unregister_ops(struct soc_device *dev) { return 0; }
 static inline void pm_set_sync_magic(void) { ; }
-static inline int pm_enter_mode_timeout(enum suspend_state_t state, uint32_t tmo) { return 0; }
-static inline int pm_enter_mode(enum suspend_state_t state) { return 0; }
+static inline int  pm_enter_mode_timeout(enum suspend_state_t state,
+                                         uint32_t             tmo) {
+    return 0;
+}
+static inline int  pm_enter_mode(enum suspend_state_t state) { return 0; }
 static inline void pm_suspend_abort(void) { ; }
 static inline enum suspend_state_t pm_get_mode(void) { return PM_MODE_ON; }
-static inline int pm_init(void) { return 0; }
-static inline void pm_start(void) { ; }
-static inline void pm_stop(void) { ; }
+static inline int                  pm_init(void) { return 0; }
+static inline void                 pm_start(void) { ; }
+static inline void                 pm_stop(void) { ; }
 static inline void pm_set_test_level(enum suspend_test_level_t level) { ; }
 static inline void pm_set_debug_delay_ms(unsigned int ms) { ; }
 static inline void pm_stats_show(void) { ; }
 static inline void pm_mode_platform_select(unsigned int select) { ; }
-static inline int pm_register_wlan_power_onoff(pm_module_power_onoff wlan_power_cb,
-                                               unsigned int select) { return 0; }
-static inline int pm_register_bt_power_onoff(pm_module_power_onoff bt_power_cb, unsigned int select) { return 0; }
+static inline int
+    pm_register_wlan_power_onoff(pm_module_power_onoff wlan_power_cb,
+                                 unsigned int          select) {
+    return 0;
+}
+static inline int pm_register_bt_power_onoff(pm_module_power_onoff bt_power_cb,
+                                             unsigned int          select) {
+    return 0;
+}
 static inline void pm_unregister_bt_power_onoff(void) { ; }
-static inline int pm_register_ble_power_onoff(pm_module_power_onoff ble_power_cb, unsigned int select) { return 0; }
+static inline int
+    pm_register_ble_power_onoff(pm_module_power_onoff ble_power_cb,
+                                unsigned int          select) {
+    return 0;
+}
 static inline void pm_unregister_ble_power_onoff(void) { ; }
 
 static inline int pm_check_wakeup_irqs(void) { return 0; }
