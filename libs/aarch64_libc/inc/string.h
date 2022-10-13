@@ -29,4 +29,7 @@ size_t strlcpy(char * dst, const char * src, size_t dsize);
 size_t strlcat(char * dst, const char * src, size_t dsize);
 char *strtok_r(char *s, const char *delim, char **last);
 
+char *strcpy(char *restrict, const char *restrict);
+char *strncpy(char * __restrict dst, const char * __restrict src, size_t n);
+
 #endif /* STRING_H */

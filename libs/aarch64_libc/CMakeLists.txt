@@ -31,6 +31,7 @@ target_sources( ${LIB_OBJS_NAME}
 		strtoll.c
 		strtoul.c
 		strtoull.c
+		strcpy.c
 )
 
 target_include_directories( ${LIB_OBJS_NAME}

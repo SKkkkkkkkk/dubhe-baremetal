@@ -1,0 +1,1 @@
+#define configSUPPORT_MALLOC 0 // aarch64目前不支持malloc

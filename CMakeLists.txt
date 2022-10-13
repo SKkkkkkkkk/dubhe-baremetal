@@ -209,6 +209,7 @@ set(ENABLE_USE_SYSTIMER ON)
 set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 set(ENABLE_USE_PMIC OFF)
+set(ENABLE_USE_tinyCLI OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 
@@ -382,6 +383,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_PMIC)
         add_subdirectory(${SDK_DIR}/libs/pmic/axp2101)
         set(link_libs ${link_libs} axp2101)
+    endif()
+
+     ### USE_tinyCLI
+     cmake_dependent_option(
+        USE_tinyCLI "Use tinyCLI" ON
+        "ENABLE_USE_tinyCLI;" OFF
+    )
+    if(USE_tinyCLI)
+        add_subdirectory(${SDK_DIR}/libs/tinyCLI)
+        set(link_libs ${link_libs} tinyCLI)
     endif()
 
 endif()

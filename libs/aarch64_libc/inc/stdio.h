@@ -27,5 +27,6 @@ int vsnprintf(char *s, size_t n, const char *fmt, va_list args);
 
 int putchar(int c);
 int puts(const char *s);
+int getchar();
 
 #endif /* STDIO_H */

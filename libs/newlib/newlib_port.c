@@ -44,9 +44,9 @@ extern int errno;
 		{
 			uart_config _uart_config = {
 				.data_bits = 8,
-				.stop_bits = 0,
-				.parity = true,
-				.baudrate = 115200
+				.stop_bits = 1,
+				.parity = false,
+				.baudrate = 9600
 			};
 			if(uart_configure(&_uart_config) != UART_OK)
 				return 0;
@@ -56,10 +56,7 @@ extern int errno;
 
 		int i;
 		for(i=0;i<len;i++)
-		{
-			if(uart_getchar(ptr+i) != UART_OK)
-				return 0;
-		}
+			while(uart_getchar(ptr+i)!=UART_OK);
 		(void)fd;
 		return i;
 	}
