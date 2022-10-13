@@ -33,10 +33,6 @@
 #include "cmsis_gcc.h"
 #include "interrupt.h"
 
-#define ktime_t                   uint64_t
-#define ktime_get()               0 //(HAL_RTC_GetFreeRunTime() / 1000) TODO
-#define ktime_to_msecs(t)         (t)
-
 #define arch_suspend_disable_irqs __disable_irq
 #define arch_suspend_enable_irqs  __enable_irq
 

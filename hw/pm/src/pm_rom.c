@@ -42,6 +42,7 @@
 #include "_pm_define.h"
 #include "pm_i.h"
 #include "port.h"
+#include "systimer.h"
 
 #ifdef CONFIG_PM
 
@@ -108,9 +109,24 @@ void pm_set_dump_addr(uint32_t addr, uint32_t len, uint32_t idx)
     pm_debug_dump_addr[ idx ][ 1 ] = addr;
 }
 
-static int pm_test_level = TEST_NONE;
-
+static int           pm_test_level = TEST_NONE;
 static unsigned long suspend_test_start_time;
+
+static systimer_id_t time_id = SYSTIMER_ERR_ID;
+#define ktime_t           uint64_t
+#define ktime_to_msecs(t) (t)
+
+int ktime_get(void)
+{
+    if (time_id == SYSTIMER_ERR_ID) {
+        time_id = systimer_acquire_timer();
+        if (time_id == SYSTIMER_ERR_ID) return -1;
+    }
+
+    if (time_id) return (systimer_get_elapsed_time(time_id, IN_MS));
+
+    return -1;
+}
 
 void suspend_test_start(void) { suspend_test_start_time = ktime_get(); }
 
@@ -121,6 +137,9 @@ void suspend_test_finish(const char *label)
 
     msec = ktime_to_msecs(abs(nj));
     PM_LOGN("%s took %d ms\n", label, msec);
+
+    if (time_id) systimer_release_timer(time_id);
+    time_id = SYSTIMER_ERR_ID;
 }
 
 int suspend_test(int level)

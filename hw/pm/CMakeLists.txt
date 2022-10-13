@@ -30,6 +30,7 @@ target_compile_options(${LIB_NAME}
 
 target_link_libraries(${LIB_NAME}
 	PUBLIC
+		systimer
 		m3
 		freertos_kernel
 )

@@ -18,11 +18,11 @@ int32_t                  arg_flag = 1;
 void task1(void *arg)
 {
     pmSemaphore = xSemaphoreCreateBinary();
+    pm_set_test_level(TEST_CORE); // test mode
 
     while (1) {
         printf("task1\n");
         if (xSemaphoreTake(pmSemaphore, portMAX_DELAY)) {
-            /* pm_set_test_level(TEST_CORE); */
             printf("\nPM example start!\n");
             printf("Support 3 low power modes: sleep/standby/hibernation\n");
 

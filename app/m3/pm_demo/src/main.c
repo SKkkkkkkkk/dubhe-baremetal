@@ -241,7 +241,7 @@ int main()
     cfg.check_addr = 0x00;
     cfg.check_len  = 1;
 
-    err = axp2101_i2c_init(&cfg);
+    // err = axp2101_i2c_init(&cfg);
 
     if (!err) {
         axp20x_i2c_write(AXP2101_INTEN1, 0);
