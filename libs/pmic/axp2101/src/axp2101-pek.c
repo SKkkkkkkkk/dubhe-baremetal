@@ -199,9 +199,11 @@ __nouse__ static int axp20x_pek_irq(int irq, void *pwr)
 
 static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 {
-    __nouse__ struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-    struct pk_dts               *pk_dts     = &axp20x_pek->pk_dts;
-    u32                          val        = 0;
+    struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
+    struct pk_dts     *pk_dts     = &axp20x_pek->pk_dts;
+    u32                val        = 0;
+
+    if (axp20x_dev->sts != STATUS_OK) return -1;
 
     axp20x_i2c_read(axp2101_PONLEVEL, &val);
     if (pk_dts->pmu_powkey_on_time < 128)
@@ -323,9 +325,12 @@ void axp20x_pek_remove(void)
 
 int axp2101_powerkey_suspend(void)
 {
-    u32 val = 0;
+    u32                val        = 0;
+    struct axp20x_dev *axp20x_dev = g_axp20x_pek->axp20x;
+    if (axp20x_dev->sts != STATUS_OK) return -1;
 
     // SLEEP enable
+    printf("pmic go to sleep !!!\n");
     axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
     val |= 0x01;
     axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
@@ -361,21 +366,23 @@ int axp2101_powerkey_suspend(void)
 
 int axp2101_powerkey_resume(void)
 {
+    u32                val        = 0;
+    struct axp20x_dev *axp20x_dev = g_axp20x_pek->axp20x;
+    if (axp20x_dev->sts != STATUS_OK) return -1;
 
-    axp20x_set_dcdc1(1200);
-    axp20x_set_dcdc2(1200);
-    axp20x_set_dcdc3(1200);
-    axp20x_set_dcdc4(1200);
-    axp20x_set_dcdc5(1200);
-    axp20x_set_aldo1(1200);
-    axp20x_set_aldo2(1200);
-    axp20x_set_aldo3(1200);
-    axp20x_set_aldo4(1200);
-    axp20x_set_bldo1(1200);
-    axp20x_set_bldo2(1200);
-    axp20x_set_dldo1(1200);
-    axp20x_set_dldo2(1200);
-    axp20x_set_cpusldo(1200);
+    printf("pmic go to resume !!!\n");
+
+    // IRQ Pin low to Wakeup
+    axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
+    val &= 0xef;
+    axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
+
+    // POWERON Short Long IRQ
+    val = 0x00;
+    axp20x_i2c_write(AXP2101_INTEN2, val);
+    // Cleat IRQ status
+    val = 0x0c;
+    axp20x_i2c_write(AXP2101_INTSTS2, val);
 
     return 0;
 }

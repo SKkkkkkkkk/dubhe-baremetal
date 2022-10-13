@@ -47,6 +47,8 @@
 
 extern void cpu_tz_suspend(void);
 
+struct pmic_callback_ops axp2101_pmic_ops;
+
 #ifdef CONFIG_PM_DEBUG
 static struct arm_CMX_core_regs vault_arm_registers;
 #endif
@@ -439,6 +441,10 @@ static void __suspend_enter(enum suspend_state_t state)
         PM_LOGN("PM_MODE_SLEEP  exit\n"); /* debug info. */
     } else {
         PM_LOGN("PM_MODE_STANDBY enter\n"); /* debug info. */
+
+        if (axp2101_pmic_ops.pmic_to_sleep != NULL)
+            axp2101_pmic_ops.pmic_to_sleep();
+
         /* 配置PMU相关寄存器 */
         /* 配置唤醒原 */
         /* 配置始终相关 */
@@ -449,6 +455,8 @@ static void __suspend_enter(enum suspend_state_t state)
         /* __cpu_suspend(state); */
         cpu_suspend();
 
+        if (axp2101_pmic_ops.pmic_to_resume != NULL)
+            axp2101_pmic_ops.pmic_to_resume();
         /* 配置标识表明唤醒之前的状态 */
         PM_LOGN("PM_MODE_STANDBY  exit\n"); /* debug info. */
     }

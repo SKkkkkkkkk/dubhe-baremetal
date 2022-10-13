@@ -286,6 +286,8 @@ static void axp2101_dts_parse(struct axp20x_dev *axp20x)
 {
     u32 val;
 
+    if (axp20x->sts != STATUS_OK) return;
+
     // "pmu_powerok_noreset"
     axp20x_i2c_read(AXP2101_COMM_CFG, &val);
     val &= 0xfe;
@@ -355,6 +357,7 @@ int axp20x_device_probe(struct axp20x_dev *axp20x)
 
     axp2101_regulator_probe(axp20x, NULL);
 
+    axp20x->sts = STATUS_OK;
     printf("AXP20X driver loaded\n");
 
     return 0;

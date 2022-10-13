@@ -128,6 +128,8 @@ static int axp20x_i2c_probe(void *i2c, void *id)
     axp20x = malloc(sizeof(struct axp20x_dev));
     if (!axp20x) return -1;
 
+    axp20x->sts = STATUS_NONE;
+
     memcpy(&axp20x->cfg, i2c, sizeof(struct pmic_cfg));
 
     for (int i = 0; i < ARRAY_SIZE(axp20x_i2c_of_match); i++) {
@@ -200,7 +202,7 @@ int axp2101_i2c_init(struct pmic_cfg *cfg)
         return err;
     }
 
-    axp20x_i2c_probe(cfg, NULL);
+    err = axp20x_i2c_probe(cfg, NULL);
     return err;
 }
 

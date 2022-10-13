@@ -1668,6 +1668,12 @@ enum regcache_type {
     REGCACHE_FLAT,
 };
 
+enum sts_type {
+	STATUS_OK,
+	STATUS_ERR,
+	STATUS_NONE,
+};
+
 struct regmap_range {
     unsigned int range_min;
     unsigned int range_max;
@@ -1962,6 +1968,7 @@ struct axp20x_dev {
     // struct device			*dev;
     struct pmic_cfg cfg;
     int             irq;
+    int             sts;
     // struct regmap			*regmap;
     // struct regmap_irq_chip_data	*regmap_irqc;
     struct regulator_dev         *rdev;

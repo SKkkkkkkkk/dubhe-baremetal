@@ -231,28 +231,27 @@ int main()
 
     __nouse__ u32 val   = 0;
     __nouse__ u32 count = 0;
-#if 0
-	struct pmic_cfg cfg;
-	strcpy(cfg.name, "axp2101");
-	cfg.reg_addr = 0x34;
-	cfg.i2c_bus = 2;
-	cfg.check_addr = 0x00;
-	cfg.check_len = 1;
-	axp2101_i2c_init(&cfg);
+    int           err   = 0;
 
-	axp20x_i2c_write(AXP2101_INTEN1, 0);
-	axp20x_i2c_write(AXP2101_INTEN2, 0);
-	axp20x_i2c_write(AXP2101_INTEN3, 0);
-	axp20x_i2c_read(AXP2101_INTEN1, &val);
-	printf("AXP2101_INTEN1 = 0x%x\n", val);
-	axp20x_i2c_read(AXP2101_INTEN2, &val);
-	printf("AXP2101_INTEN2 = 0x%x\n", val);
-	axp20x_i2c_read(AXP2101_INTEN3, &val);
-	printf("AXP2101_INTEN3 = 0x%x\n", val);
-	axp2101_powerkey_suspend();
-	// axp2101_powerkey_resume();
-#endif
-#if 0
+    struct pmic_cfg cfg;
+
+    strcpy(cfg.name, "axp2101");
+    cfg.reg_addr   = 0x34;
+    cfg.i2c_bus    = 2;
+    cfg.check_addr = 0x00;
+    cfg.check_len  = 1;
+
+    err = axp2101_i2c_init(&cfg);
+
+    if (!err) {
+        axp20x_i2c_write(AXP2101_INTEN1, 0);
+        axp20x_i2c_write(AXP2101_INTEN2, 0);
+        axp20x_i2c_write(AXP2101_INTEN3, 0);
+        axp2101_pmic_ops.pmic_to_sleep  = axp2101_powerkey_suspend;
+        axp2101_pmic_ops.pmic_to_resume = axp2101_powerkey_resume;
+    }
+
+#if 0 /*{{{*/
 	while(1){
 #if 0
 		systimer_delay(1, IN_S);
@@ -323,7 +322,7 @@ int main()
 		printf("IP[%d] = 0x%x\n", Interrupt79_IRQn, val);
 		systimer_delay(2, IN_S);
 	}
-#endif
+#endif /*}}}*/
 
     if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
                           &xTaskBuffer) == NULL)
