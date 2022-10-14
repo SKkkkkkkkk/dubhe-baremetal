@@ -47,6 +47,7 @@ endif()
 target_link_libraries(${LIB_OBJS_NAME} 
 	PRIVATE
 		systimer
+		i2c
 )
 
 

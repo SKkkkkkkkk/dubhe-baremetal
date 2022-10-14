@@ -11,286 +11,286 @@
 #ifndef __LINUX_MFD_AXP20X_H
 #define __LINUX_MFD_AXP20X_H
 
-#define __nouse__		__attribute__((unused))
+#define __nouse__ __attribute__((unused))
 
 enum {
-	AXP152_ID = 0,
-	AXP202_ID,
-	AXP209_ID,
-	AXP221_ID,
-	AXP223_ID,
-	AXP288_ID,
-	AXP806_ID,
-	AXP809_ID,
-	AXP2101_ID,
-	AXP15_ID,
-	AXP1530_ID,
-	AXP858_ID,
-	AXP803_ID,
-	AXP2202_ID,
-	AXP2585_ID,
-	NR_AXP20X_VARIANTS,
+    AXP152_ID = 0,
+    AXP202_ID,
+    AXP209_ID,
+    AXP221_ID,
+    AXP223_ID,
+    AXP288_ID,
+    AXP806_ID,
+    AXP809_ID,
+    AXP2101_ID,
+    AXP15_ID,
+    AXP1530_ID,
+    AXP858_ID,
+    AXP803_ID,
+    AXP2202_ID,
+    AXP2585_ID,
+    NR_AXP20X_VARIANTS,
 };
 
 enum {
-	AXP_SPLY = 1U << 0,
-	AXP_REGU = 1U << 1,
-	AXP_INT  = 1U << 2,
-	AXP_CHG  = 1U << 3,
-	AXP_MISC = 1U << 4,
+    AXP_SPLY = 1U << 0,
+    AXP_REGU = 1U << 1,
+    AXP_INT  = 1U << 2,
+    AXP_CHG  = 1U << 3,
+    AXP_MISC = 1U << 4,
 };
 
 extern int axp_debug_mask;
 
-#define AXP20X_DATACACHE(m)		(0x04 + (m))
+#define AXP20X_DATACACHE(m)         (0x04 + (m))
 
 /* Power supply */
-#define AXP152_PWR_OP_MODE		0x01
-#define AXP152_LDO3456_DC1234_CTRL	0x12
-#define AXP152_ALDO_OP_MODE		0x13
-#define AXP152_LDO0_CTRL		0x15
-#define AXP152_DCDC2_V_OUT		0x23
-#define AXP152_DCDC2_V_SCAL		0x25
-#define AXP152_DCDC1_V_OUT		0x26
-#define AXP152_DCDC3_V_OUT		0x27
-#define AXP152_ALDO12_V_OUT		0x28
-#define AXP152_DLDO1_V_OUT		0x29
-#define AXP152_DLDO2_V_OUT		0x2a
-#define AXP152_DCDC4_V_OUT		0x2b
-#define AXP152_V_OFF			0x31
-#define AXP152_OFF_CTRL			0x32
-#define AXP152_PEK_KEY			0x36
-#define AXP152_DCDC_FREQ		0x37
-#define AXP152_DCDC_MODE		0x80
+#define AXP152_PWR_OP_MODE          0x01
+#define AXP152_LDO3456_DC1234_CTRL  0x12
+#define AXP152_ALDO_OP_MODE         0x13
+#define AXP152_LDO0_CTRL            0x15
+#define AXP152_DCDC2_V_OUT          0x23
+#define AXP152_DCDC2_V_SCAL         0x25
+#define AXP152_DCDC1_V_OUT          0x26
+#define AXP152_DCDC3_V_OUT          0x27
+#define AXP152_ALDO12_V_OUT         0x28
+#define AXP152_DLDO1_V_OUT          0x29
+#define AXP152_DLDO2_V_OUT          0x2a
+#define AXP152_DCDC4_V_OUT          0x2b
+#define AXP152_V_OFF                0x31
+#define AXP152_OFF_CTRL             0x32
+#define AXP152_PEK_KEY              0x36
+#define AXP152_DCDC_FREQ            0x37
+#define AXP152_DCDC_MODE            0x80
 
-#define AXP20X_PWR_INPUT_STATUS		0x00
-#define AXP20X_PWR_OP_MODE		0x01
-#define AXP20X_USB_OTG_STATUS		0x02
-#define AXP20X_PWR_OUT_CTRL		0x12
-#define AXP20X_DCDC2_V_OUT		0x23
-#define AXP20X_DCDC2_LDO3_V_SCAL	0x25
-#define AXP20X_DCDC3_V_OUT		0x27
-#define AXP20X_LDO24_V_OUT		0x28
-#define AXP20X_LDO3_V_OUT		0x29
-#define AXP20X_VBUS_IPSOUT_MGMT		0x30
-#define AXP20X_V_OFF			0x31
-#define AXP20X_OFF_CTRL			0x32
-#define AXP20X_CHRG_CTRL1		0x33
-#define AXP20X_CHRG_CTRL2		0x34
-#define AXP20X_CHRG_BAK_CTRL		0x35
-#define AXP20X_PEK_KEY			0x36
-#define AXP20X_DCDC_FREQ		0x37
-#define AXP20X_V_LTF_CHRG		0x38
-#define AXP20X_V_HTF_CHRG		0x39
-#define AXP20X_APS_WARN_L1		0x3a
-#define AXP20X_APS_WARN_L2		0x3b
-#define AXP20X_V_LTF_DISCHRG		0x3c
-#define AXP20X_V_HTF_DISCHRG		0x3d
+#define AXP20X_PWR_INPUT_STATUS     0x00
+#define AXP20X_PWR_OP_MODE          0x01
+#define AXP20X_USB_OTG_STATUS       0x02
+#define AXP20X_PWR_OUT_CTRL         0x12
+#define AXP20X_DCDC2_V_OUT          0x23
+#define AXP20X_DCDC2_LDO3_V_SCAL    0x25
+#define AXP20X_DCDC3_V_OUT          0x27
+#define AXP20X_LDO24_V_OUT          0x28
+#define AXP20X_LDO3_V_OUT           0x29
+#define AXP20X_VBUS_IPSOUT_MGMT     0x30
+#define AXP20X_V_OFF                0x31
+#define AXP20X_OFF_CTRL             0x32
+#define AXP20X_CHRG_CTRL1           0x33
+#define AXP20X_CHRG_CTRL2           0x34
+#define AXP20X_CHRG_BAK_CTRL        0x35
+#define AXP20X_PEK_KEY              0x36
+#define AXP20X_DCDC_FREQ            0x37
+#define AXP20X_V_LTF_CHRG           0x38
+#define AXP20X_V_HTF_CHRG           0x39
+#define AXP20X_APS_WARN_L1          0x3a
+#define AXP20X_APS_WARN_L2          0x3b
+#define AXP20X_V_LTF_DISCHRG        0x3c
+#define AXP20X_V_HTF_DISCHRG        0x3d
 
-#define AXP22X_PWR_OUT_CTRL1		0x10
-#define AXP22X_PWR_OUT_CTRL2		0x12
-#define AXP22X_PWR_OUT_CTRL3		0x13
-#define AXP22X_DLDO1_V_OUT		0x15
-#define AXP22X_DLDO2_V_OUT		0x16
-#define AXP22X_DLDO3_V_OUT		0x17
-#define AXP22X_DLDO4_V_OUT		0x18
-#define AXP22X_ELDO1_V_OUT		0x19
-#define AXP22X_ELDO2_V_OUT		0x1a
-#define AXP22X_ELDO3_V_OUT		0x1b
-#define AXP22X_DC5LDO_V_OUT		0x1c
-#define AXP22X_DCDC1_V_OUT		0x21
-#define AXP22X_DCDC2_V_OUT		0x22
-#define AXP22X_DCDC3_V_OUT		0x23
-#define AXP22X_DCDC4_V_OUT		0x24
-#define AXP22X_DCDC5_V_OUT		0x25
-#define AXP22X_DCDC23_V_RAMP_CTRL	0x27
-#define AXP22X_ALDO1_V_OUT		0x28
-#define AXP22X_ALDO2_V_OUT		0x29
-#define AXP22X_ALDO3_V_OUT		0x2a
-#define AXP22X_CHRG_CTRL3		0x35
+#define AXP22X_PWR_OUT_CTRL1        0x10
+#define AXP22X_PWR_OUT_CTRL2        0x12
+#define AXP22X_PWR_OUT_CTRL3        0x13
+#define AXP22X_DLDO1_V_OUT          0x15
+#define AXP22X_DLDO2_V_OUT          0x16
+#define AXP22X_DLDO3_V_OUT          0x17
+#define AXP22X_DLDO4_V_OUT          0x18
+#define AXP22X_ELDO1_V_OUT          0x19
+#define AXP22X_ELDO2_V_OUT          0x1a
+#define AXP22X_ELDO3_V_OUT          0x1b
+#define AXP22X_DC5LDO_V_OUT         0x1c
+#define AXP22X_DCDC1_V_OUT          0x21
+#define AXP22X_DCDC2_V_OUT          0x22
+#define AXP22X_DCDC3_V_OUT          0x23
+#define AXP22X_DCDC4_V_OUT          0x24
+#define AXP22X_DCDC5_V_OUT          0x25
+#define AXP22X_DCDC23_V_RAMP_CTRL   0x27
+#define AXP22X_ALDO1_V_OUT          0x28
+#define AXP22X_ALDO2_V_OUT          0x29
+#define AXP22X_ALDO3_V_OUT          0x2a
+#define AXP22X_CHRG_CTRL3           0x35
 
-#define AXP806_STARTUP_SRC		0x00
-#define AXP806_CHIP_ID			0x03
-#define AXP806_PWR_OUT_CTRL1		0x10
-#define AXP806_PWR_OUT_CTRL2		0x11
-#define AXP806_DCDCA_V_CTRL		0x12
-#define AXP806_DCDCB_V_CTRL		0x13
-#define AXP806_DCDCC_V_CTRL		0x14
-#define AXP806_DCDCD_V_CTRL		0x15
-#define AXP806_DCDCE_V_CTRL		0x16
-#define AXP806_ALDO1_V_CTRL		0x17
-#define AXP806_ALDO2_V_CTRL		0x18
-#define AXP806_ALDO3_V_CTRL		0x19
-#define AXP806_DCDC_MODE_CTRL1		0x1a
-#define AXP806_DCDC_MODE_CTRL2		0x1b
-#define AXP806_DCDC_FREQ_CTRL		0x1c
-#define AXP806_BLDO1_V_CTRL		0x20
-#define AXP806_BLDO2_V_CTRL		0x21
-#define AXP806_BLDO3_V_CTRL		0x22
-#define AXP806_BLDO4_V_CTRL		0x23
-#define AXP806_CLDO1_V_CTRL		0x24
-#define AXP806_CLDO2_V_CTRL		0x25
-#define AXP806_CLDO3_V_CTRL		0x26
-#define AXP806_VREF_TEMP_WARN_L		0xf3
+#define AXP806_STARTUP_SRC          0x00
+#define AXP806_CHIP_ID              0x03
+#define AXP806_PWR_OUT_CTRL1        0x10
+#define AXP806_PWR_OUT_CTRL2        0x11
+#define AXP806_DCDCA_V_CTRL         0x12
+#define AXP806_DCDCB_V_CTRL         0x13
+#define AXP806_DCDCC_V_CTRL         0x14
+#define AXP806_DCDCD_V_CTRL         0x15
+#define AXP806_DCDCE_V_CTRL         0x16
+#define AXP806_ALDO1_V_CTRL         0x17
+#define AXP806_ALDO2_V_CTRL         0x18
+#define AXP806_ALDO3_V_CTRL         0x19
+#define AXP806_DCDC_MODE_CTRL1      0x1a
+#define AXP806_DCDC_MODE_CTRL2      0x1b
+#define AXP806_DCDC_FREQ_CTRL       0x1c
+#define AXP806_BLDO1_V_CTRL         0x20
+#define AXP806_BLDO2_V_CTRL         0x21
+#define AXP806_BLDO3_V_CTRL         0x22
+#define AXP806_BLDO4_V_CTRL         0x23
+#define AXP806_CLDO1_V_CTRL         0x24
+#define AXP806_CLDO2_V_CTRL         0x25
+#define AXP806_CLDO3_V_CTRL         0x26
+#define AXP806_VREF_TEMP_WARN_L     0xf3
 
-#define AXP806_STARTUP_SOURCE      (0x00)
-#define AXP806_IC_TYPE             (0x03)
-#define AXP806_DATA_BUFFER1        (0x04)
-#define AXP806_DATA_BUFFER2        (0x05)
-#define AXP806_DATA_BUFFER3        (0x06)
-#define AXP806_DATA_BUFFER4        (0x07)
-#define AXP806_ONOFF_CTRL1         (0x10)
-#define AXP806_ONOFF_CTRL2         (0x11)
-#define AXP806_DCAOUT_VOL          (0x12)
-#define AXP806_DCBOUT_VOL          (0x13)
-#define AXP806_DCCOUT_VOL          (0x14)
-#define AXP806_DCDOUT_VOL          (0x15)
-#define AXP806_DCEOUT_VOL          (0x16)
-#define AXP806_ALDO1OUT_VOL        (0x17)
-#define AXP806_ALDO2OUT_VOL        (0x18)
-#define AXP806_ALDO3OUT_VOL        (0x19)
-#define AXP806_DCDC_DVM_CTRL       (0x1A)
-#define AXP806_DCDC_MODE_CTRL      (0x1B)
-#define AXP806_DCDC_FREQSET        (0x1C)
-#define AXP806_DCDC_MON_CTRL       (0x1D)
-#define AXP806_IFQ_PWROK_SET       (0x1F)
-#define AXP806_BLDO1OUT_VOL        (0x20)
-#define AXP806_BLDO2OUT_VOL        (0x21)
-#define AXP806_BLDO3OUT_VOL        (0x22)
-#define AXP806_BLDO4OUT_VOL        (0x23)
-#define AXP806_CLDO1OUT_VOL        (0x24)
-#define AXP806_CLDO2OUT_VOL        (0x25)
-#define AXP806_CLDO3OUT_VOL        (0x26)
-#define AXP806_VOFF_SET            (0x31)
-#define AXP806_OFF_CTL             (0x32)
-#define AXP806_WAKEUP_PIN_CTRL     (0x35)
-#define AXP806_POK_SET             (0x36)
-#define AXP806_INTERFACE_MODE      (0x3E)
-#define AXP806_SPECIAL_CTRL        (0x3F)
+#define AXP806_STARTUP_SOURCE       (0x00)
+#define AXP806_IC_TYPE              (0x03)
+#define AXP806_DATA_BUFFER1         (0x04)
+#define AXP806_DATA_BUFFER2         (0x05)
+#define AXP806_DATA_BUFFER3         (0x06)
+#define AXP806_DATA_BUFFER4         (0x07)
+#define AXP806_ONOFF_CTRL1          (0x10)
+#define AXP806_ONOFF_CTRL2          (0x11)
+#define AXP806_DCAOUT_VOL           (0x12)
+#define AXP806_DCBOUT_VOL           (0x13)
+#define AXP806_DCCOUT_VOL           (0x14)
+#define AXP806_DCDOUT_VOL           (0x15)
+#define AXP806_DCEOUT_VOL           (0x16)
+#define AXP806_ALDO1OUT_VOL         (0x17)
+#define AXP806_ALDO2OUT_VOL         (0x18)
+#define AXP806_ALDO3OUT_VOL         (0x19)
+#define AXP806_DCDC_DVM_CTRL        (0x1A)
+#define AXP806_DCDC_MODE_CTRL       (0x1B)
+#define AXP806_DCDC_FREQSET         (0x1C)
+#define AXP806_DCDC_MON_CTRL        (0x1D)
+#define AXP806_IFQ_PWROK_SET        (0x1F)
+#define AXP806_BLDO1OUT_VOL         (0x20)
+#define AXP806_BLDO2OUT_VOL         (0x21)
+#define AXP806_BLDO3OUT_VOL         (0x22)
+#define AXP806_BLDO4OUT_VOL         (0x23)
+#define AXP806_CLDO1OUT_VOL         (0x24)
+#define AXP806_CLDO2OUT_VOL         (0x25)
+#define AXP806_CLDO3OUT_VOL         (0x26)
+#define AXP806_VOFF_SET             (0x31)
+#define AXP806_OFF_CTL              (0x32)
+#define AXP806_WAKEUP_PIN_CTRL      (0x35)
+#define AXP806_POK_SET              (0x36)
+#define AXP806_INTERFACE_MODE       (0x3E)
+#define AXP806_SPECIAL_CTRL         (0x3F)
 
-#define AXP806_INTEN1              (0x40)
-#define AXP806_INTEN2              (0x41)
-#define AXP806_INTSTS1             (0x48)
-#define AXP806_INTSTS2             (0x49)
-#define AXP806_REG_ADDR_EXT        (0xFF)
+#define AXP806_INTEN1               (0x40)
+#define AXP806_INTEN2               (0x41)
+#define AXP806_INTSTS1              (0x48)
+#define AXP806_INTSTS2              (0x49)
+#define AXP806_REG_ADDR_EXT         (0xFF)
 
 /* Interrupt */
-#define AXP152_IRQ1_EN			0x40
-#define AXP152_IRQ2_EN			0x41
-#define AXP152_IRQ3_EN			0x42
-#define AXP152_IRQ1_STATE		0x48
-#define AXP152_IRQ2_STATE		0x49
-#define AXP152_IRQ3_STATE		0x4a
+#define AXP152_IRQ1_EN              0x40
+#define AXP152_IRQ2_EN              0x41
+#define AXP152_IRQ3_EN              0x42
+#define AXP152_IRQ1_STATE           0x48
+#define AXP152_IRQ2_STATE           0x49
+#define AXP152_IRQ3_STATE           0x4a
 
-#define AXP20X_IRQ1_EN			0x40
-#define AXP20X_IRQ2_EN			0x41
-#define AXP20X_IRQ3_EN			0x42
-#define AXP20X_IRQ4_EN			0x43
-#define AXP20X_IRQ5_EN			0x44
-#define AXP20X_IRQ6_EN			0x45
-#define AXP20X_IRQ1_STATE		0x48
-#define AXP20X_IRQ2_STATE		0x49
-#define AXP20X_IRQ3_STATE		0x4a
-#define AXP20X_IRQ4_STATE		0x4b
-#define AXP20X_IRQ5_STATE		0x4c
-#define AXP20X_IRQ6_STATE		0x4d
+#define AXP20X_IRQ1_EN              0x40
+#define AXP20X_IRQ2_EN              0x41
+#define AXP20X_IRQ3_EN              0x42
+#define AXP20X_IRQ4_EN              0x43
+#define AXP20X_IRQ5_EN              0x44
+#define AXP20X_IRQ6_EN              0x45
+#define AXP20X_IRQ1_STATE           0x48
+#define AXP20X_IRQ2_STATE           0x49
+#define AXP20X_IRQ3_STATE           0x4a
+#define AXP20X_IRQ4_STATE           0x4b
+#define AXP20X_IRQ5_STATE           0x4c
+#define AXP20X_IRQ6_STATE           0x4d
 
 /* ADC */
-#define AXP20X_ACIN_V_ADC_H		0x56
-#define AXP20X_ACIN_V_ADC_L		0x57
-#define AXP20X_ACIN_I_ADC_H		0x58
-#define AXP20X_ACIN_I_ADC_L		0x59
-#define AXP20X_VBUS_V_ADC_H		0x5a
-#define AXP20X_VBUS_V_ADC_L		0x5b
-#define AXP20X_VBUS_I_ADC_H		0x5c
-#define AXP20X_VBUS_I_ADC_L		0x5d
-#define AXP20X_TEMP_ADC_H		0x5e
-#define AXP20X_TEMP_ADC_L		0x5f
-#define AXP20X_TS_IN_H			0x62
-#define AXP20X_TS_IN_L			0x63
-#define AXP20X_GPIO0_V_ADC_H		0x64
-#define AXP20X_GPIO0_V_ADC_L		0x65
-#define AXP20X_GPIO1_V_ADC_H		0x66
-#define AXP20X_GPIO1_V_ADC_L		0x67
-#define AXP20X_PWR_BATT_H		0x70
-#define AXP20X_PWR_BATT_M		0x71
-#define AXP20X_PWR_BATT_L		0x72
-#define AXP20X_BATT_V_H			0x78
-#define AXP20X_BATT_V_L			0x79
-#define AXP20X_BATT_CHRG_I_H		0x7a
-#define AXP20X_BATT_CHRG_I_L		0x7b
-#define AXP20X_BATT_DISCHRG_I_H		0x7c
-#define AXP20X_BATT_DISCHRG_I_L		0x7d
-#define AXP20X_IPSOUT_V_HIGH_H		0x7e
-#define AXP20X_IPSOUT_V_HIGH_L		0x7f
+#define AXP20X_ACIN_V_ADC_H         0x56
+#define AXP20X_ACIN_V_ADC_L         0x57
+#define AXP20X_ACIN_I_ADC_H         0x58
+#define AXP20X_ACIN_I_ADC_L         0x59
+#define AXP20X_VBUS_V_ADC_H         0x5a
+#define AXP20X_VBUS_V_ADC_L         0x5b
+#define AXP20X_VBUS_I_ADC_H         0x5c
+#define AXP20X_VBUS_I_ADC_L         0x5d
+#define AXP20X_TEMP_ADC_H           0x5e
+#define AXP20X_TEMP_ADC_L           0x5f
+#define AXP20X_TS_IN_H              0x62
+#define AXP20X_TS_IN_L              0x63
+#define AXP20X_GPIO0_V_ADC_H        0x64
+#define AXP20X_GPIO0_V_ADC_L        0x65
+#define AXP20X_GPIO1_V_ADC_H        0x66
+#define AXP20X_GPIO1_V_ADC_L        0x67
+#define AXP20X_PWR_BATT_H           0x70
+#define AXP20X_PWR_BATT_M           0x71
+#define AXP20X_PWR_BATT_L           0x72
+#define AXP20X_BATT_V_H             0x78
+#define AXP20X_BATT_V_L             0x79
+#define AXP20X_BATT_CHRG_I_H        0x7a
+#define AXP20X_BATT_CHRG_I_L        0x7b
+#define AXP20X_BATT_DISCHRG_I_H     0x7c
+#define AXP20X_BATT_DISCHRG_I_L     0x7d
+#define AXP20X_IPSOUT_V_HIGH_H      0x7e
+#define AXP20X_IPSOUT_V_HIGH_L      0x7f
 
 /* Power supply */
-#define AXP20X_DCDC_MODE		0x80
-#define AXP20X_ADC_EN1			0x82
-#define AXP20X_ADC_EN2			0x83
-#define AXP20X_ADC_RATE			0x84
-#define AXP20X_GPIO10_IN_RANGE		0x85
-#define AXP20X_GPIO1_ADC_IRQ_RIS	0x86
-#define AXP20X_GPIO1_ADC_IRQ_FAL	0x87
-#define AXP20X_TIMER_CTRL		0x8a
-#define AXP20X_VBUS_MON			0x8b
-#define AXP20X_OVER_TMP			0x8f
+#define AXP20X_DCDC_MODE            0x80
+#define AXP20X_ADC_EN1              0x82
+#define AXP20X_ADC_EN2              0x83
+#define AXP20X_ADC_RATE             0x84
+#define AXP20X_GPIO10_IN_RANGE      0x85
+#define AXP20X_GPIO1_ADC_IRQ_RIS    0x86
+#define AXP20X_GPIO1_ADC_IRQ_FAL    0x87
+#define AXP20X_TIMER_CTRL           0x8a
+#define AXP20X_VBUS_MON             0x8b
+#define AXP20X_OVER_TMP             0x8f
 
-#define AXP22X_PWREN_CTRL1		0x8c
-#define AXP22X_PWREN_CTRL2		0x8d
+#define AXP22X_PWREN_CTRL1          0x8c
+#define AXP22X_PWREN_CTRL2          0x8d
 
 /* GPIO */
-#define AXP152_GPIO0_CTRL		0x90
-#define AXP152_GPIO1_CTRL		0x91
-#define AXP152_GPIO2_CTRL		0x92
-#define AXP152_GPIO3_CTRL		0x93
-#define AXP152_LDOGPIO2_V_OUT		0x96
-#define AXP152_GPIO_INPUT		0x97
-#define AXP152_PWM0_FREQ_X		0x98
-#define AXP152_PWM0_FREQ_Y		0x99
-#define AXP152_PWM0_DUTY_CYCLE		0x9a
-#define AXP152_PWM1_FREQ_X		0x9b
-#define AXP152_PWM1_FREQ_Y		0x9c
-#define AXP152_PWM1_DUTY_CYCLE		0x9d
+#define AXP152_GPIO0_CTRL           0x90
+#define AXP152_GPIO1_CTRL           0x91
+#define AXP152_GPIO2_CTRL           0x92
+#define AXP152_GPIO3_CTRL           0x93
+#define AXP152_LDOGPIO2_V_OUT       0x96
+#define AXP152_GPIO_INPUT           0x97
+#define AXP152_PWM0_FREQ_X          0x98
+#define AXP152_PWM0_FREQ_Y          0x99
+#define AXP152_PWM0_DUTY_CYCLE      0x9a
+#define AXP152_PWM1_FREQ_X          0x9b
+#define AXP152_PWM1_FREQ_Y          0x9c
+#define AXP152_PWM1_DUTY_CYCLE      0x9d
 
-#define AXP20X_GPIO0_CTRL		0x90
-#define AXP20X_LDO5_V_OUT		0x91
-#define AXP20X_GPIO1_CTRL		0x92
-#define AXP20X_GPIO2_CTRL		0x93
-#define AXP20X_GPIO20_SS		0x94
-#define AXP20X_GPIO3_CTRL		0x95
+#define AXP20X_GPIO0_CTRL           0x90
+#define AXP20X_LDO5_V_OUT           0x91
+#define AXP20X_GPIO1_CTRL           0x92
+#define AXP20X_GPIO2_CTRL           0x93
+#define AXP20X_GPIO20_SS            0x94
+#define AXP20X_GPIO3_CTRL           0x95
 
-#define AXP22X_LDO_IO0_V_OUT		0x91
-#define AXP22X_LDO_IO1_V_OUT		0x93
-#define AXP22X_GPIO_STATE		0x94
-#define AXP22X_GPIO_PULL_DOWN		0x95
+#define AXP22X_LDO_IO0_V_OUT        0x91
+#define AXP22X_LDO_IO1_V_OUT        0x93
+#define AXP22X_GPIO_STATE           0x94
+#define AXP22X_GPIO_PULL_DOWN       0x95
 
 /* Battery */
-#define AXP20X_CHRG_CC_31_24		0xb0
-#define AXP20X_CHRG_CC_23_16		0xb1
-#define AXP20X_CHRG_CC_15_8		0xb2
-#define AXP20X_CHRG_CC_7_0		0xb3
-#define AXP20X_DISCHRG_CC_31_24		0xb4
-#define AXP20X_DISCHRG_CC_23_16		0xb5
-#define AXP20X_DISCHRG_CC_15_8		0xb6
-#define AXP20X_DISCHRG_CC_7_0		0xb7
-#define AXP20X_CC_CTRL			0xb8
-#define AXP20X_FG_RES			0xb9
+#define AXP20X_CHRG_CC_31_24        0xb0
+#define AXP20X_CHRG_CC_23_16        0xb1
+#define AXP20X_CHRG_CC_15_8         0xb2
+#define AXP20X_CHRG_CC_7_0          0xb3
+#define AXP20X_DISCHRG_CC_31_24     0xb4
+#define AXP20X_DISCHRG_CC_23_16     0xb5
+#define AXP20X_DISCHRG_CC_15_8      0xb6
+#define AXP20X_DISCHRG_CC_7_0       0xb7
+#define AXP20X_CC_CTRL              0xb8
+#define AXP20X_FG_RES               0xb9
 
 /* OCV */
-#define AXP20X_RDC_H			0xba
-#define AXP20X_RDC_L			0xbb
-#define AXP20X_OCV(m)			(0xc0 + (m))
-#define AXP20X_OCV_MAX			0xf
+#define AXP20X_RDC_H                0xba
+#define AXP20X_RDC_L                0xbb
+#define AXP20X_OCV(m)               (0xc0 + (m))
+#define AXP20X_OCV_MAX              0xf
 
 /* AXP22X specific registers */
-#define AXP22X_BATLOW_THRES1		0xe6
+#define AXP22X_BATLOW_THRES1        0xe6
 
 /* AXP288 specific registers */
-#define AXP288_PMIC_ADC_H               0x56
-#define AXP288_PMIC_ADC_L               0x57
-#define AXP288_ADC_TS_PIN_CTRL          0x84
-#define AXP288_PMIC_ADC_EN              0x84
+#define AXP288_PMIC_ADC_H           0x56
+#define AXP288_PMIC_ADC_L           0x57
+#define AXP288_ADC_TS_PIN_CTRL      0x84
+#define AXP288_PMIC_ADC_EN          0x84
 
 /* Fuel Gauge */
 #define AXP288_FG_RDC1_REG          0xba
@@ -312,420 +312,420 @@ extern int axp_debug_mask;
 #define AXP288_FG_TUNE4             0xec
 #define AXP288_FG_TUNE5             0xed
 
-#define AXP2101_COMM_STAT0      (0x00)
-#define AXP2101_COMM_STAT1      (0x01)
-#define AXP2101_CHIP_ID         (0x03)
-#define AXP2101_DATA_BUFFER0    (0x04)
-#define AXP2101_DATA_BUFFER1    (0x05)
-#define AXP2101_DATA_BUFFER2    (0x06)
-#define AXP2101_DATA_BUFFER3    (0x07)
-#define AXP2101_COMM_FAULT      (0x08)
-#define AXP2101_COMM_CFG        (0X10)
-#define AXP2101_BATFET_CTRL     (0X12)
-#define AXP2101_DIE_TEMP_CFG    (0X13)
-#define AXP2101_VSYS_MIN        (0x14)
-#define AXP2101_VINDPM_CFG      (0x15)
-#define AXP2101_IIN_LIM         (0x16)
-#define AXP2101_RESET_CFG       (0x17)
-#define AXP2101_MODULE_EN       (0x18)
-#define AXP2101_WATCHDOG_CFG    (0x19)
-#define AXP2101_GAUGE_THLD      (0x1A)
-#define AXP2101_GPIO12_CTRL     (0x1B)
-#define AXP2101_GPIO34_CTRL     (0x1C)
-#define AXP2101_BUS_MODE_SEL    (0x1D)
-#define AXP2101_PWRON_STAT      (0x20)
-#define AXP2101_PWROFF_STAT     (0x21)
-#define AXP2101_PWROFF_EN       (0x22)
-#define AXP2101_DCDC_PWROFF_EN  (0x23)
-#define AXP2101_VOFF_THLD       (0x24)
-#define AXP2101_PWR_TIME_CTRL   (0x25)
-#define AXP2101_SLEEP_CFG       (0x26)
-#define AXP2101_PONLEVEL        (0x27)
-#define AXP2101_FAST_PWRON_CFG0 (0x28)
-#define AXP2101_FAST_PWRON_CFG1 (0x29)
-#define AXP2101_FAST_PWRON_CFG2 (0x2A)
-#define AXP2101_FAST_PWRON_CFG3 (0x2B)
-#define AXP2101_ADC_CH_EN0      (0x30)
-#define AXP2101_ADC_CH_EN1      (0x31)
-#define AXP2101_ADC_CH_EN2      (0x32)
-#define AXP2101_ADC_CH_EN3      (0x33)
-#define AXP2101_VBAT_H          (0x34)
-#define AXP2101_VBAT_L          (0x35)
-#define AXP2101_TS_H            (0x36)
-#define AXP2101_TS_L            (0x37)
-#define AXP2101_VBUS_H          (0x38)
-#define AXP2101_VBUS_L          (0x39)
-#define AXP2101_VSYS_H          (0x3A)
-#define AXP2101_VSYS_L          (0x3B)
-#define AXP2101_TDIE_H          (0x3C)
-#define AXP2101_TDIE_L          (0x3D)
-#define AXP2101_GPADC_H         (0x3E)
-#define AXP2101_GPADC_L         (0x3F)
-#define AXP2101_INTEN1          (0x40)
-#define AXP2101_INTEN2          (0x41)
-#define AXP2101_INTEN3          (0x42)
-#define AXP2101_INTSTS1         (0x48)
-#define AXP2101_INTSTS2         (0x49)
-#define AXP2101_INTSTS3         (0x4A)
-#define AXP2101_TS_CFG          (0x50)
+#define AXP2101_COMM_STAT0          (0x00)
+#define AXP2101_COMM_STAT1          (0x01)
+#define AXP2101_CHIP_ID             (0x03)
+#define AXP2101_DATA_BUFFER0        (0x04)
+#define AXP2101_DATA_BUFFER1        (0x05)
+#define AXP2101_DATA_BUFFER2        (0x06)
+#define AXP2101_DATA_BUFFER3        (0x07)
+#define AXP2101_COMM_FAULT          (0x08)
+#define AXP2101_COMM_CFG            (0X10)
+#define AXP2101_BATFET_CTRL         (0X12)
+#define AXP2101_DIE_TEMP_CFG        (0X13)
+#define AXP2101_VSYS_MIN            (0x14)
+#define AXP2101_VINDPM_CFG          (0x15)
+#define AXP2101_IIN_LIM             (0x16)
+#define AXP2101_RESET_CFG           (0x17)
+#define AXP2101_MODULE_EN           (0x18)
+#define AXP2101_WATCHDOG_CFG        (0x19)
+#define AXP2101_GAUGE_THLD          (0x1A)
+#define AXP2101_GPIO12_CTRL         (0x1B)
+#define AXP2101_GPIO34_CTRL         (0x1C)
+#define AXP2101_BUS_MODE_SEL        (0x1D)
+#define AXP2101_PWRON_STAT          (0x20)
+#define AXP2101_PWROFF_STAT         (0x21)
+#define AXP2101_PWROFF_EN           (0x22)
+#define AXP2101_DCDC_PWROFF_EN      (0x23)
+#define AXP2101_VOFF_THLD           (0x24)
+#define AXP2101_PWR_TIME_CTRL       (0x25)
+#define AXP2101_SLEEP_CFG           (0x26)
+#define AXP2101_PONLEVEL            (0x27)
+#define AXP2101_FAST_PWRON_CFG0     (0x28)
+#define AXP2101_FAST_PWRON_CFG1     (0x29)
+#define AXP2101_FAST_PWRON_CFG2     (0x2A)
+#define AXP2101_FAST_PWRON_CFG3     (0x2B)
+#define AXP2101_ADC_CH_EN0          (0x30)
+#define AXP2101_ADC_CH_EN1          (0x31)
+#define AXP2101_ADC_CH_EN2          (0x32)
+#define AXP2101_ADC_CH_EN3          (0x33)
+#define AXP2101_VBAT_H              (0x34)
+#define AXP2101_VBAT_L              (0x35)
+#define AXP2101_TS_H                (0x36)
+#define AXP2101_TS_L                (0x37)
+#define AXP2101_VBUS_H              (0x38)
+#define AXP2101_VBUS_L              (0x39)
+#define AXP2101_VSYS_H              (0x3A)
+#define AXP2101_VSYS_L              (0x3B)
+#define AXP2101_TDIE_H              (0x3C)
+#define AXP2101_TDIE_L              (0x3D)
+#define AXP2101_GPADC_H             (0x3E)
+#define AXP2101_GPADC_L             (0x3F)
+#define AXP2101_INTEN1              (0x40)
+#define AXP2101_INTEN2              (0x41)
+#define AXP2101_INTEN3              (0x42)
+#define AXP2101_INTSTS1             (0x48)
+#define AXP2101_INTSTS2             (0x49)
+#define AXP2101_INTSTS3             (0x4A)
+#define AXP2101_TS_CFG              (0x50)
 
-#define AXP2101_TS_HYSHL2H      (0x52)
-#define AXP2101_TS_HYSH21       (0x53)
-#define AXP2101_VLTF_CHG        (0x54)
-#define AXP2101_VHTF_CHG        (0x55)
-#define AXP2101_VLTF_WORK       (0x56)
-#define AXP2101_VHTF_WORK       (0x57)
-#define AXP2101_JEITA_CFG       (0x58)
-#define AXP2101_JEITA_CV_CFG    (0x59)
-#define AXP2101_JEITA_COOL      (0x5A)
-#define AXP2101_JEITA_WARM      (0x5B)
-#define AXP2101_TS_CFG_DATA_H   (0x5C)
-#define AXP2101_TS_CFG_DATA_L   (0x5D)
-#define AXP2101_CHG_CFG         (0x60)
-#define AXP2101_IPRECHG_CFG     (0x61)
-#define AXP2101_ICC_CFG         (0x62)
-#define AXP2101_ITERM_CFG       (0x63)
-#define AXP2101_CHG_V_CFG       (0x64)
-#define AXP2101_TREGU_THLD      (0x65)
-#define AXP2101_CHG_FREQ        (0x66)
-#define AXP2101_CHG_TMR_CFG     (0x67)
-#define AXP2101_BAT_DET         (0x68)
-#define AXP2101_CHGLED_CFG      (0x69)
-#define AXP2101_BTN_CHG_CFG     (0x6A)
-#define AXP2101_SW_TEST_CFG     (0x7B)
-#define AXP2101_DCDC_CFG0       (0x80)
-#define AXP2101_DCDC_CFG1       (0x81)
-#define AXP2101_DCDC1_CFG       (0x82)
-#define AXP2101_DCDC2_CFG       (0x83)
-#define AXP2101_DCDC3_CFG       (0x84)
-#define AXP2101_DCDC4_CFG       (0x85)
-#define AXP2101_DCDC5_CFG       (0x86)
-#define AXP2101_DCDC_OC_CFG     (0x87)
-#define AXP2101_LDO_EN_CFG0     (0x90)
-#define AXP2101_LDO_EN_CFG1     (0x91)
-#define AXP2101_ALDO1_CFG       (0x92)
-#define AXP2101_ALDO2_CFG       (0x93)
-#define AXP2101_ALDO3_CFG       (0x94)
-#define AXP2101_ALDO4_CFG       (0x95)
-#define AXP2101_BLDO1_CFG       (0x96)
-#define AXP2101_BLDO2_CFG       (0x97)
-#define AXP2101_CPUSLD_CFG      (0x98)
-#define AXP2101_DLDO1_CFG       (0x99)
-#define AXP2101_DLDO2_CFG       (0x9A)
-#define AXP2101_IP_VER          (0xA0)
-#define AXP2101_BROM            (0xA1)
-#define AXP2101_CONFIG          (0xA2)
-#define AXP2101_TEMPERATURE     (0xA3)
-#define AXP2101_SOC             (0xA4)
-#define AXP2101_TIME2EMPTY_H    (0xA6)
-#define AXP2101_TIME2EMPTY_L    (0xA7)
-#define AXP2101_TIME2FULL_H     (0xA8)
-#define AXP2101_TIME2FULL_L     (0xA9)
-#define AXP2101_FW_VERSION      (0xAB)
-#define AXP2101_INT0_FLAG       (0xAC)
-#define AXP2101_COUTER_PERIOD   (0xAD)
-#define AXP2101_BG_TRIM         (0xAE)
-#define AXP2101_OSC_TRIM        (0xAF)
-#define AXP2101_FG_ADDR         (0xB0)
-#define AXP2101_FG_DATA_H       (0xB2)
-#define AXP2101_FG_DATA_L       (0xB3)
-#define AXP2101_RAM_MBIST       (0xB4)
-#define AXP2101_ROM_TEST        (0xB5)
-#define AXP2101_ROM_TEST_RT0    (0xB6)
-#define AXP2101_ROM_TEST_RT1    (0xB7)
-#define AXP2101_ROM_TEST_RT2    (0xB8)
-#define AXP2101_ROM_TEST_RT3    (0xB9)
-#define AXP2101_WD_CLR_DIS      (0xBA)
+#define AXP2101_TS_HYSHL2H          (0x52)
+#define AXP2101_TS_HYSH21           (0x53)
+#define AXP2101_VLTF_CHG            (0x54)
+#define AXP2101_VHTF_CHG            (0x55)
+#define AXP2101_VLTF_WORK           (0x56)
+#define AXP2101_VHTF_WORK           (0x57)
+#define AXP2101_JEITA_CFG           (0x58)
+#define AXP2101_JEITA_CV_CFG        (0x59)
+#define AXP2101_JEITA_COOL          (0x5A)
+#define AXP2101_JEITA_WARM          (0x5B)
+#define AXP2101_TS_CFG_DATA_H       (0x5C)
+#define AXP2101_TS_CFG_DATA_L       (0x5D)
+#define AXP2101_CHG_CFG             (0x60)
+#define AXP2101_IPRECHG_CFG         (0x61)
+#define AXP2101_ICC_CFG             (0x62)
+#define AXP2101_ITERM_CFG           (0x63)
+#define AXP2101_CHG_V_CFG           (0x64)
+#define AXP2101_TREGU_THLD          (0x65)
+#define AXP2101_CHG_FREQ            (0x66)
+#define AXP2101_CHG_TMR_CFG         (0x67)
+#define AXP2101_BAT_DET             (0x68)
+#define AXP2101_CHGLED_CFG          (0x69)
+#define AXP2101_BTN_CHG_CFG         (0x6A)
+#define AXP2101_SW_TEST_CFG         (0x7B)
+#define AXP2101_DCDC_CFG0           (0x80)
+#define AXP2101_DCDC_CFG1           (0x81)
+#define AXP2101_DCDC1_CFG           (0x82)
+#define AXP2101_DCDC2_CFG           (0x83)
+#define AXP2101_DCDC3_CFG           (0x84)
+#define AXP2101_DCDC4_CFG           (0x85)
+#define AXP2101_DCDC5_CFG           (0x86)
+#define AXP2101_DCDC_OC_CFG         (0x87)
+#define AXP2101_LDO_EN_CFG0         (0x90)
+#define AXP2101_LDO_EN_CFG1         (0x91)
+#define AXP2101_ALDO1_CFG           (0x92)
+#define AXP2101_ALDO2_CFG           (0x93)
+#define AXP2101_ALDO3_CFG           (0x94)
+#define AXP2101_ALDO4_CFG           (0x95)
+#define AXP2101_BLDO1_CFG           (0x96)
+#define AXP2101_BLDO2_CFG           (0x97)
+#define AXP2101_CPUSLD_CFG          (0x98)
+#define AXP2101_DLDO1_CFG           (0x99)
+#define AXP2101_DLDO2_CFG           (0x9A)
+#define AXP2101_IP_VER              (0xA0)
+#define AXP2101_BROM                (0xA1)
+#define AXP2101_CONFIG              (0xA2)
+#define AXP2101_TEMPERATURE         (0xA3)
+#define AXP2101_SOC                 (0xA4)
+#define AXP2101_TIME2EMPTY_H        (0xA6)
+#define AXP2101_TIME2EMPTY_L        (0xA7)
+#define AXP2101_TIME2FULL_H         (0xA8)
+#define AXP2101_TIME2FULL_L         (0xA9)
+#define AXP2101_FW_VERSION          (0xAB)
+#define AXP2101_INT0_FLAG           (0xAC)
+#define AXP2101_COUTER_PERIOD       (0xAD)
+#define AXP2101_BG_TRIM             (0xAE)
+#define AXP2101_OSC_TRIM            (0xAF)
+#define AXP2101_FG_ADDR             (0xB0)
+#define AXP2101_FG_DATA_H           (0xB2)
+#define AXP2101_FG_DATA_L           (0xB3)
+#define AXP2101_RAM_MBIST           (0xB4)
+#define AXP2101_ROM_TEST            (0xB5)
+#define AXP2101_ROM_TEST_RT0        (0xB6)
+#define AXP2101_ROM_TEST_RT1        (0xB7)
+#define AXP2101_ROM_TEST_RT2        (0xB8)
+#define AXP2101_ROM_TEST_RT3        (0xB9)
+#define AXP2101_WD_CLR_DIS          (0xBA)
 
-#define AXP2101_BUFFERC         (0xff)
-#define AXP2101_COMM_CFG0       (0x100)
+#define AXP2101_BUFFERC             (0xff)
+#define AXP2101_COMM_CFG0           (0x100)
 
 /* For AXP15 */
-#define AXP15_STATUS              (0x00)
-#define AXP15_MODE_CHGSTATUS      (0x01)
-#define AXP15_OTG_STATUS          (0x02)
-#define AXP15_IC_TYPE             (0x03)
-#define AXP15_DATA_BUFFER1        (0x04)
-#define AXP15_DATA_BUFFER2        (0x05)
-#define AXP15_DATA_BUFFER3        (0x06)
-#define AXP15_DATA_BUFFER4        (0x07)
-#define AXP15_DATA_BUFFER5        (0x08)
-#define AXP15_DATA_BUFFER6        (0x09)
-#define AXP15_DATA_BUFFER7        (0x0A)
-#define AXP15_DATA_BUFFER8        (0x0B)
-#define AXP15_DATA_BUFFER9        (0x0C)
-#define AXP15_DATA_BUFFERA        (0x0D)
-#define AXP15_DATA_BUFFERB        (0x0E)
-#define AXP15_DATA_BUFFERC        (0x0F)
-#define AXP15_LDO3456_DC1234_CTL  (0x12)
-#define AXP15_LDO0OUT_VOL         (0x15)
-#define AXP15_DC2OUT_VOL          (0x23)
-#define AXP15_DCDC2_DVM_CTRL      (0x25)
-#define AXP15_DC1OUT_VOL          (0x26)
-#define AXP15_DC3OUT_VOL          (0x27)
-#define AXP15_LDO34OUT_VOL        (0x28)
-#define AXP15_LDO5OUT_VOL         (0x29)
-#define AXP15_LDO6OUT_VOL         (0x2A)
-#define AXP15_DC4OUT_VOL          (0x2B)
-#define AXP15_IPS_SET             (0x30)
-#define AXP15_VOFF_SET            (0x31)
-#define AXP15_OFF_CTL             (0x32)
-#define AXP15_CHARGE1             (0x33)
-#define AXP15_CHARGE2             (0x34)
-#define AXP15_BACKUP_CHG          (0x35)
-#define AXP15_POK_SET             (0x36)
-#define AXP15_DCDC_FREQSET        (0x37)
-#define AXP15_VLTF_CHGSET         (0x38)
-#define AXP15_VHTF_CHGSET         (0x39)
-#define AXP15_APS_WARNING1        (0x3A)
-#define AXP15_APS_WARNING2        (0x3B)
-#define AXP15_TLTF_DISCHGSET      (0x3C)
-#define AXP15_THTF_DISCHGSET      (0x3D)
-#define AXP15_INTEN1              (0x40)
-#define AXP15_INTEN2              (0x41)
-#define AXP15_INTEN3              (0x42)
-#define AXP15_INTSTS1             (0x48)
-#define AXP15_INTSTS2             (0x49)
-#define AXP15_INTSTS3             (0x4A)
-#define AXP15_DCDC_MODESET        (0x80)
-#define AXP15_ADC_EN1             (0x82)
-#define AXP15_ADC_EN2             (0x83)
-#define AXP15_ADC_SPEED           (0x84)
-#define AXP15_ADC_INPUTRANGE      (0x85)
-#define AXP15_ADC_IRQ_RETFSET     (0x86)
-#define AXP15_ADC_IRQ_FETFSET     (0x87)
-#define AXP15_TIMER_CTL           (0x8A)
-#define AXP15_VBUS_DET_SRP        (0x8B)
-#define AXP15_HOTOVER_CTL         (0x8F)
-#define AXP15_GPIO0_CTL           (0x90)
-#define AXP15_GPIO1_CTL           (0x91)
-#define AXP15_GPIO2_CTL           (0x92)
-#define AXP15_GPIO3_CTL           (0x93)
-#define AXP15_GPIO012_SIGNAL      (0x94)
-#define AXP15_GPIO0_VOL           (0x96)
-#define AXP15_GPIO0123_SIGNAL     (0x97)
+#define AXP15_STATUS                (0x00)
+#define AXP15_MODE_CHGSTATUS        (0x01)
+#define AXP15_OTG_STATUS            (0x02)
+#define AXP15_IC_TYPE               (0x03)
+#define AXP15_DATA_BUFFER1          (0x04)
+#define AXP15_DATA_BUFFER2          (0x05)
+#define AXP15_DATA_BUFFER3          (0x06)
+#define AXP15_DATA_BUFFER4          (0x07)
+#define AXP15_DATA_BUFFER5          (0x08)
+#define AXP15_DATA_BUFFER6          (0x09)
+#define AXP15_DATA_BUFFER7          (0x0A)
+#define AXP15_DATA_BUFFER8          (0x0B)
+#define AXP15_DATA_BUFFER9          (0x0C)
+#define AXP15_DATA_BUFFERA          (0x0D)
+#define AXP15_DATA_BUFFERB          (0x0E)
+#define AXP15_DATA_BUFFERC          (0x0F)
+#define AXP15_LDO3456_DC1234_CTL    (0x12)
+#define AXP15_LDO0OUT_VOL           (0x15)
+#define AXP15_DC2OUT_VOL            (0x23)
+#define AXP15_DCDC2_DVM_CTRL        (0x25)
+#define AXP15_DC1OUT_VOL            (0x26)
+#define AXP15_DC3OUT_VOL            (0x27)
+#define AXP15_LDO34OUT_VOL          (0x28)
+#define AXP15_LDO5OUT_VOL           (0x29)
+#define AXP15_LDO6OUT_VOL           (0x2A)
+#define AXP15_DC4OUT_VOL            (0x2B)
+#define AXP15_IPS_SET               (0x30)
+#define AXP15_VOFF_SET              (0x31)
+#define AXP15_OFF_CTL               (0x32)
+#define AXP15_CHARGE1               (0x33)
+#define AXP15_CHARGE2               (0x34)
+#define AXP15_BACKUP_CHG            (0x35)
+#define AXP15_POK_SET               (0x36)
+#define AXP15_DCDC_FREQSET          (0x37)
+#define AXP15_VLTF_CHGSET           (0x38)
+#define AXP15_VHTF_CHGSET           (0x39)
+#define AXP15_APS_WARNING1          (0x3A)
+#define AXP15_APS_WARNING2          (0x3B)
+#define AXP15_TLTF_DISCHGSET        (0x3C)
+#define AXP15_THTF_DISCHGSET        (0x3D)
+#define AXP15_INTEN1                (0x40)
+#define AXP15_INTEN2                (0x41)
+#define AXP15_INTEN3                (0x42)
+#define AXP15_INTSTS1               (0x48)
+#define AXP15_INTSTS2               (0x49)
+#define AXP15_INTSTS3               (0x4A)
+#define AXP15_DCDC_MODESET          (0x80)
+#define AXP15_ADC_EN1               (0x82)
+#define AXP15_ADC_EN2               (0x83)
+#define AXP15_ADC_SPEED             (0x84)
+#define AXP15_ADC_INPUTRANGE        (0x85)
+#define AXP15_ADC_IRQ_RETFSET       (0x86)
+#define AXP15_ADC_IRQ_FETFSET       (0x87)
+#define AXP15_TIMER_CTL             (0x8A)
+#define AXP15_VBUS_DET_SRP          (0x8B)
+#define AXP15_HOTOVER_CTL           (0x8F)
+#define AXP15_GPIO0_CTL             (0x90)
+#define AXP15_GPIO1_CTL             (0x91)
+#define AXP15_GPIO2_CTL             (0x92)
+#define AXP15_GPIO3_CTL             (0x93)
+#define AXP15_GPIO012_SIGNAL        (0x94)
+#define AXP15_GPIO0_VOL             (0x96)
+#define AXP15_GPIO0123_SIGNAL       (0x97)
 
 /* For AXP1530 */
-#define AXP1530_ON_INDICATE          (0x00)
-#define AXP1530_OFF_INDICATE         (0x01)
-#define AXP1530_IC_TYPE              (0x03)
-#define AXP1530_OUTPUT_CONTROL       (0x10)
-#define AXP1530_DCDC_DVM_PWM         (0x12)
-#define AXP1530_DCDC1_CONRTOL        (0x13)
-#define AXP1530_DCDC2_CONRTOL        (0x14)
-#define AXP1530_DCDC3_CONRTOL        (0x15)
-#define AXP1530_ALDO1_CONRTOL        (0x16)
-#define AXP1530_DLDO1_CONRTOL        (0x17)
-#define AXP1530_POWER_STATUS         (0x1A)
-#define AXP1530_PWROK_SET            (0x1B)
-#define AXP1530_WAKEUP_CONRTOL       (0x1C)
-#define AXP1530_OUTOUT_MONITOR       (0x1D)
-#define AXP1530_POK_CONRTOL          (0x1E)
-#define AXP1530_IRQ_ENABLE1          (0x20)
-#define AXP1530_IRQ_STATUS1          (0x21)
-#define AXP1530_LOCK_REG71           (0x70)
-#define AXP1530_EPROM_SET            (0x71)
-#define AXP1530_DCDC12_DEFAULT       (0x80)
-#define AXP1530_DCDC3_A1D1_DEFAULT   (0x81)
-#define AXP1530_STARTUP_SEQ          (0x82)
-#define AXP1530_STARTUP_RTCLDO       (0x83)
-#define AXP1530_BIAS_I2C_ADDR        (0x84)
-#define AXP1530_VREF_VRPN            (0x85)
-#define AXP1530_VREF_VOL             (0x86)
-#define AXP1530_FREQUENCY            (0x87)
+#define AXP1530_ON_INDICATE         (0x00)
+#define AXP1530_OFF_INDICATE        (0x01)
+#define AXP1530_IC_TYPE             (0x03)
+#define AXP1530_OUTPUT_CONTROL      (0x10)
+#define AXP1530_DCDC_DVM_PWM        (0x12)
+#define AXP1530_DCDC1_CONRTOL       (0x13)
+#define AXP1530_DCDC2_CONRTOL       (0x14)
+#define AXP1530_DCDC3_CONRTOL       (0x15)
+#define AXP1530_ALDO1_CONRTOL       (0x16)
+#define AXP1530_DLDO1_CONRTOL       (0x17)
+#define AXP1530_POWER_STATUS        (0x1A)
+#define AXP1530_PWROK_SET           (0x1B)
+#define AXP1530_WAKEUP_CONRTOL      (0x1C)
+#define AXP1530_OUTOUT_MONITOR      (0x1D)
+#define AXP1530_POK_CONRTOL         (0x1E)
+#define AXP1530_IRQ_ENABLE1         (0x20)
+#define AXP1530_IRQ_STATUS1         (0x21)
+#define AXP1530_LOCK_REG71          (0x70)
+#define AXP1530_EPROM_SET           (0x71)
+#define AXP1530_DCDC12_DEFAULT      (0x80)
+#define AXP1530_DCDC3_A1D1_DEFAULT  (0x81)
+#define AXP1530_STARTUP_SEQ         (0x82)
+#define AXP1530_STARTUP_RTCLDO      (0x83)
+#define AXP1530_BIAS_I2C_ADDR       (0x84)
+#define AXP1530_VREF_VRPN           (0x85)
+#define AXP1530_VREF_VOL            (0x86)
+#define AXP1530_FREQUENCY           (0x87)
 
 /* For AXP858 */
 #define AXP858_ON_INDICATE          (0x00)
 #define AXP858_OFF_INDICATE         (0x01)
 #define AXP858_IC_TYPE              (0x03)
-#define AXP858_DATA_BUFFER1        (0x04)
-#define AXP858_DATA_BUFFER2        (0x05)
-#define AXP858_DATA_BUFFER3        (0x06)
-#define AXP858_DATA_BUFFER4        (0x07)
+#define AXP858_DATA_BUFFER1         (0x04)
+#define AXP858_DATA_BUFFER2         (0x05)
+#define AXP858_DATA_BUFFER3         (0x06)
+#define AXP858_DATA_BUFFER4         (0x07)
 
-#define AXP858_OUTPUT_CONTROL1       (0x10)
+#define AXP858_OUTPUT_CONTROL1      (0x10)
 #define AXP858_OUTPUT_CONTROL2      (0x11)
-#define AXP858_OUTPUT_CONTROL3        (0x12)
+#define AXP858_OUTPUT_CONTROL3      (0x12)
 #define AXP858_DCDC1_CONTROL        (0x13)
 #define AXP858_DCDC2_CONTROL        (0x14)
 #define AXP858_DCDC3_CONTROL        (0x15)
 #define AXP858_DCDC4_CONTROL        (0x16)
-#define AXP858_DCDC5_CONTROL         (0x17)
-#define AXP858_DCDC6_CONTROL            (0x18)
-#define AXP858_ALDO1_CONTROL       (0x19)
-#define AXP858_DCDC_MODE1       (0x1A)
-#define AXP858_DCDC_MODE2          (0x1B)
-#define AXP858_DCDC_MODE3          (0x1C)
-#define AXP858_DCDC_FREQUENCY          (0x1D)
-#define AXP858_OUTPUT_MONITOR           (0x1E)
-#define AXP858_IRQ_PWROK_VOFF            (0x1F)
-#define AXP858_ALDO2_CTL       (0x20)
-#define AXP858_ALDO3_CTL   (0x21)
-#define AXP858_ALDO4_CTL          (0x22)
-#define AXP858_ALDO5_CTL       (0x23)
-#define AXP858_BLDO1_CTL        (0x24)
+#define AXP858_DCDC5_CONTROL        (0x17)
+#define AXP858_DCDC6_CONTROL        (0x18)
+#define AXP858_ALDO1_CONTROL        (0x19)
+#define AXP858_DCDC_MODE1           (0x1A)
+#define AXP858_DCDC_MODE2           (0x1B)
+#define AXP858_DCDC_MODE3           (0x1C)
+#define AXP858_DCDC_FREQUENCY       (0x1D)
+#define AXP858_OUTPUT_MONITOR       (0x1E)
+#define AXP858_IRQ_PWROK_VOFF       (0x1F)
+#define AXP858_ALDO2_CTL            (0x20)
+#define AXP858_ALDO3_CTL            (0x21)
+#define AXP858_ALDO4_CTL            (0x22)
+#define AXP858_ALDO5_CTL            (0x23)
+#define AXP858_BLDO1_CTL            (0x24)
 #define AXP858_BLDO2_CTL            (0x25)
-#define AXP858_BLDO3_CTL             (0x26)
+#define AXP858_BLDO3_CTL            (0x26)
 #define AXP858_BLDO4_CTL            (0x27)
 #define AXP858_BLDO5_CTL            (0x28)
 #define AXP858_CLDO1_CTL            (0x29)
 #define AXP858_CLDO2_CTL            (0x2A)
-#define AXP858_CLDO3_GPIO1_CTL            (0x2B)
-#define AXP858_CLDO4_GPIO2_CTL            (0x2C)
+#define AXP858_CLDO3_GPIO1_CTL      (0x2B)
+#define AXP858_CLDO4_GPIO2_CTL      (0x2C)
 #define AXP858_CLDO4_CTL            (0x2D)
-#define AXP858_CPUSLDO_CTL            (0x2E)
-#define AXP858_WKP_CTL_OC_IRQ            (0x31)
-#define AXP858_POWER_DOWN_DIS            (0x32)
-#define AXP858_POK_SET            (0x36)
-#define AXP858_TWI_OR_RSB            (0x3E)
-#define AXP858_IRQ_EN1            (0x40)
-#define AXP858_IRQ_EN2            (0x41)
-#define AXP858_IRQ_STS1            (0x48)
-#define AXP858_IRQ_STS2            (0x49)
-#define AXP858_DIGITAL_PAT1            (0xF0)
-#define AXP858_DIGITAL_PAT2            (0xF1)
+#define AXP858_CPUSLDO_CTL          (0x2E)
+#define AXP858_WKP_CTL_OC_IRQ       (0x31)
+#define AXP858_POWER_DOWN_DIS       (0x32)
+#define AXP858_POK_SET              (0x36)
+#define AXP858_TWI_OR_RSB           (0x3E)
+#define AXP858_IRQ_EN1              (0x40)
+#define AXP858_IRQ_EN2              (0x41)
+#define AXP858_IRQ_STS1             (0x48)
+#define AXP858_IRQ_STS2             (0x49)
+#define AXP858_DIGITAL_PAT1         (0xF0)
+#define AXP858_DIGITAL_PAT2         (0xF1)
 #define AXP858_EPROM_SET            (0xF2)
-#define AXP858_VREF_TEM_SET            (0xF3)
-#define AXP858_LOCK_F0125            (0xF4)
-#define AXP858_EPROM_TUNE            (0xF5)
-#define AXP858_ADDR_EXTEN            (0xFF)
-#define AXP858_DCDC1_PWRON_DEF          (0x100)
-#define AXP858_DCDC2_DEF          (0x101)
-#define AXP858_DCDC3_DEF          (0x102)
-#define AXP858_DCDC4_DEF          (0x103)
-#define AXP858_DCDC5_DEF          (0x104)
-#define AXP858_DCDC6_DEF          (0x105)
-#define AXP858_ALDO12_DEF          (0x106)
-#define AXP858_ALDO23_DEF          (0x107)
-#define AXP858_ALDO45_DEF          (0x108)
-#define AXP858_ALDO5_BLDO1_DEF          (0x109)
-#define AXP858_BLDO12_DEF          (0x10A)
-#define AXP858_BLDO23_DEF          (0x10B)
-#define AXP858_BLDO45_DEF          (0x10C)
-#define AXP858_BLDO5_CLDO1_DEF          (0x10D)
-#define AXP858_CLDO23_DEF          (0x10E)
-#define AXP858_CLDO34_DEF          (0x10F)
-#define AXP858_START_DCDC123          (0x110)
-#define AXP858_START_DCDC456          (0x111)
-#define AXP858_START_ALDO12          (0x112)
-#define AXP858_START_ALDO345          (0x113)
-#define AXP858_START_BLDO123          (0x114)
-#define AXP858_START_BLDO45          (0x115)
-#define AXP858_START_CLDO123          (0x116)
-#define AXP858_START_CLDO34_CPUS          (0x117)
-#define AXP858_TWI_RSB_SET1          (0x118)
-#define AXP858_TWI_RSB_SET2          (0x119)
-#define AXP858_TWI_SET          (0x11A)
-#define AXP858_VREF_TC_ALDO3          (0x140)
-#define AXP858_VREF_VOL          (0x141)
-#define AXP858_INTERNAL_ALDO2          (0x142)
-#define AXP858_FREQUENCY_ALDO2          (0x143)
+#define AXP858_VREF_TEM_SET         (0xF3)
+#define AXP858_LOCK_F0125           (0xF4)
+#define AXP858_EPROM_TUNE           (0xF5)
+#define AXP858_ADDR_EXTEN           (0xFF)
+#define AXP858_DCDC1_PWRON_DEF      (0x100)
+#define AXP858_DCDC2_DEF            (0x101)
+#define AXP858_DCDC3_DEF            (0x102)
+#define AXP858_DCDC4_DEF            (0x103)
+#define AXP858_DCDC5_DEF            (0x104)
+#define AXP858_DCDC6_DEF            (0x105)
+#define AXP858_ALDO12_DEF           (0x106)
+#define AXP858_ALDO23_DEF           (0x107)
+#define AXP858_ALDO45_DEF           (0x108)
+#define AXP858_ALDO5_BLDO1_DEF      (0x109)
+#define AXP858_BLDO12_DEF           (0x10A)
+#define AXP858_BLDO23_DEF           (0x10B)
+#define AXP858_BLDO45_DEF           (0x10C)
+#define AXP858_BLDO5_CLDO1_DEF      (0x10D)
+#define AXP858_CLDO23_DEF           (0x10E)
+#define AXP858_CLDO34_DEF           (0x10F)
+#define AXP858_START_DCDC123        (0x110)
+#define AXP858_START_DCDC456        (0x111)
+#define AXP858_START_ALDO12         (0x112)
+#define AXP858_START_ALDO345        (0x113)
+#define AXP858_START_BLDO123        (0x114)
+#define AXP858_START_BLDO45         (0x115)
+#define AXP858_START_CLDO123        (0x116)
+#define AXP858_START_CLDO34_CPUS    (0x117)
+#define AXP858_TWI_RSB_SET1         (0x118)
+#define AXP858_TWI_RSB_SET2         (0x119)
+#define AXP858_TWI_SET              (0x11A)
+#define AXP858_VREF_TC_ALDO3        (0x140)
+#define AXP858_VREF_VOL             (0x141)
+#define AXP858_INTERNAL_ALDO2       (0x142)
+#define AXP858_FREQUENCY_ALDO2      (0x143)
 
 /* For AXP803 */
-#define AXP803_STATUS              (0x00)
-#define AXP803_MODE_CHGSTATUS      (0x01)
-#define AXP803_IC_TYPE             (0x03)
-#define AXP803_BUFFER1             (0x04)
-#define AXP803_BUFFER2             (0x05)
-#define AXP803_BUFFER3             (0x06)
-#define AXP803_BUFFER4             (0x07)
-#define AXP803_BUFFER5             (0x08)
-#define AXP803_BUFFER6             (0x09)
-#define AXP803_BUFFER7             (0x0A)
-#define AXP803_BUFFER8             (0x0B)
-#define AXP803_BUFFER9             (0x0C)
-#define AXP803_BUFFERA             (0x0D)
-#define AXP803_BUFFERB             (0x0E)
-#define AXP803_BUFFERC             (0x0F)
-#define AXP803_LDO_DC_EN1          (0X10)
-#define AXP803_LDO_DC_EN2          (0X12)
-#define AXP803_LDO_DC_EN3          (0X13)
-#define AXP803_DLDO1OUT_VOL        (0x15)
-#define AXP803_DLDO2OUT_VOL        (0x16)
-#define AXP803_DLDO3OUT_VOL        (0x17)
-#define AXP803_DLDO4OUT_VOL        (0x18)
-#define AXP803_ELDO1OUT_VOL        (0x19)
-#define AXP803_ELDO2OUT_VOL        (0x1A)
-#define AXP803_ELDO3OUT_VOL        (0x1B)
-#define AXP803_FLDO1OUT_VOL        (0x1C)
-#define AXP803_FLDO2OUT_VOL        (0x1D)
-#define AXP803_DC1OUT_VOL          (0x20)
-#define AXP803_DC2OUT_VOL          (0x21)
-#define AXP803_DC3OUT_VOL          (0x22)
-#define AXP803_DC4OUT_VOL          (0x23)
-#define AXP803_DC5OUT_VOL          (0x24)
-#define AXP803_DC6OUT_VOL          (0x25)
-#define AXP803_DC7OUT_VOL          (0x26)
-#define AXP803_DCDC_DVM_CTL        (0x27)
-#define AXP803_ALDO1OUT_VOL        (0x28)
-#define AXP803_ALDO2OUT_VOL        (0x29)
-#define AXP803_ALDO3OUT_VOL        (0x2A)
-#define AXP803_BC_CTL              (0X2C)
-#define AXP803_IPS_SET             (0x30)
-#define AXP803_VOFF_SET            (0x31)
-#define AXP803_OFF_CTL             (0x32)
-#define AXP803_CHARGE1             (0x33)
-#define AXP803_CHARGE2             (0x34)
-#define AXP803_CHARGE3             (0x35)
-#define AXP803_POK_SET             (0x36)
-#define AXP803_VLTF_CHARGE         (0x38)
-#define AXP803_VHTF_CHARGE         (0x39)
-#define AXP803_CHARGE_AC_SET       (0x3A)
-#define AXP803_DCDC_FREQSET        (0x3B)
-#define AXP803_VLTF_WORK           (0x3C)
-#define AXP803_VHTF_WORK           (0x3D)
-#define AXP803_INTEN1              (0x40)
-#define AXP803_INTEN2              (0x41)
-#define AXP803_INTEN3              (0x42)
-#define AXP803_INTEN4              (0x43)
-#define AXP803_INTEN5              (0x44)
-#define AXP803_INTEN6              (0x45)
-#define AXP803_INTSTS1             (0x48)
-#define AXP803_INTSTS2             (0x49)
-#define AXP803_INTSTS3             (0x4A)
-#define AXP803_INTSTS4             (0x4B)
-#define AXP803_INTSTS5             (0x4C)
-#define AXP803_INTSTS6             (0x4D)
-#define AXP803_INTTEMP             (0x56)
-#define AXP803_VTS_RES             (0x58)
-#define AXP803_VBATH_RES           (0x78)
-#define AXP803_VBATL_RES           (0x79)
-#define AXP803_IBATH_REG           (0x7A)
-#define AXP803_DISIBATH_REG        (0x7C)
-#define AXP803_DCDC_MODESET        (0x80)
-#define AXP803_ADC_EN              (0x82)
-#define AXP803_ADC_SPEED_SET       (0x85)
-#define AXP803_HOTOVER_CTL         (0x8F)
-#define AXP803_GPIO0_CTL           (0x90)
-#define AXP803_GPIO0LDOOUT_VOL     (0x91)
-#define AXP803_GPIO1_CTL           (0x92)
-#define AXP803_GPIO1LDOOUT_VOL     (0x93)
-#define AXP803_GPIO01_SIGNAL       (0x94)
-#define AXP803_BAT_CHGCOULOMB3     (0xB0)
-#define AXP803_BAT_CHGCOULOMB2     (0xB1)
-#define AXP803_BAT_CHGCOULOMB1     (0xB2)
-#define AXP803_BAT_CHGCOULOMB0     (0xB3)
-#define AXP803_BAT_DISCHGCOULOMB3  (0xB4)
-#define AXP803_BAT_DISCHGCOULOMB2  (0xB5)
-#define AXP803_BAT_DISCHGCOULOMB1  (0xB6)
-#define AXP803_BAT_DISCHGCOULOMB0  (0xB7)
-#define AXP803_COULOMB_CTL         (0xB8)
-#define AXP803_CAP                 (0xB9)
-#define AXP803_RDC0                (0xBA)
-#define AXP803_RDC1                (0xBB)
-#define AXP803_OCVBATH_RES         (0xBC)
-#define AXP803_OCVBATL_RES         (0xBD)
-#define AXP803_OCVCAP              (0xC0)
-#define AXP803_BATCAP0             (0xE0)
-#define AXP803_BATCAP1             (0xE1)
-#define AXP803_COUCNT0             (0xE2)
-#define AXP803_COUCNT1             (0xE3)
-#define AXP803_OCV_PERCENT         (0xE4)
-#define AXP803_COU_PERCENT         (0xE5)
-#define AXP803_WARNING_LEVEL       (0xE6)
-#define AXP803_ADJUST_PARA         (0xE8)
-#define AXP803_ADJUST_PARA1        (0xE9)
-#define AXP803_REG_ADDR_EXT        (0xFF)
+#define AXP803_STATUS               (0x00)
+#define AXP803_MODE_CHGSTATUS       (0x01)
+#define AXP803_IC_TYPE              (0x03)
+#define AXP803_BUFFER1              (0x04)
+#define AXP803_BUFFER2              (0x05)
+#define AXP803_BUFFER3              (0x06)
+#define AXP803_BUFFER4              (0x07)
+#define AXP803_BUFFER5              (0x08)
+#define AXP803_BUFFER6              (0x09)
+#define AXP803_BUFFER7              (0x0A)
+#define AXP803_BUFFER8              (0x0B)
+#define AXP803_BUFFER9              (0x0C)
+#define AXP803_BUFFERA              (0x0D)
+#define AXP803_BUFFERB              (0x0E)
+#define AXP803_BUFFERC              (0x0F)
+#define AXP803_LDO_DC_EN1           (0X10)
+#define AXP803_LDO_DC_EN2           (0X12)
+#define AXP803_LDO_DC_EN3           (0X13)
+#define AXP803_DLDO1OUT_VOL         (0x15)
+#define AXP803_DLDO2OUT_VOL         (0x16)
+#define AXP803_DLDO3OUT_VOL         (0x17)
+#define AXP803_DLDO4OUT_VOL         (0x18)
+#define AXP803_ELDO1OUT_VOL         (0x19)
+#define AXP803_ELDO2OUT_VOL         (0x1A)
+#define AXP803_ELDO3OUT_VOL         (0x1B)
+#define AXP803_FLDO1OUT_VOL         (0x1C)
+#define AXP803_FLDO2OUT_VOL         (0x1D)
+#define AXP803_DC1OUT_VOL           (0x20)
+#define AXP803_DC2OUT_VOL           (0x21)
+#define AXP803_DC3OUT_VOL           (0x22)
+#define AXP803_DC4OUT_VOL           (0x23)
+#define AXP803_DC5OUT_VOL           (0x24)
+#define AXP803_DC6OUT_VOL           (0x25)
+#define AXP803_DC7OUT_VOL           (0x26)
+#define AXP803_DCDC_DVM_CTL         (0x27)
+#define AXP803_ALDO1OUT_VOL         (0x28)
+#define AXP803_ALDO2OUT_VOL         (0x29)
+#define AXP803_ALDO3OUT_VOL         (0x2A)
+#define AXP803_BC_CTL               (0X2C)
+#define AXP803_IPS_SET              (0x30)
+#define AXP803_VOFF_SET             (0x31)
+#define AXP803_OFF_CTL              (0x32)
+#define AXP803_CHARGE1              (0x33)
+#define AXP803_CHARGE2              (0x34)
+#define AXP803_CHARGE3              (0x35)
+#define AXP803_POK_SET              (0x36)
+#define AXP803_VLTF_CHARGE          (0x38)
+#define AXP803_VHTF_CHARGE          (0x39)
+#define AXP803_CHARGE_AC_SET        (0x3A)
+#define AXP803_DCDC_FREQSET         (0x3B)
+#define AXP803_VLTF_WORK            (0x3C)
+#define AXP803_VHTF_WORK            (0x3D)
+#define AXP803_INTEN1               (0x40)
+#define AXP803_INTEN2               (0x41)
+#define AXP803_INTEN3               (0x42)
+#define AXP803_INTEN4               (0x43)
+#define AXP803_INTEN5               (0x44)
+#define AXP803_INTEN6               (0x45)
+#define AXP803_INTSTS1              (0x48)
+#define AXP803_INTSTS2              (0x49)
+#define AXP803_INTSTS3              (0x4A)
+#define AXP803_INTSTS4              (0x4B)
+#define AXP803_INTSTS5              (0x4C)
+#define AXP803_INTSTS6              (0x4D)
+#define AXP803_INTTEMP              (0x56)
+#define AXP803_VTS_RES              (0x58)
+#define AXP803_VBATH_RES            (0x78)
+#define AXP803_VBATL_RES            (0x79)
+#define AXP803_IBATH_REG            (0x7A)
+#define AXP803_DISIBATH_REG         (0x7C)
+#define AXP803_DCDC_MODESET         (0x80)
+#define AXP803_ADC_EN               (0x82)
+#define AXP803_ADC_SPEED_SET        (0x85)
+#define AXP803_HOTOVER_CTL          (0x8F)
+#define AXP803_GPIO0_CTL            (0x90)
+#define AXP803_GPIO0LDOOUT_VOL      (0x91)
+#define AXP803_GPIO1_CTL            (0x92)
+#define AXP803_GPIO1LDOOUT_VOL      (0x93)
+#define AXP803_GPIO01_SIGNAL        (0x94)
+#define AXP803_BAT_CHGCOULOMB3      (0xB0)
+#define AXP803_BAT_CHGCOULOMB2      (0xB1)
+#define AXP803_BAT_CHGCOULOMB1      (0xB2)
+#define AXP803_BAT_CHGCOULOMB0      (0xB3)
+#define AXP803_BAT_DISCHGCOULOMB3   (0xB4)
+#define AXP803_BAT_DISCHGCOULOMB2   (0xB5)
+#define AXP803_BAT_DISCHGCOULOMB1   (0xB6)
+#define AXP803_BAT_DISCHGCOULOMB0   (0xB7)
+#define AXP803_COULOMB_CTL          (0xB8)
+#define AXP803_CAP                  (0xB9)
+#define AXP803_RDC0                 (0xBA)
+#define AXP803_RDC1                 (0xBB)
+#define AXP803_OCVBATH_RES          (0xBC)
+#define AXP803_OCVBATL_RES          (0xBD)
+#define AXP803_OCVCAP               (0xC0)
+#define AXP803_BATCAP0              (0xE0)
+#define AXP803_BATCAP1              (0xE1)
+#define AXP803_COUCNT0              (0xE2)
+#define AXP803_COUCNT1              (0xE3)
+#define AXP803_OCV_PERCENT          (0xE4)
+#define AXP803_COU_PERCENT          (0xE5)
+#define AXP803_WARNING_LEVEL        (0xE6)
+#define AXP803_ADJUST_PARA          (0xE8)
+#define AXP803_ADJUST_PARA1         (0xE9)
+#define AXP803_REG_ADDR_EXT         (0xFF)
 
 /*
  * axp2202 define
@@ -958,7 +958,7 @@ extern int axp_debug_mask;
 #define AXP2585_COULOMB_CTL         (0xB8)
 #define AXP2585_CAP                 (0xB9)
 #define AXP2585_RDC0                (0xBA)
-#define AXP2585_RDC1               (0xBB)
+#define AXP2585_RDC1                (0xBB)
 #define AXP2585_BATCAP0             (0xE0)
 #define AXP2585_BATCAP1             (0xE1)
 #define AXP2585_WARNING_LEVEL       (0xE6)
@@ -968,700 +968,696 @@ extern int axp_debug_mask;
 
 /* Regulators IDs */
 enum {
-	AXP152_DCDC1 = 0,
-	AXP152_DCDC2,
-	AXP152_DCDC3,
-	AXP152_DCDC4,
-	AXP152_ALDO1,
-	AXP152_ALDO2,
-	AXP152_DLDO1,
-	AXP152_DLDO2,
-	AXP152_LDO0,
-	AXP152_GPIO2_LDO,
-	AXP152_RTC13,
-	AXP152_RTC18,
-	AXP152_REG_ID_MAX,
+    AXP152_DCDC1 = 0,
+    AXP152_DCDC2,
+    AXP152_DCDC3,
+    AXP152_DCDC4,
+    AXP152_ALDO1,
+    AXP152_ALDO2,
+    AXP152_DLDO1,
+    AXP152_DLDO2,
+    AXP152_LDO0,
+    AXP152_GPIO2_LDO,
+    AXP152_RTC13,
+    AXP152_RTC18,
+    AXP152_REG_ID_MAX,
 };
 
 enum {
-	AXP20X_LDO1 = 0,
-	AXP20X_LDO2,
-	AXP20X_LDO3,
-	AXP20X_LDO4,
-	AXP20X_LDO5,
-	AXP20X_DCDC2,
-	AXP20X_DCDC3,
-	AXP20X_REG_ID_MAX,
+    AXP20X_LDO1 = 0,
+    AXP20X_LDO2,
+    AXP20X_LDO3,
+    AXP20X_LDO4,
+    AXP20X_LDO5,
+    AXP20X_DCDC2,
+    AXP20X_DCDC3,
+    AXP20X_REG_ID_MAX,
 };
 
 enum {
-	AXP22X_DCDC1 = 0,
-	AXP22X_DCDC2,
-	AXP22X_DCDC3,
-	AXP22X_DCDC4,
-	AXP22X_DCDC5,
-	AXP22X_DC1SW,
-	AXP22X_DC5LDO,
-	AXP22X_ALDO1,
-	AXP22X_ALDO2,
-	AXP22X_ALDO3,
-	AXP22X_ELDO1,
-	AXP22X_ELDO2,
-	AXP22X_ELDO3,
-	AXP22X_DLDO1,
-	AXP22X_DLDO2,
-	AXP22X_DLDO3,
-	AXP22X_DLDO4,
-	AXP22X_RTC_LDO,
-	AXP22X_LDO_IO0,
-	AXP22X_LDO_IO1,
-	AXP22X_REG_ID_MAX,
+    AXP22X_DCDC1 = 0,
+    AXP22X_DCDC2,
+    AXP22X_DCDC3,
+    AXP22X_DCDC4,
+    AXP22X_DCDC5,
+    AXP22X_DC1SW,
+    AXP22X_DC5LDO,
+    AXP22X_ALDO1,
+    AXP22X_ALDO2,
+    AXP22X_ALDO3,
+    AXP22X_ELDO1,
+    AXP22X_ELDO2,
+    AXP22X_ELDO3,
+    AXP22X_DLDO1,
+    AXP22X_DLDO2,
+    AXP22X_DLDO3,
+    AXP22X_DLDO4,
+    AXP22X_RTC_LDO,
+    AXP22X_LDO_IO0,
+    AXP22X_LDO_IO1,
+    AXP22X_REG_ID_MAX,
 };
 
 enum {
-	AXP806_DCDCA = 0,
-	AXP806_DCDCB,
-	AXP806_DCDCC,
-	AXP806_DCDCD,
-	AXP806_DCDCE,
-	AXP806_ALDO1,
-	AXP806_ALDO2,
-	AXP806_ALDO3,
-	AXP806_BLDO1,
-	AXP806_BLDO2,
-	AXP806_BLDO3,
-	AXP806_BLDO4,
-	AXP806_CLDO1,
-	AXP806_CLDO2,
-	AXP806_CLDO3,
-	AXP806_SW,
-	AXP806_REG_ID_MAX,
+    AXP806_DCDCA = 0,
+    AXP806_DCDCB,
+    AXP806_DCDCC,
+    AXP806_DCDCD,
+    AXP806_DCDCE,
+    AXP806_ALDO1,
+    AXP806_ALDO2,
+    AXP806_ALDO3,
+    AXP806_BLDO1,
+    AXP806_BLDO2,
+    AXP806_BLDO3,
+    AXP806_BLDO4,
+    AXP806_CLDO1,
+    AXP806_CLDO2,
+    AXP806_CLDO3,
+    AXP806_SW,
+    AXP806_REG_ID_MAX,
 };
 
 enum {
-	AXP809_DCDC1 = 0,
-	AXP809_DCDC2,
-	AXP809_DCDC3,
-	AXP809_DCDC4,
-	AXP809_DCDC5,
-	AXP809_DC1SW,
-	AXP809_DC5LDO,
-	AXP809_ALDO1,
-	AXP809_ALDO2,
-	AXP809_ALDO3,
-	AXP809_ELDO1,
-	AXP809_ELDO2,
-	AXP809_ELDO3,
-	AXP809_DLDO1,
-	AXP809_DLDO2,
-	AXP809_RTC_LDO,
-	AXP809_LDO_IO0,
-	AXP809_LDO_IO1,
-	AXP809_SW,
-	AXP809_REG_ID_MAX,
+    AXP809_DCDC1 = 0,
+    AXP809_DCDC2,
+    AXP809_DCDC3,
+    AXP809_DCDC4,
+    AXP809_DCDC5,
+    AXP809_DC1SW,
+    AXP809_DC5LDO,
+    AXP809_ALDO1,
+    AXP809_ALDO2,
+    AXP809_ALDO3,
+    AXP809_ELDO1,
+    AXP809_ELDO2,
+    AXP809_ELDO3,
+    AXP809_DLDO1,
+    AXP809_DLDO2,
+    AXP809_RTC_LDO,
+    AXP809_LDO_IO0,
+    AXP809_LDO_IO1,
+    AXP809_SW,
+    AXP809_REG_ID_MAX,
 };
 
 enum {
-	AXP2101_DCDC1 = 0,
-	AXP2101_DCDC2,
-	AXP2101_DCDC3,
-	AXP2101_DCDC4,
-	AXP2101_DCDC5,
-	AXP2101_LDO1,  /* RTCLDO */
-	AXP2101_LDO2,  /* RTCLDO1 */
-	AXP2101_LDO3,  /* ALDO1 */
-	AXP2101_LDO4,  /* ALDO2 */
-	AXP2101_LDO5,  /* ALDO3 */
-	AXP2101_LDO6,  /* ALDO4 */
-	AXP2101_LDO7,  /* BLDO1 */
-	AXP2101_LDO8,  /* BLDO2 */
-	AXP2101_LDO9,  /* DLDO1 */
-	AXP2101_LDO10, /* DLDO2 */
-	AXP2101_LDO11, /* CPULDOS */
-	AXP2101_REG_ID_MAX,
+    AXP2101_DCDC1 = 0,
+    AXP2101_DCDC2,
+    AXP2101_DCDC3,
+    AXP2101_DCDC4,
+    AXP2101_DCDC5,
+    AXP2101_LDO1,  /* RTCLDO */
+    AXP2101_LDO2,  /* RTCLDO1 */
+    AXP2101_LDO3,  /* ALDO1 */
+    AXP2101_LDO4,  /* ALDO2 */
+    AXP2101_LDO5,  /* ALDO3 */
+    AXP2101_LDO6,  /* ALDO4 */
+    AXP2101_LDO7,  /* BLDO1 */
+    AXP2101_LDO8,  /* BLDO2 */
+    AXP2101_LDO9,  /* DLDO1 */
+    AXP2101_LDO10, /* DLDO2 */
+    AXP2101_LDO11, /* CPULDOS */
+    AXP2101_REG_ID_MAX,
 };
 
 enum {
-	AXP15_DCDC1 = 0,
-	AXP15_DCDC2,
-	AXP15_DCDC3,
-	AXP15_DCDC4,
-	AXP15_DCDC5,
-	AXP15_LDO1,  /* RTCLDO */
-	AXP15_LDO2,  /* RTCLDO1 */
-	AXP15_LDO3,  /* ALDO1 */
-	AXP15_LDO4,  /* ALDO2 */
-	AXP15_LDO5,  /* ALDO3 */
-	AXP15_LDO6,  /* ALDO4 */
-	AXP15_LDO7,  /* BLDO1 */
-	AXP15_REG_ID_MAX,
+    AXP15_DCDC1 = 0,
+    AXP15_DCDC2,
+    AXP15_DCDC3,
+    AXP15_DCDC4,
+    AXP15_DCDC5,
+    AXP15_LDO1, /* RTCLDO */
+    AXP15_LDO2, /* RTCLDO1 */
+    AXP15_LDO3, /* ALDO1 */
+    AXP15_LDO4, /* ALDO2 */
+    AXP15_LDO5, /* ALDO3 */
+    AXP15_LDO6, /* ALDO4 */
+    AXP15_LDO7, /* BLDO1 */
+    AXP15_REG_ID_MAX,
 };
 
 enum {
-	AXP1530_DCDC1 = 0,
-	AXP1530_DCDC2,
-	AXP1530_DCDC3,
-	AXP1530_LDO1,  /* RTCLDO */
-	AXP1530_LDO2,  /* RTCLDO1 */
-	AXP1530_REG_ID_MAX,
+    AXP1530_DCDC1 = 0,
+    AXP1530_DCDC2,
+    AXP1530_DCDC3,
+    AXP1530_LDO1, /* RTCLDO */
+    AXP1530_LDO2, /* RTCLDO1 */
+    AXP1530_REG_ID_MAX,
 };
 
 enum {
-	AXP858_DCDC1 = 0,
-	AXP858_DCDC2,
-	AXP858_DCDC3,
-	AXP858_DCDC4,
-	AXP858_DCDC5,
-	AXP858_DCDC6,
-	AXP858_ALDO1,
-	AXP858_ALDO2,
-	AXP858_ALDO3,
-	AXP858_ALDO4,
-	AXP858_ALDO5,
-	AXP858_BLDO1,
-	AXP858_BLDO2,
-	AXP858_BLDO3,
-	AXP858_BLDO4,
-	AXP858_BLDO5,
-	AXP858_CLDO1,
-	AXP858_CLDO2,
-	AXP858_CLDO3,
-	AXP858_CLDO4,
-	AXP858_CPUSLDO,
-	AXP858_SW,
-	AXP858_REG_ID_MAX,
+    AXP858_DCDC1 = 0,
+    AXP858_DCDC2,
+    AXP858_DCDC3,
+    AXP858_DCDC4,
+    AXP858_DCDC5,
+    AXP858_DCDC6,
+    AXP858_ALDO1,
+    AXP858_ALDO2,
+    AXP858_ALDO3,
+    AXP858_ALDO4,
+    AXP858_ALDO5,
+    AXP858_BLDO1,
+    AXP858_BLDO2,
+    AXP858_BLDO3,
+    AXP858_BLDO4,
+    AXP858_BLDO5,
+    AXP858_CLDO1,
+    AXP858_CLDO2,
+    AXP858_CLDO3,
+    AXP858_CLDO4,
+    AXP858_CPUSLDO,
+    AXP858_SW,
+    AXP858_REG_ID_MAX,
 };
 
 enum {
-	AXP803_DCDC1 = 0,
-	AXP803_DCDC2,
-	AXP803_DCDC3,
-	AXP803_DCDC4,
-	AXP803_DCDC5,
-	AXP803_DCDC6,
-	AXP803_DCDC7,
-	AXP803_RTCLDO,
-	AXP803_ALDO1,
-	AXP803_ALDO2,
-	AXP803_ALDO3,
-	AXP803_DLDO1,
-	AXP803_DLDO2,
-	AXP803_DLDO3,
-	AXP803_DLDO4,
-	AXP803_ELDO1,
-	AXP803_ELDO2,
-	AXP803_ELDO3,
-	AXP803_FLDO1,
-	AXP803_FLDO2,
-	AXP803_LDOIO0,
-	AXP803_LDOIO1,
-	AXP803_DC1SW,
-	AXP803_REG_ID_MAX,
+    AXP803_DCDC1 = 0,
+    AXP803_DCDC2,
+    AXP803_DCDC3,
+    AXP803_DCDC4,
+    AXP803_DCDC5,
+    AXP803_DCDC6,
+    AXP803_DCDC7,
+    AXP803_RTCLDO,
+    AXP803_ALDO1,
+    AXP803_ALDO2,
+    AXP803_ALDO3,
+    AXP803_DLDO1,
+    AXP803_DLDO2,
+    AXP803_DLDO3,
+    AXP803_DLDO4,
+    AXP803_ELDO1,
+    AXP803_ELDO2,
+    AXP803_ELDO3,
+    AXP803_FLDO1,
+    AXP803_FLDO2,
+    AXP803_LDOIO0,
+    AXP803_LDOIO1,
+    AXP803_DC1SW,
+    AXP803_REG_ID_MAX,
 };
 
 enum {
-	AXP2585_REG_ID_MAX = 0,
+    AXP2585_REG_ID_MAX = 0,
 };
 
 /* IRQs */
 enum {
-	AXP152_IRQ_LDO0IN_CONNECT = 1,
-	AXP152_IRQ_LDO0IN_REMOVAL,
-	AXP152_IRQ_ALDO0IN_CONNECT,
-	AXP152_IRQ_ALDO0IN_REMOVAL,
-	AXP152_IRQ_DCDC1_V_LOW,
-	AXP152_IRQ_DCDC2_V_LOW,
-	AXP152_IRQ_DCDC3_V_LOW,
-	AXP152_IRQ_DCDC4_V_LOW,
-	AXP152_IRQ_PEK_SHORT,
-	AXP152_IRQ_PEK_LONG,
-	AXP152_IRQ_TIMER,
-	AXP152_IRQ_PEK_RIS_EDGE,
-	AXP152_IRQ_PEK_FAL_EDGE,
-	AXP152_IRQ_GPIO3_INPUT,
-	AXP152_IRQ_GPIO2_INPUT,
-	AXP152_IRQ_GPIO1_INPUT,
-	AXP152_IRQ_GPIO0_INPUT,
+    AXP152_IRQ_LDO0IN_CONNECT = 1,
+    AXP152_IRQ_LDO0IN_REMOVAL,
+    AXP152_IRQ_ALDO0IN_CONNECT,
+    AXP152_IRQ_ALDO0IN_REMOVAL,
+    AXP152_IRQ_DCDC1_V_LOW,
+    AXP152_IRQ_DCDC2_V_LOW,
+    AXP152_IRQ_DCDC3_V_LOW,
+    AXP152_IRQ_DCDC4_V_LOW,
+    AXP152_IRQ_PEK_SHORT,
+    AXP152_IRQ_PEK_LONG,
+    AXP152_IRQ_TIMER,
+    AXP152_IRQ_PEK_RIS_EDGE,
+    AXP152_IRQ_PEK_FAL_EDGE,
+    AXP152_IRQ_GPIO3_INPUT,
+    AXP152_IRQ_GPIO2_INPUT,
+    AXP152_IRQ_GPIO1_INPUT,
+    AXP152_IRQ_GPIO0_INPUT,
 };
 
 enum {
-	AXP20X_IRQ_ACIN_OVER_V = 1,
-	AXP20X_IRQ_ACIN_PLUGIN,
-	AXP20X_IRQ_ACIN_REMOVAL,
-	AXP20X_IRQ_VBUS_OVER_V,
-	AXP20X_IRQ_VBUS_PLUGIN,
-	AXP20X_IRQ_VBUS_REMOVAL,
-	AXP20X_IRQ_VBUS_V_LOW,
-	AXP20X_IRQ_BATT_PLUGIN,
-	AXP20X_IRQ_BATT_REMOVAL,
-	AXP20X_IRQ_BATT_ENT_ACT_MODE,
-	AXP20X_IRQ_BATT_EXIT_ACT_MODE,
-	AXP20X_IRQ_CHARG,
-	AXP20X_IRQ_CHARG_DONE,
-	AXP20X_IRQ_BATT_TEMP_HIGH,
-	AXP20X_IRQ_BATT_TEMP_LOW,
-	AXP20X_IRQ_DIE_TEMP_HIGH,
-	AXP20X_IRQ_CHARG_I_LOW,
-	AXP20X_IRQ_DCDC1_V_LONG,
-	AXP20X_IRQ_DCDC2_V_LONG,
-	AXP20X_IRQ_DCDC3_V_LONG,
-	AXP20X_IRQ_PEK_SHORT = 22,
-	AXP20X_IRQ_PEK_LONG,
-	AXP20X_IRQ_N_OE_PWR_ON,
-	AXP20X_IRQ_N_OE_PWR_OFF,
-	AXP20X_IRQ_VBUS_VALID,
-	AXP20X_IRQ_VBUS_NOT_VALID,
-	AXP20X_IRQ_VBUS_SESS_VALID,
-	AXP20X_IRQ_VBUS_SESS_END,
-	AXP20X_IRQ_LOW_PWR_LVL1,
-	AXP20X_IRQ_LOW_PWR_LVL2,
-	AXP20X_IRQ_TIMER,
-	AXP20X_IRQ_PEK_RIS_EDGE,
-	AXP20X_IRQ_PEK_FAL_EDGE,
-	AXP20X_IRQ_GPIO3_INPUT,
-	AXP20X_IRQ_GPIO2_INPUT,
-	AXP20X_IRQ_GPIO1_INPUT,
-	AXP20X_IRQ_GPIO0_INPUT,
+    AXP20X_IRQ_ACIN_OVER_V = 1,
+    AXP20X_IRQ_ACIN_PLUGIN,
+    AXP20X_IRQ_ACIN_REMOVAL,
+    AXP20X_IRQ_VBUS_OVER_V,
+    AXP20X_IRQ_VBUS_PLUGIN,
+    AXP20X_IRQ_VBUS_REMOVAL,
+    AXP20X_IRQ_VBUS_V_LOW,
+    AXP20X_IRQ_BATT_PLUGIN,
+    AXP20X_IRQ_BATT_REMOVAL,
+    AXP20X_IRQ_BATT_ENT_ACT_MODE,
+    AXP20X_IRQ_BATT_EXIT_ACT_MODE,
+    AXP20X_IRQ_CHARG,
+    AXP20X_IRQ_CHARG_DONE,
+    AXP20X_IRQ_BATT_TEMP_HIGH,
+    AXP20X_IRQ_BATT_TEMP_LOW,
+    AXP20X_IRQ_DIE_TEMP_HIGH,
+    AXP20X_IRQ_CHARG_I_LOW,
+    AXP20X_IRQ_DCDC1_V_LONG,
+    AXP20X_IRQ_DCDC2_V_LONG,
+    AXP20X_IRQ_DCDC3_V_LONG,
+    AXP20X_IRQ_PEK_SHORT = 22,
+    AXP20X_IRQ_PEK_LONG,
+    AXP20X_IRQ_N_OE_PWR_ON,
+    AXP20X_IRQ_N_OE_PWR_OFF,
+    AXP20X_IRQ_VBUS_VALID,
+    AXP20X_IRQ_VBUS_NOT_VALID,
+    AXP20X_IRQ_VBUS_SESS_VALID,
+    AXP20X_IRQ_VBUS_SESS_END,
+    AXP20X_IRQ_LOW_PWR_LVL1,
+    AXP20X_IRQ_LOW_PWR_LVL2,
+    AXP20X_IRQ_TIMER,
+    AXP20X_IRQ_PEK_RIS_EDGE,
+    AXP20X_IRQ_PEK_FAL_EDGE,
+    AXP20X_IRQ_GPIO3_INPUT,
+    AXP20X_IRQ_GPIO2_INPUT,
+    AXP20X_IRQ_GPIO1_INPUT,
+    AXP20X_IRQ_GPIO0_INPUT,
 };
 
 enum axp22x_irqs {
-	AXP22X_IRQ_ACIN_OVER_V = 1,
-	AXP22X_IRQ_ACIN_PLUGIN,
-	AXP22X_IRQ_ACIN_REMOVAL,
-	AXP22X_IRQ_VBUS_OVER_V,
-	AXP22X_IRQ_VBUS_PLUGIN,
-	AXP22X_IRQ_VBUS_REMOVAL,
-	AXP22X_IRQ_VBUS_V_LOW,
-	AXP22X_IRQ_BATT_PLUGIN,
-	AXP22X_IRQ_BATT_REMOVAL,
-	AXP22X_IRQ_BATT_ENT_ACT_MODE,
-	AXP22X_IRQ_BATT_EXIT_ACT_MODE,
-	AXP22X_IRQ_CHARG,
-	AXP22X_IRQ_CHARG_DONE,
-	AXP22X_IRQ_BATT_TEMP_HIGH,
-	AXP22X_IRQ_BATT_TEMP_LOW,
-	AXP22X_IRQ_DIE_TEMP_HIGH,
-	AXP22X_IRQ_PEK_SHORT,
-	AXP22X_IRQ_PEK_LONG,
-	AXP22X_IRQ_LOW_PWR_LVL1,
-	AXP22X_IRQ_LOW_PWR_LVL2,
-	AXP22X_IRQ_TIMER,
-	AXP22X_IRQ_PEK_RIS_EDGE,
-	AXP22X_IRQ_PEK_FAL_EDGE,
-	AXP22X_IRQ_GPIO1_INPUT,
-	AXP22X_IRQ_GPIO0_INPUT,
+    AXP22X_IRQ_ACIN_OVER_V = 1,
+    AXP22X_IRQ_ACIN_PLUGIN,
+    AXP22X_IRQ_ACIN_REMOVAL,
+    AXP22X_IRQ_VBUS_OVER_V,
+    AXP22X_IRQ_VBUS_PLUGIN,
+    AXP22X_IRQ_VBUS_REMOVAL,
+    AXP22X_IRQ_VBUS_V_LOW,
+    AXP22X_IRQ_BATT_PLUGIN,
+    AXP22X_IRQ_BATT_REMOVAL,
+    AXP22X_IRQ_BATT_ENT_ACT_MODE,
+    AXP22X_IRQ_BATT_EXIT_ACT_MODE,
+    AXP22X_IRQ_CHARG,
+    AXP22X_IRQ_CHARG_DONE,
+    AXP22X_IRQ_BATT_TEMP_HIGH,
+    AXP22X_IRQ_BATT_TEMP_LOW,
+    AXP22X_IRQ_DIE_TEMP_HIGH,
+    AXP22X_IRQ_PEK_SHORT,
+    AXP22X_IRQ_PEK_LONG,
+    AXP22X_IRQ_LOW_PWR_LVL1,
+    AXP22X_IRQ_LOW_PWR_LVL2,
+    AXP22X_IRQ_TIMER,
+    AXP22X_IRQ_PEK_RIS_EDGE,
+    AXP22X_IRQ_PEK_FAL_EDGE,
+    AXP22X_IRQ_GPIO1_INPUT,
+    AXP22X_IRQ_GPIO0_INPUT,
 };
 
 enum axp288_irqs {
-	AXP288_IRQ_VBUS_FALL     = 2,
-	AXP288_IRQ_VBUS_RISE,
-	AXP288_IRQ_OV,
-	AXP288_IRQ_FALLING_ALT,
-	AXP288_IRQ_RISING_ALT,
-	AXP288_IRQ_OV_ALT,
-	AXP288_IRQ_DONE          = 10,
-	AXP288_IRQ_CHARGING,
-	AXP288_IRQ_SAFE_QUIT,
-	AXP288_IRQ_SAFE_ENTER,
-	AXP288_IRQ_ABSENT,
-	AXP288_IRQ_APPEND,
-	AXP288_IRQ_QWBTU,
-	AXP288_IRQ_WBTU,
-	AXP288_IRQ_QWBTO,
-	AXP288_IRQ_WBTO,
-	AXP288_IRQ_QCBTU,
-	AXP288_IRQ_CBTU,
-	AXP288_IRQ_QCBTO,
-	AXP288_IRQ_CBTO,
-	AXP288_IRQ_WL2,
-	AXP288_IRQ_WL1,
-	AXP288_IRQ_GPADC,
-	AXP288_IRQ_OT            = 31,
-	AXP288_IRQ_GPIO0,
-	AXP288_IRQ_GPIO1,
-	AXP288_IRQ_POKO,
-	AXP288_IRQ_POKL,
-	AXP288_IRQ_POKS,
-	AXP288_IRQ_POKN,
-	AXP288_IRQ_POKP,
-	AXP288_IRQ_TIMER,
-	AXP288_IRQ_MV_CHNG,
-	AXP288_IRQ_BC_USB_CHNG,
+    AXP288_IRQ_VBUS_FALL = 2,
+    AXP288_IRQ_VBUS_RISE,
+    AXP288_IRQ_OV,
+    AXP288_IRQ_FALLING_ALT,
+    AXP288_IRQ_RISING_ALT,
+    AXP288_IRQ_OV_ALT,
+    AXP288_IRQ_DONE = 10,
+    AXP288_IRQ_CHARGING,
+    AXP288_IRQ_SAFE_QUIT,
+    AXP288_IRQ_SAFE_ENTER,
+    AXP288_IRQ_ABSENT,
+    AXP288_IRQ_APPEND,
+    AXP288_IRQ_QWBTU,
+    AXP288_IRQ_WBTU,
+    AXP288_IRQ_QWBTO,
+    AXP288_IRQ_WBTO,
+    AXP288_IRQ_QCBTU,
+    AXP288_IRQ_CBTU,
+    AXP288_IRQ_QCBTO,
+    AXP288_IRQ_CBTO,
+    AXP288_IRQ_WL2,
+    AXP288_IRQ_WL1,
+    AXP288_IRQ_GPADC,
+    AXP288_IRQ_OT = 31,
+    AXP288_IRQ_GPIO0,
+    AXP288_IRQ_GPIO1,
+    AXP288_IRQ_POKO,
+    AXP288_IRQ_POKL,
+    AXP288_IRQ_POKS,
+    AXP288_IRQ_POKN,
+    AXP288_IRQ_POKP,
+    AXP288_IRQ_TIMER,
+    AXP288_IRQ_MV_CHNG,
+    AXP288_IRQ_BC_USB_CHNG,
 };
 
 enum axp806_irqs {
-	AXP806_IRQ_DIE_TEMP_HIGH_LV1,
-	AXP806_IRQ_DIE_TEMP_HIGH_LV2,
-	AXP806_IRQ_DCDCA_V_LOW = 3,
-	AXP806_IRQ_DCDCB_V_LOW,
-	AXP806_IRQ_DCDCC_V_LOW,
-	AXP806_IRQ_DCDCD_V_LOW,
-	AXP806_IRQ_DCDCE_V_LOW,
-	AXP806_IRQ_PWROK_LONG,
-	AXP806_IRQ_PWROK_SHORT,
-	AXP806_IRQ_WAKEUP = 12,
-	AXP806_IRQ_PWROK_FALL,
-	AXP806_IRQ_PWROK_RISE,
+    AXP806_IRQ_DIE_TEMP_HIGH_LV1,
+    AXP806_IRQ_DIE_TEMP_HIGH_LV2,
+    AXP806_IRQ_DCDCA_V_LOW = 3,
+    AXP806_IRQ_DCDCB_V_LOW,
+    AXP806_IRQ_DCDCC_V_LOW,
+    AXP806_IRQ_DCDCD_V_LOW,
+    AXP806_IRQ_DCDCE_V_LOW,
+    AXP806_IRQ_PWROK_LONG,
+    AXP806_IRQ_PWROK_SHORT,
+    AXP806_IRQ_WAKEUP = 12,
+    AXP806_IRQ_PWROK_FALL,
+    AXP806_IRQ_PWROK_RISE,
 };
 
 enum axp809_irqs {
-	AXP809_IRQ_ACIN_OVER_V = 1,
-	AXP809_IRQ_ACIN_PLUGIN,
-	AXP809_IRQ_ACIN_REMOVAL,
-	AXP809_IRQ_VBUS_OVER_V,
-	AXP809_IRQ_VBUS_PLUGIN,
-	AXP809_IRQ_VBUS_REMOVAL,
-	AXP809_IRQ_VBUS_V_LOW,
-	AXP809_IRQ_BATT_PLUGIN,
-	AXP809_IRQ_BATT_REMOVAL,
-	AXP809_IRQ_BATT_ENT_ACT_MODE,
-	AXP809_IRQ_BATT_EXIT_ACT_MODE,
-	AXP809_IRQ_CHARG,
-	AXP809_IRQ_CHARG_DONE,
-	AXP809_IRQ_BATT_CHG_TEMP_HIGH,
-	AXP809_IRQ_BATT_CHG_TEMP_HIGH_END,
-	AXP809_IRQ_BATT_CHG_TEMP_LOW,
-	AXP809_IRQ_BATT_CHG_TEMP_LOW_END,
-	AXP809_IRQ_BATT_ACT_TEMP_HIGH,
-	AXP809_IRQ_BATT_ACT_TEMP_HIGH_END,
-	AXP809_IRQ_BATT_ACT_TEMP_LOW,
-	AXP809_IRQ_BATT_ACT_TEMP_LOW_END,
-	AXP809_IRQ_DIE_TEMP_HIGH,
-	AXP809_IRQ_LOW_PWR_LVL1,
-	AXP809_IRQ_LOW_PWR_LVL2,
-	AXP809_IRQ_TIMER,
-	AXP809_IRQ_PEK_RIS_EDGE,
-	AXP809_IRQ_PEK_FAL_EDGE,
-	AXP809_IRQ_PEK_SHORT,
-	AXP809_IRQ_PEK_LONG,
-	AXP809_IRQ_PEK_OVER_OFF,
-	AXP809_IRQ_GPIO1_INPUT,
-	AXP809_IRQ_GPIO0_INPUT,
+    AXP809_IRQ_ACIN_OVER_V = 1,
+    AXP809_IRQ_ACIN_PLUGIN,
+    AXP809_IRQ_ACIN_REMOVAL,
+    AXP809_IRQ_VBUS_OVER_V,
+    AXP809_IRQ_VBUS_PLUGIN,
+    AXP809_IRQ_VBUS_REMOVAL,
+    AXP809_IRQ_VBUS_V_LOW,
+    AXP809_IRQ_BATT_PLUGIN,
+    AXP809_IRQ_BATT_REMOVAL,
+    AXP809_IRQ_BATT_ENT_ACT_MODE,
+    AXP809_IRQ_BATT_EXIT_ACT_MODE,
+    AXP809_IRQ_CHARG,
+    AXP809_IRQ_CHARG_DONE,
+    AXP809_IRQ_BATT_CHG_TEMP_HIGH,
+    AXP809_IRQ_BATT_CHG_TEMP_HIGH_END,
+    AXP809_IRQ_BATT_CHG_TEMP_LOW,
+    AXP809_IRQ_BATT_CHG_TEMP_LOW_END,
+    AXP809_IRQ_BATT_ACT_TEMP_HIGH,
+    AXP809_IRQ_BATT_ACT_TEMP_HIGH_END,
+    AXP809_IRQ_BATT_ACT_TEMP_LOW,
+    AXP809_IRQ_BATT_ACT_TEMP_LOW_END,
+    AXP809_IRQ_DIE_TEMP_HIGH,
+    AXP809_IRQ_LOW_PWR_LVL1,
+    AXP809_IRQ_LOW_PWR_LVL2,
+    AXP809_IRQ_TIMER,
+    AXP809_IRQ_PEK_RIS_EDGE,
+    AXP809_IRQ_PEK_FAL_EDGE,
+    AXP809_IRQ_PEK_SHORT,
+    AXP809_IRQ_PEK_LONG,
+    AXP809_IRQ_PEK_OVER_OFF,
+    AXP809_IRQ_GPIO1_INPUT,
+    AXP809_IRQ_GPIO0_INPUT,
 };
 
 enum axp2101_irqs {
-	/* irq0 */
-	AXP2101_IRQ_BWUT,
-	AXP2101_IRQ_BWOT,
-	AXP2101_IRQ_BCUT,
-	AXP2101_IRQ_BCOT,
-	AXP2101_IRQ_NEWSOC,
-	AXP2101_IRQ_GWDT,
-	AXP2101_IRQ_SOCWL1,
-	AXP2101_IRQ_SOCWL2,
-	/* irq1 */
-	AXP2101_IRQ_PONP,
-	AXP2101_IRQ_PONN,
-	AXP2101_IRQ_PONL,
-	AXP2101_IRQ_PONS,
-	AXP2101_IRQ_BREMOV,
-	AXP2101_IRQ_BINSERT,
-	AXP2101_IRQ_VREMOV,
-	AXP2101_IRQ_VINSET,
-	/* irq2 */
-	AXP2101_IRQ_BOVP,
-	AXP2101_IRQ_CHGTE,
-	AXP2101_IRQ_DOTL1,
-	AXP2101_IRQ_CHGST,
-	AXP2101_IRQ_CHGDN,
-	AXP2101_IRQ_BOCP,
-	AXP2101_IRQ_LDOOC,
-	AXP2101_IRQ_WDEXP,
+    /* irq0 */
+    AXP2101_IRQ_BWUT,
+    AXP2101_IRQ_BWOT,
+    AXP2101_IRQ_BCUT,
+    AXP2101_IRQ_BCOT,
+    AXP2101_IRQ_NEWSOC,
+    AXP2101_IRQ_GWDT,
+    AXP2101_IRQ_SOCWL1,
+    AXP2101_IRQ_SOCWL2,
+    /* irq1 */
+    AXP2101_IRQ_PONP,
+    AXP2101_IRQ_PONN,
+    AXP2101_IRQ_PONL,
+    AXP2101_IRQ_PONS,
+    AXP2101_IRQ_BREMOV,
+    AXP2101_IRQ_BINSERT,
+    AXP2101_IRQ_VREMOV,
+    AXP2101_IRQ_VINSET,
+    /* irq2 */
+    AXP2101_IRQ_BOVP,
+    AXP2101_IRQ_CHGTE,
+    AXP2101_IRQ_DOTL1,
+    AXP2101_IRQ_CHGST,
+    AXP2101_IRQ_CHGDN,
+    AXP2101_IRQ_BOCP,
+    AXP2101_IRQ_LDOOC,
+    AXP2101_IRQ_WDEXP,
 };
 
 enum axp15_irqs {
-	/* irq0 */
-	AXP15_IRQ_ALDOIN_H2L = 2,
-	AXP15_IRQ_ALDOIN_L2H,
-	AXP15_IRQ_LDO0IN_H2L = 5,
-	AXP15_IRQ_LDO0IN_L2H,
-	/* irq1 */
-	AXP15_IRQ_PEKLO = 8,
-	AXP15_IRQ_PEKSH,
-	AXP15_IRQ_DCDC4_V_LOW,
-	AXP15_IRQ_DCDC3_V_LOW,
-	AXP15_IRQ_DCDC2_V_LOW,
-	AXP15_IRQ_DCDC1_V_LOW,
+    /* irq0 */
+    AXP15_IRQ_ALDOIN_H2L = 2,
+    AXP15_IRQ_ALDOIN_L2H,
+    AXP15_IRQ_LDO0IN_H2L = 5,
+    AXP15_IRQ_LDO0IN_L2H,
+    /* irq1 */
+    AXP15_IRQ_PEKLO = 8,
+    AXP15_IRQ_PEKSH,
+    AXP15_IRQ_DCDC4_V_LOW,
+    AXP15_IRQ_DCDC3_V_LOW,
+    AXP15_IRQ_DCDC2_V_LOW,
+    AXP15_IRQ_DCDC1_V_LOW,
 
-	/* irq2 */
-	AXP15_IRQ_GPIO0 = 16,
-	AXP15_IRQ_GPIO1,
-	AXP15_IRQ_GPIO2,
-	AXP15_IRQ_GPIO3,
-	AXP15_IRQ_PEKFE = 21,
-	AXP15_IRQ_PEKRE,
-	AXP15_IRQ_EVENT_TIMEOUT,
+    /* irq2 */
+    AXP15_IRQ_GPIO0 = 16,
+    AXP15_IRQ_GPIO1,
+    AXP15_IRQ_GPIO2,
+    AXP15_IRQ_GPIO3,
+    AXP15_IRQ_PEKFE = 21,
+    AXP15_IRQ_PEKRE,
+    AXP15_IRQ_EVENT_TIMEOUT,
 };
 
 enum axp1530_irqs {
-	/* irq0 */
-	AXP1530_IRQ_TEMP_OVER,
-	AXP1530_IRQ_DCDC2_UNDER = 2,
-	AXP1530_IRQ_DCDC3_UNDER,
-	AXP1530_IRQ_POKLIRQ_EN,
-	AXP1530_IRQ_POKSIRQ_EN,
-	AXP1530_IRQ_KEY_L2H_EN,
-	AXP1530_IRQ_KEY_H2L_EN,
+    /* irq0 */
+    AXP1530_IRQ_TEMP_OVER,
+    AXP1530_IRQ_DCDC2_UNDER = 2,
+    AXP1530_IRQ_DCDC3_UNDER,
+    AXP1530_IRQ_POKLIRQ_EN,
+    AXP1530_IRQ_POKSIRQ_EN,
+    AXP1530_IRQ_KEY_L2H_EN,
+    AXP1530_IRQ_KEY_H2L_EN,
 };
 
 enum axp858_irqs {
-	/* irq0 */
-	AXP858_IRQ_TEMP_OVER1 = 0,
-	AXP858_IRQ_TEMP_OVER2,
-	AXP858_IRQ_DCDC1_UNDER,
-	AXP858_IRQ_DCDC2_UNDER,
-	AXP858_IRQ_DCDC3_UNDER,
-	AXP858_IRQ_DCDC4_UNDER,
-	AXP858_IRQ_DCDC5_UNDER,
-	AXP858_IRQ_DCDC6_UNDER,
-	/* irq1 */
-	AXP858_IRQ_POKLIRQ_EN,
-	AXP858_IRQ_POKSIRQ_EN,
-	AXP858_IRQ_GPIO1_EN,
-	AXP858_IRQ_POKNIRQ_EN,
-	AXP858_IRQ_POKPIRQ_EN,
-	AXP858_IRQ_GPIO2_EN,
-	AXP858_IRQ_DCDC2_CUR_OVER,
-	AXP858_IRQ_DCDC3_CUR_OVER,
+    /* irq0 */
+    AXP858_IRQ_TEMP_OVER1 = 0,
+    AXP858_IRQ_TEMP_OVER2,
+    AXP858_IRQ_DCDC1_UNDER,
+    AXP858_IRQ_DCDC2_UNDER,
+    AXP858_IRQ_DCDC3_UNDER,
+    AXP858_IRQ_DCDC4_UNDER,
+    AXP858_IRQ_DCDC5_UNDER,
+    AXP858_IRQ_DCDC6_UNDER,
+    /* irq1 */
+    AXP858_IRQ_POKLIRQ_EN,
+    AXP858_IRQ_POKSIRQ_EN,
+    AXP858_IRQ_GPIO1_EN,
+    AXP858_IRQ_POKNIRQ_EN,
+    AXP858_IRQ_POKPIRQ_EN,
+    AXP858_IRQ_GPIO2_EN,
+    AXP858_IRQ_DCDC2_CUR_OVER,
+    AXP858_IRQ_DCDC3_CUR_OVER,
 };
 
 enum axp803_irqs {
-	/* irq0 */
-	AXP803_IRQ_USBRE = 2,
-	AXP803_IRQ_USBIN,
-	AXP803_IRQ_USBOV,
-	AXP803_IRQ_ACRE,
-	AXP803_IRQ_ACIN,
-	AXP803_IRQ_ACOV,
-	/* irq1 */
-	AXP803_IRQ_CHAOV = 10,
-	AXP803_IRQ_CHAST,
-	AXP803_IRQ_BATATOU,
-	AXP803_IRQ_BATATIN,
-	AXP803_IRQ_BATRE,
-	AXP803_IRQ_BATIN,
-	/* irq2 */
-	AXP803_IRQ_QBATINWORK,
-	AXP803_IRQ_BATINWORK,
-	AXP803_IRQ_QBATOVWORK,
-	AXP803_IRQ_BATOVWORK,
-	AXP803_IRQ_QBATINCHG,
-	AXP803_IRQ_BATINCHG,
-	AXP803_IRQ_QBATOVCHG,
-	AXP803_IRQ_BATOVCHG,
-	/* irq3 */
-	AXP803_IRQ_LOWN2,
-	AXP803_IRQ_LOWN1,
-	/* irq4 */
-	AXP803_IRQ_GPIO0 = 32,
-	AXP803_IRQ_GPIO1,
-	AXP803_IRQ_POKLO = 35,
-	AXP803_IRQ_POKSH,
-	AXP803_IRQ_PEKFE,
-	AXP803_IRQ_PEKRE,
-	AXP803_IRQ_TIMER,
+    /* irq0 */
+    AXP803_IRQ_USBRE = 2,
+    AXP803_IRQ_USBIN,
+    AXP803_IRQ_USBOV,
+    AXP803_IRQ_ACRE,
+    AXP803_IRQ_ACIN,
+    AXP803_IRQ_ACOV,
+    /* irq1 */
+    AXP803_IRQ_CHAOV = 10,
+    AXP803_IRQ_CHAST,
+    AXP803_IRQ_BATATOU,
+    AXP803_IRQ_BATATIN,
+    AXP803_IRQ_BATRE,
+    AXP803_IRQ_BATIN,
+    /* irq2 */
+    AXP803_IRQ_QBATINWORK,
+    AXP803_IRQ_BATINWORK,
+    AXP803_IRQ_QBATOVWORK,
+    AXP803_IRQ_BATOVWORK,
+    AXP803_IRQ_QBATINCHG,
+    AXP803_IRQ_BATINCHG,
+    AXP803_IRQ_QBATOVCHG,
+    AXP803_IRQ_BATOVCHG,
+    /* irq3 */
+    AXP803_IRQ_LOWN2,
+    AXP803_IRQ_LOWN1,
+    /* irq4 */
+    AXP803_IRQ_GPIO0 = 32,
+    AXP803_IRQ_GPIO1,
+    AXP803_IRQ_POKLO = 35,
+    AXP803_IRQ_POKSH,
+    AXP803_IRQ_PEKFE,
+    AXP803_IRQ_PEKRE,
+    AXP803_IRQ_TIMER,
 };
 
 enum {
-	AXP2202_DCDC1 = 0,
-	AXP2202_DCDC2,
-	AXP2202_DCDC3,
-	AXP2202_CPUSLDO,
-	AXP2202_ALDO1,
-	AXP2202_ALDO2,
-	AXP2202_ALDO3,
-	AXP2202_ALDO4,
-	AXP2202_BLDO1,
-	AXP2202_BLDO2,
-	AXP2202_BLDO3,
-	AXP2202_BLDO4,
-	AXP2202_CLDO1,
-	AXP2202_CLDO2,
-	AXP2202_CLDO3,
-	AXP2202_CLDO4,
-	AXP2202_REG_ID_MAX,
-	AXP2202_VBUS,
+    AXP2202_DCDC1 = 0,
+    AXP2202_DCDC2,
+    AXP2202_DCDC3,
+    AXP2202_CPUSLDO,
+    AXP2202_ALDO1,
+    AXP2202_ALDO2,
+    AXP2202_ALDO3,
+    AXP2202_ALDO4,
+    AXP2202_BLDO1,
+    AXP2202_BLDO2,
+    AXP2202_BLDO3,
+    AXP2202_BLDO4,
+    AXP2202_CLDO1,
+    AXP2202_CLDO2,
+    AXP2202_CLDO3,
+    AXP2202_CLDO4,
+    AXP2202_REG_ID_MAX,
+    AXP2202_VBUS,
 };
 
 enum axp2202_irqs {
-	/* irq0 */
-	AXP2202_IRQ_SOCWL2,
-	AXP2202_IRQ_SOCWL1,
-	AXP2202_IRQ_GWDT,
-	AXP2202_IRQ_NEWSOC,
-	AXP2202_IRQ_BST_OV,
-	AXP2202_IRQ_VBUS_OV,
-	AXP2202_IRQ_VBUS_FAULT,
-	/* irq1 */
-	AXP2202_IRQ_VINSERT,
-	AXP2202_IRQ_VREMOVE,
-	AXP2202_IRQ_BINSERT,
-	AXP2202_IRQ_BREMOVE,
-	AXP2202_IRQ_PONS,
-	AXP2202_IRQ_PONL,
-	AXP2202_IRQ_PONN,
-	AXP2202_IRQ_PONP,
-	/* irq2 */
-	AXP2202_IRQ_WDEXP,
-	AXP2202_IRQ_LDOOC,
-	AXP2202_IRQ_BOCP,
-	AXP2202_IRQ_CHGDN,
-	AXP2202_IRQ_CHGST,
-	AXP2202_IRQ_DOTL1,
-	AXP2202_IRQ_CHGTE,
-	AXP2202_IRQ_BOVP,
-	/* irq3 */
-	AXP2202_IRQ_BC_DONE,
-	AXP2202_IRQ_BC_CHNG,
-	AXP2202_IRQ_RID_CHNG,
-	AXP2202_IRQ_BCOTQ,
-	AXP2202_IRQ_BCOT,
-	AXP2202_IRQ_BCUT,
-	AXP2202_IRQ_BWOT,
-	AXP2202_IRQ_BWUT,
-	/* irq4 */
-	AXP2202_IRQ_CREMOVE,
-	AXP2202_IRQ_CINSERT,
-	AXP2202_IRQ_TOGGLE_DONE,
-	AXP2202_IRQ_VBUS_SAFE5V,
-	AXP2202_IRQ_VBUS_SAFE0V,
-	AXP2202_IRQ_ERR_GEN,
-	AXP2202_IRQ_PWR_CHNG,
+    /* irq0 */
+    AXP2202_IRQ_SOCWL2,
+    AXP2202_IRQ_SOCWL1,
+    AXP2202_IRQ_GWDT,
+    AXP2202_IRQ_NEWSOC,
+    AXP2202_IRQ_BST_OV,
+    AXP2202_IRQ_VBUS_OV,
+    AXP2202_IRQ_VBUS_FAULT,
+    /* irq1 */
+    AXP2202_IRQ_VINSERT,
+    AXP2202_IRQ_VREMOVE,
+    AXP2202_IRQ_BINSERT,
+    AXP2202_IRQ_BREMOVE,
+    AXP2202_IRQ_PONS,
+    AXP2202_IRQ_PONL,
+    AXP2202_IRQ_PONN,
+    AXP2202_IRQ_PONP,
+    /* irq2 */
+    AXP2202_IRQ_WDEXP,
+    AXP2202_IRQ_LDOOC,
+    AXP2202_IRQ_BOCP,
+    AXP2202_IRQ_CHGDN,
+    AXP2202_IRQ_CHGST,
+    AXP2202_IRQ_DOTL1,
+    AXP2202_IRQ_CHGTE,
+    AXP2202_IRQ_BOVP,
+    /* irq3 */
+    AXP2202_IRQ_BC_DONE,
+    AXP2202_IRQ_BC_CHNG,
+    AXP2202_IRQ_RID_CHNG,
+    AXP2202_IRQ_BCOTQ,
+    AXP2202_IRQ_BCOT,
+    AXP2202_IRQ_BCUT,
+    AXP2202_IRQ_BWOT,
+    AXP2202_IRQ_BWUT,
+    /* irq4 */
+    AXP2202_IRQ_CREMOVE,
+    AXP2202_IRQ_CINSERT,
+    AXP2202_IRQ_TOGGLE_DONE,
+    AXP2202_IRQ_VBUS_SAFE5V,
+    AXP2202_IRQ_VBUS_SAFE0V,
+    AXP2202_IRQ_ERR_GEN,
+    AXP2202_IRQ_PWR_CHNG,
 
 };
 
 enum axp2585_irqs {
-	AXP2585_IRQ_Q_DROP2,  //7l2
-	AXP2585_IRQ_Q_DROP1,  //6l1
-	AXP2585_IRQ_Q_CHANGE,
-	AXP2585_IRQ_Q_GOOD,
-	AXP2585_IRQ_BAT_DECT,
-	AXP2585_IRQ_BOOST_OVP,
-	AXP2585_IRQ_BOOST_OCP,
-	AXP2585_IRQ_BAT_OCP,
-	AXP2585_IRQ_BCOT,       //15
-	AXP2585_IRQ_QBCOT,      //14
-	AXP2585_IRQ_BCUT,       //13
-	AXP2585_IRQ_QBCUT,
-	AXP2585_IRQ_BWOT,       //11
-	AXP2585_IRQ_QBWOT,
-	AXP2585_IRQ_BWUT,       //9
-	AXP2585_IRQ_QBWUT,
-	AXP2585_IRQ_VBUS_INSERT,  //23ac
-	AXP2585_IRQ_VBUS_REMOVE,  //22ac
-	AXP2585_IRQ_BAT_INSERT,  //21
-	AXP2585_IRQ_BAT_REMOVE,  //20
-	AXP2585_IRQ_BAT_DB2GD,
-	AXP2585_IRQ_TJ_OTP,
-	AXP2585_IRQ_BAT_SMODE,
-	AXP2585_IRQ_VBUS_OVP,
-	AXP2585_IRQ_SIRQ,
-	AXP2585_IRQ_LIRQ,
-	AXP2585_IRQ_NIRQ,       //29
-	AXP2585_IRQ_PIRQ,       //28
-	AXP2585_IRQ_GPADC_BWOT,
-	AXP2585_IRQ_GPADC_QBWOT,
-	AXP2585_IRQ_GPADC_BWUT,
-	AXP2585_IRQ_GPADC_QBWUT,
-	AXP2585_IRQ_CHGBG,     //39
-	AXP2585_IRQ_CHGDONE,   //38
-	AXP2585_IRQ_BC_OK,
-	AXP2585_IRQ_BC_CHANGE,
-	AXP2585_IRQ_RID_CHANGE,
-	AXP2585_IRQ_BAT_OVP,
-	AXP2585_IRQ_REMOVE,  //47tc
-	AXP2585_IRQ_INSERT,  //46tc
-	AXP2585_IRQ_TOGGLE_DONE,
-	AXP2585_IRQ_VBUS_SAFE5V,
-	AXP2585_IRQ_ERROR_GEN,
-	AXP2585_IRQ_POW_CHNG,
+    AXP2585_IRQ_Q_DROP2, // 7l2
+    AXP2585_IRQ_Q_DROP1, // 6l1
+    AXP2585_IRQ_Q_CHANGE,
+    AXP2585_IRQ_Q_GOOD,
+    AXP2585_IRQ_BAT_DECT,
+    AXP2585_IRQ_BOOST_OVP,
+    AXP2585_IRQ_BOOST_OCP,
+    AXP2585_IRQ_BAT_OCP,
+    AXP2585_IRQ_BCOT,  // 15
+    AXP2585_IRQ_QBCOT, // 14
+    AXP2585_IRQ_BCUT,  // 13
+    AXP2585_IRQ_QBCUT,
+    AXP2585_IRQ_BWOT, // 11
+    AXP2585_IRQ_QBWOT,
+    AXP2585_IRQ_BWUT, // 9
+    AXP2585_IRQ_QBWUT,
+    AXP2585_IRQ_VBUS_INSERT, // 23ac
+    AXP2585_IRQ_VBUS_REMOVE, // 22ac
+    AXP2585_IRQ_BAT_INSERT,  // 21
+    AXP2585_IRQ_BAT_REMOVE,  // 20
+    AXP2585_IRQ_BAT_DB2GD,
+    AXP2585_IRQ_TJ_OTP,
+    AXP2585_IRQ_BAT_SMODE,
+    AXP2585_IRQ_VBUS_OVP,
+    AXP2585_IRQ_SIRQ,
+    AXP2585_IRQ_LIRQ,
+    AXP2585_IRQ_NIRQ, // 29
+    AXP2585_IRQ_PIRQ, // 28
+    AXP2585_IRQ_GPADC_BWOT,
+    AXP2585_IRQ_GPADC_QBWOT,
+    AXP2585_IRQ_GPADC_BWUT,
+    AXP2585_IRQ_GPADC_QBWUT,
+    AXP2585_IRQ_CHGBG,   // 39
+    AXP2585_IRQ_CHGDONE, // 38
+    AXP2585_IRQ_BC_OK,
+    AXP2585_IRQ_BC_CHANGE,
+    AXP2585_IRQ_RID_CHANGE,
+    AXP2585_IRQ_BAT_OVP,
+    AXP2585_IRQ_REMOVE, // 47tc
+    AXP2585_IRQ_INSERT, // 46tc
+    AXP2585_IRQ_TOGGLE_DONE,
+    AXP2585_IRQ_VBUS_SAFE5V,
+    AXP2585_IRQ_ERROR_GEN,
+    AXP2585_IRQ_POW_CHNG,
 };
-#define AXP288_TS_ADC_H		0x58
-#define AXP288_TS_ADC_L		0x59
-#define AXP288_GP_ADC_H		0x5a
-#define AXP288_GP_ADC_L		0x5b
+#define AXP288_TS_ADC_H      0x58
+#define AXP288_TS_ADC_L      0x59
+#define AXP288_GP_ADC_H      0x5a
+#define AXP288_GP_ADC_L      0x5b
 
 //////////////////////////////////////////////////////////////////////
-#define IORESOURCE_BITS     0x000000ff  /* Bus-specific bits */
+#define IORESOURCE_BITS      0x000000ff /* Bus-specific bits */
 
-#define IORESOURCE_TYPE_BITS    0x00001f00  /* Resource type */
-#define IORESOURCE_IO       0x00000100  /* PCI/ISA I/O ports */
-#define IORESOURCE_MEM      0x00000200
-#define IORESOURCE_REG      0x00000300  /* Register offsets */
-#define IORESOURCE_IRQ      0x00000400
-#define IORESOURCE_DMA      0x00000800
-#define IORESOURCE_BUS      0x00001000
+#define IORESOURCE_TYPE_BITS 0x00001f00 /* Resource type */
+#define IORESOURCE_IO        0x00000100 /* PCI/ISA I/O ports */
+#define IORESOURCE_MEM       0x00000200
+#define IORESOURCE_REG       0x00000300 /* Register offsets */
+#define IORESOURCE_IRQ       0x00000400
+#define IORESOURCE_DMA       0x00000800
+#define IORESOURCE_BUS       0x00001000
 
 enum {
-    IORES_DESC_NONE             = 0,
-    IORES_DESC_CRASH_KERNEL         = 1,
-    IORES_DESC_ACPI_TABLES          = 2,
-    IORES_DESC_ACPI_NV_STORAGE      = 3,
+    IORES_DESC_NONE                     = 0,
+    IORES_DESC_CRASH_KERNEL             = 1,
+    IORES_DESC_ACPI_TABLES              = 2,
+    IORES_DESC_ACPI_NV_STORAGE          = 3,
     IORES_DESC_PERSISTENT_MEMORY        = 4,
     IORES_DESC_PERSISTENT_MEMORY_LEGACY = 5,
 };
 
 /* helpers to define resources */
-#define DEFINE_RES_NAMED(_start, _size, _name, _flags)          \
-    {                               \
-        .start = (_start),                  \
-        .end = (_start) + (_size) - 1,              \
-        .name = (_name),                    \
-        .flags = (_flags),                  \
-        .desc = IORES_DESC_NONE,                \
+#define DEFINE_RES_NAMED(_start, _size, _name, _flags)                    \
+    {                                                                     \
+        .start = (_start), .end = (_start) + (_size) -1, .name = (_name), \
+        .flags = (_flags), .desc = IORES_DESC_NONE,                       \
     }
 
-#define DEFINE_RES_IRQ_NAMED(_irq, _name)               \
+#define DEFINE_RES_IRQ_NAMED(_irq, _name) \
     DEFINE_RES_NAMED((_irq), 1, (_name), IORESOURCE_IRQ)
-#define DEFINE_RES_IRQ(_irq)                        \
-    DEFINE_RES_IRQ_NAMED((_irq), NULL)
+#define DEFINE_RES_IRQ(_irq) DEFINE_RES_IRQ_NAMED((_irq), NULL)
 
 struct of_device_id {
-	char *compatible;
-	void *data;
+    char *compatible;
+    void *data;
 };
 
 struct dev_pm_ops {
-	int (*suspend)(void *);
-	int (*resume)(void *);
+    int (*suspend)(void *);
+    int (*resume)(void *);
 };
 
 struct platform_driver {
-	char *name;
-	struct of_device_id *of_match_table;
-	int (*probe)(void *, void *);
-	int (*remove)(void *);
-	struct of_device_id *id_table;
-	struct dev_pm_ops *pm;
+    char                *name;
+    struct of_device_id *of_match_table;
+    int (*probe)(void *, void *);
+    int (*remove)(void *);
+    struct of_device_id *id_table;
+    struct dev_pm_ops   *pm;
 };
 
 struct resource {
-    size_t start;
-    size_t end;
-    const char *name;
-    unsigned long flags;
-    unsigned long desc;
+    size_t           start;
+    size_t           end;
+    const char      *name;
+    unsigned long    flags;
+    unsigned long    desc;
     struct resource *parent, *sibling, *child;
 };
 
 struct mfd_cell {
-    const char      *name;
+    const char *name;
     int         id;
 
     /* platform data passed to the sub devices drivers */
-    void            *platform_data;
-    size_t          pdata_size;
+    void  *platform_data;
+    size_t pdata_size;
     /*
      * Device Tree compatible string
      * See: Documentation/devicetree/usage-model.txt Chapter 2.2 for details
      */
-    const char      *of_compatible;
+    const char *of_compatible;
     /*
      * These resources can be specified relative to the parent device.
      * For accessing hardware you should use resources from the platform dev
      */
-    int         num_resources;
-    const struct resource   *resources;
+    int                    num_resources;
+    const struct resource *resources;
 };
 
 /* An enum of all the supported cache types */
@@ -1672,18 +1668,27 @@ enum regcache_type {
     REGCACHE_FLAT,
 };
 
+enum sts_type {
+	STATUS_OK,
+	STATUS_ERR,
+	STATUS_NONE,
+};
+
 struct regmap_range {
     unsigned int range_min;
     unsigned int range_max;
 };
 
-#define regmap_reg_range(low, high) { .range_min = low, .range_max = high, }
+#define regmap_reg_range(low, high)          \
+    {                                        \
+        .range_min = low, .range_max = high, \
+    }
 
 struct regmap_access_table {
     const struct regmap_range *yes_ranges;
-    unsigned int n_yes_ranges;
+    unsigned int               n_yes_ranges;
     const struct regmap_range *no_ranges;
-    unsigned int n_no_ranges;
+    unsigned int               n_no_ranges;
 };
 
 struct regmap_config {
@@ -1698,15 +1703,15 @@ struct regmap_config {
 
     bool fast_io;
 
-    unsigned int max_register;
+    unsigned int                      max_register;
     const struct regmap_access_table *wr_table;
     const struct regmap_access_table *rd_table;
     const struct regmap_access_table *volatile_table;
     const struct regmap_access_table *precious_table;
-    unsigned int num_reg_defaults;
-    enum regcache_type cache_type;
-    const void *reg_defaults_raw;
-    unsigned int num_reg_defaults_raw;
+    unsigned int                      num_reg_defaults;
+    enum regcache_type                cache_type;
+    const void                       *reg_defaults_raw;
+    unsigned int                      num_reg_defaults_raw;
 
     unsigned long read_flag_mask;
     unsigned long write_flag_mask;
@@ -1735,20 +1740,20 @@ struct regmap_irq_chip {
     unsigned int wake_base;
     unsigned int type_base;
     unsigned int irq_reg_stride;
-    bool init_ack_masked:1;
-    bool mask_invert:1;
-    bool use_ack:1;
-    bool ack_invert:1;
-    bool wake_invert:1;
-    bool runtime_pm:1;
-    bool type_invert:1;
+    bool         init_ack_masked : 1;
+    bool         mask_invert : 1;
+    bool         use_ack : 1;
+    bool         ack_invert : 1;
+    bool         wake_invert : 1;
+    bool         runtime_pm : 1;
+    bool         type_invert : 1;
 
     int num_regs;
 
     const struct regmap_irq *irqs;
-    int num_irqs;
+    int                      num_irqs;
 
-    int num_type_reg;
+    int          num_type_reg;
     unsigned int type_reg_stride;
 
     void *irq_drv_data;
@@ -1756,59 +1761,55 @@ struct regmap_irq_chip {
 ///////////////////////////////////////////////////////////////////////
 
 typedef unsigned int u32;
-typedef int s32;
+typedef int          s32;
 
-#define REGULATOR_LINEAR_RANGE(_min_uV, _min_sel, _max_sel, _step_uV)   \
-{                                   \
-    .min_uV     = _min_uV,                  \
-    .min_sel    = _min_sel,                 \
-    .max_sel    = _max_sel,                 \
-    .uV_step    = _step_uV,                 \
-}
+#define REGULATOR_LINEAR_RANGE(_min_uV, _min_sel, _max_sel, _step_uV) \
+    {                                                                 \
+        .min_uV = _min_uV, .min_sel = _min_sel, .max_sel = _max_sel,  \
+        .uV_step = _step_uV,                                          \
+    }
 
 struct regulator_desc;
 
 struct regulator_ops {
 
     /* enumerate supported voltages */
-    int (*list_voltage) (struct regulator_desc *, unsigned selector);
+    int (*list_voltage)(struct regulator_desc *, unsigned selector);
 
     /* get/set regulator voltage */
-    int (*set_voltage) (struct regulator_desc *, int min_uV, int max_uV,
-                unsigned *selector);
+    int (*set_voltage)(struct regulator_desc *, int min_uV, int max_uV,
+                       unsigned *selector);
     int (*map_voltage)(struct regulator_desc *, int min_uV, int max_uV);
-    int (*set_voltage_sel) (struct regulator_desc *, unsigned selector);
-    int (*get_voltage) (struct regulator_desc *);
-    int (*get_voltage_sel) (struct regulator_desc *);
+    int (*set_voltage_sel)(struct regulator_desc *, unsigned selector);
+    int (*get_voltage)(struct regulator_desc *);
+    int (*get_voltage_sel)(struct regulator_desc *);
 
     /* get/set regulator current  */
-    int (*set_current_limit) (struct regulator_desc *,
-                 int min_uA, int max_uA);
-    int (*get_current_limit) (struct regulator_desc *);
+    int (*set_current_limit)(struct regulator_desc *, int min_uA, int max_uA);
+    int (*get_current_limit)(struct regulator_desc *);
 
-    int (*set_input_current_limit) (struct regulator_desc *, int lim_uA);
-    int (*set_over_current_protection) (struct regulator_desc *);
-    int (*set_active_discharge) (struct regulator_desc *, bool enable);
+    int (*set_input_current_limit)(struct regulator_desc *, int lim_uA);
+    int (*set_over_current_protection)(struct regulator_desc *);
+    int (*set_active_discharge)(struct regulator_desc *, bool enable);
 
     /* enable/disable regulator */
-    int (*enable) (struct regulator_desc *);
-    int (*disable) (struct regulator_desc *);
-    int (*is_enabled) (struct regulator_desc *);
+    int (*enable)(struct regulator_desc *);
+    int (*disable)(struct regulator_desc *);
+    int (*is_enabled)(struct regulator_desc *);
 
     /* get/set regulator operating mode (defined in consumer.h) */
-    int (*set_mode) (struct regulator_desc *, unsigned int mode);
-    unsigned int (*get_mode) (struct regulator_desc *);
+    int (*set_mode)(struct regulator_desc *, unsigned int mode);
+    unsigned int (*get_mode)(struct regulator_desc *);
 
     /* Time taken to enable or set voltage on the regulator */
-    int (*enable_time) (struct regulator_desc *);
-    int (*set_ramp_delay) (struct regulator_desc *, int ramp_delay);
-    int (*set_voltage_time) (struct regulator_desc *, int old_uV,
-                 int new_uV);
-    int (*set_voltage_time_sel) (struct regulator_desc *,
-                     unsigned int old_selector,
-                     unsigned int new_selector);
+    int (*enable_time)(struct regulator_desc *);
+    int (*set_ramp_delay)(struct regulator_desc *, int ramp_delay);
+    int (*set_voltage_time)(struct regulator_desc *, int old_uV, int new_uV);
+    int (*set_voltage_time_sel)(struct regulator_desc *,
+                                unsigned int old_selector,
+                                unsigned int new_selector);
 
-    int (*set_soft_start) (struct regulator_desc *);
+    int (*set_soft_start)(struct regulator_desc *);
 
     /* report regulator status ... most other accessors report
      * control inputs, this reports results of combining inputs
@@ -1818,8 +1819,8 @@ struct regulator_ops {
     int (*get_status)(struct regulator_desc *);
 
     /* get most efficient regulator operating mode for load */
-    unsigned int (*get_optimum_mode) (struct regulator_desc *, int input_uV,
-                      int output_uV, int load_uA);
+    unsigned int (*get_optimum_mode)(struct regulator_desc *, int input_uV,
+                                     int output_uV, int load_uA);
     /* set the load on the regulator */
     int (*set_load)(struct regulator_desc *, int load_uA);
 
@@ -1831,16 +1832,16 @@ struct regulator_ops {
      * its parent PMIC enters a global STANDBY/HIBERNATE state */
 
     /* set regulator suspend voltage */
-    int (*set_suspend_voltage) (struct regulator_desc *, int uV);
+    int (*set_suspend_voltage)(struct regulator_desc *, int uV);
 
     /* enable/disable regulator in suspend state */
-    int (*set_suspend_enable) (struct regulator_desc *);
-    int (*set_suspend_disable) (struct regulator_desc *);
+    int (*set_suspend_enable)(struct regulator_desc *);
+    int (*set_suspend_disable)(struct regulator_desc *);
 
     /* set regulator suspend operating mode (defined in consumer.h) */
-    int (*set_suspend_mode) (struct regulator_desc *, unsigned int mode);
+    int (*set_suspend_mode)(struct regulator_desc *, unsigned int mode);
 
-    int (*set_pull_down) (struct regulator_desc *);
+    int (*set_pull_down)(struct regulator_desc *);
 };
 
 enum regulator_type {
@@ -1861,15 +1862,15 @@ struct regulator_desc {
     const char *of_match;
     const char *regulators_node;
     // int (*of_parse_cb)(struct device_node *,
-                // const struct regulator_desc *,
-                // struct regulator_config *);
-    void *reg_data;     /* regulator_dev data */
-    int id;
-    unsigned int continuous_voltage_range:1;
-    unsigned n_voltages;
+    // const struct regulator_desc *,
+    // struct regulator_config *);
+    void                       *reg_data; /* regulator_dev data */
+    int                         id;
+    unsigned int                continuous_voltage_range : 1;
+    unsigned                    n_voltages;
     const struct regulator_ops *ops;
-    int irq;
-    enum regulator_type type;
+    int                         irq;
+    enum regulator_type         type;
     // struct module *owner;
 
     unsigned int min_mV;
@@ -1877,33 +1878,33 @@ struct regulator_desc {
     unsigned int min_uV;
     unsigned int uV_step;
     unsigned int linear_min_sel;
-    int fixed_uV;
+    int          fixed_uV;
     unsigned int ramp_delay;
-    int min_dropout_uV;
+    int          min_dropout_uV;
 
     const struct regulator_linear_range *linear_ranges;
-    int n_linear_ranges;
+    int                                  n_linear_ranges;
 
     const unsigned int *volt_table;
-    unsigned int vsel_reg;
-    unsigned int vsel_mask;
-    unsigned int csel_reg;
-    unsigned int csel_mask;
-    unsigned int apply_reg;
-    unsigned int apply_bit;
-    unsigned int enable_reg;
-    unsigned int enable_mask;
-    unsigned int enable_val;
-    unsigned int disable_val;
-    bool enable_is_inverted;
-    unsigned int bypass_reg;
-    unsigned int bypass_mask;
-    unsigned int bypass_val_on;
-    unsigned int bypass_val_off;
-    unsigned int active_discharge_on;
-    unsigned int active_discharge_off;
-    unsigned int active_discharge_mask;
-    unsigned int active_discharge_reg;
+    unsigned int        vsel_reg;
+    unsigned int        vsel_mask;
+    unsigned int        csel_reg;
+    unsigned int        csel_mask;
+    unsigned int        apply_reg;
+    unsigned int        apply_bit;
+    unsigned int        enable_reg;
+    unsigned int        enable_mask;
+    unsigned int        enable_val;
+    unsigned int        disable_val;
+    bool                enable_is_inverted;
+    unsigned int        bypass_reg;
+    unsigned int        bypass_mask;
+    unsigned int        bypass_val_on;
+    unsigned int        bypass_val_off;
+    unsigned int        active_discharge_on;
+    unsigned int        active_discharge_off;
+    unsigned int        active_discharge_mask;
+    unsigned int        active_discharge_reg;
 
     unsigned int enable_time;
 
@@ -1914,21 +1915,21 @@ struct regulator_desc {
 
 struct regulator_dev {
     const struct regulator_desc *desc;
-    int exclusive;
-    u32 use_count;
-    u32 open_count;
-    u32 bypass_count;
+    int                          exclusive;
+    u32                          use_count;
+    u32                          open_count;
+    u32                          bypass_count;
 
     /* lists we belong to */
     // struct list_head list; [> list of all regulators <]
 
-	// lists we own
+    // lists we own
     // struct list_head consumer_list; [> consumers we supply <]
-//
-// #if defined(CONFIG_AW_AXP)
+    //
+    // #if defined(CONFIG_AW_AXP)
     // struct list_head axp_enable_list; [> supply we enable <]
-// #endif
-//
+    // #endif
+    //
     // struct blocking_notifier_head notifier;
     // struct mutex mutex; [> consumer lock <]
     // struct module *owner;
@@ -1941,106 +1942,103 @@ struct regulator_dev {
     // struct delayed_work disable_work;
     int deferred_disables;
 
-    void *reg_data;     /* regulator_dev data */
+    void *reg_data; /* regulator_dev data */
 
     // struct dentry *debugfs;
 
     // struct regulator_enable_gpio *ena_pin;
-    unsigned int ena_gpio_state:1;
+    unsigned int ena_gpio_state : 1;
 
-    unsigned int is_switch:1;
+    unsigned int is_switch : 1;
 
     /* time when this regulator was disabled last time */
     unsigned long last_off_jiffy;
 };
 
 //////////////////////////////////////////////////////////////////////
-struct axp20x_dev {
-	// struct device			*dev;
-	int				irq;
-	// struct regmap			*regmap;
-	// struct regmap_irq_chip_data	*regmap_irqc;
-	struct regulator_dev *rdev;
-    struct regulator_desc *desc;
-	long				variant;
-	int                             nr_cells;
-	struct mfd_cell                 *cells;
-	const struct regmap_config	*regmap_cfg;
-	const struct regmap_irq_chip	*regmap_irq_chip;
-	void (*dts_parse)(struct axp20x_dev *);
+struct pmic_cfg {
+    char name[ 128 ];
+    int  i2c_bus;
+    int  reg_addr;
+    int  check_addr;
+    int  check_len;
 };
 
-#define BATTID_LEN				64
-#define OCV_CURVE_SIZE			32
-#define MAX_THERM_CURVE_SIZE	25
-#define PD_DEF_MIN_TEMP			0
-#define PD_DEF_MAX_TEMP			55
+struct axp20x_dev {
+    // struct device			*dev;
+    struct pmic_cfg cfg;
+    int             irq;
+    int             sts;
+    // struct regmap			*regmap;
+    // struct regmap_irq_chip_data	*regmap_irqc;
+    struct regulator_dev         *rdev;
+    struct regulator_desc        *desc;
+    long                          variant;
+    int                           nr_cells;
+    struct mfd_cell              *cells;
+    const struct regmap_config   *regmap_cfg;
+    const struct regmap_irq_chip *regmap_irq_chip;
+    void (*dts_parse)(struct axp20x_dev *);
+};
+
+#define BATTID_LEN           64
+#define OCV_CURVE_SIZE       32
+#define MAX_THERM_CURVE_SIZE 25
+#define PD_DEF_MIN_TEMP      0
+#define PD_DEF_MAX_TEMP      55
 
 struct axp20x_fg_pdata {
-	char battid[BATTID_LEN + 1];
-	int design_cap;
-	int min_volt;
-	int max_volt;
-	int max_temp;
-	int min_temp;
-	int cap1;
-	int cap0;
-	int rdc1;
-	int rdc0;
-	int ocv_curve[OCV_CURVE_SIZE];
-	int tcsz;
-	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
+    char battid[ BATTID_LEN + 1 ];
+    int  design_cap;
+    int  min_volt;
+    int  max_volt;
+    int  max_temp;
+    int  min_temp;
+    int  cap1;
+    int  cap0;
+    int  rdc1;
+    int  rdc0;
+    int  ocv_curve[ OCV_CURVE_SIZE ];
+    int  tcsz;
+    int  thermistor_curve[ MAX_THERM_CURVE_SIZE ][ 2 ];
 };
 
 struct axp20x_chrg_pdata {
-	int max_cc;
-	int max_cv;
-	int def_cc;
-	int def_cv;
+    int max_cc;
+    int max_cv;
+    int def_cc;
+    int def_cv;
 };
 
 struct axp288_extcon_pdata {
-	/* GPIO pin control to switch D+/D- lines b/w PMIC and SOC */
-	// struct gpio_desc *gpio_mux_cntl;
+    /* GPIO pin control to switch D+/D- lines b/w PMIC and SOC */
+    // struct gpio_desc *gpio_mux_cntl;
 };
 
 /* generic helper function for reading 9-16 bit wide regs */
-static inline int axp20x_read_variable_width(unsigned int reg, unsigned int width)
+static inline int axp20x_read_variable_width(unsigned int reg,
+                                             unsigned int width)
 {
-	__nouse__ unsigned int reg_val, result = 0;
-	__nouse__ int err;
+    __nouse__ unsigned int reg_val, result = 0;
+    __nouse__ int          err;
 
-	// err = regmap_read(regmap, reg, &reg_val);
-	// if (err)
-		// return err;
-//
-	// result = reg_val << (width - 8);
-//
-	// err = regmap_read(regmap, reg + 1, &reg_val);
-	// if (err)
-		// return err;
-//
-	// result |= reg_val;
+    // err = regmap_read(regmap, reg, &reg_val);
+    // if (err)
+    // return err;
+    //
+    // result = reg_val << (width - 8);
+    //
+    // err = regmap_read(regmap, reg + 1, &reg_val);
+    // if (err)
+    // return err;
+    //
+    // result |= reg_val;
 
-	return result;
+    return result;
 }
 
-static inline int axp20x_i2c_write(uint32_t reg, uint32_t val)
-{
-	__nouse__ unsigned int result = 0;
-	__nouse__ int err;
-
-	return result;
-}
-
-static inline int axp20x_i2c_read(uint32_t reg, uint32_t *val)
-{
-	__nouse__ unsigned int result = 0;
-	__nouse__ int err;
-
-	return result;
-}
-
+int axp20x_i2c_write(u32 reg, u32 val);
+int axp20x_i2c_read(u32 reg, u32 *val);
 /**
  * axp20x_match_device(): Setup axp20x variant related fields
  *
@@ -2072,9 +2070,11 @@ int axp20x_device_probe(struct axp20x_dev *axp20x);
  */
 int axp20x_device_remove(struct axp20x_dev *axp20x);
 
-int axp20x_pek_probe(void *pdev, void *config);
+int  axp20x_pek_probe(void *pdev, void *config);
+void axp20x_pek_remove(void);
 
-int axp2101_regulator_probe(void *dev, void *config);
+int  axp2101_regulator_probe(void *dev, void *config);
+void axp2101_regulator_remove(void);
 
 int axp20x_set_dcdc1(unsigned int mvolt);
 int axp20x_set_dcdc2(unsigned int mvolt);
@@ -2091,8 +2091,10 @@ int axp20x_set_dldo1(unsigned int mvolt);
 int axp20x_set_dldo2(unsigned int mvolt);
 int axp20x_set_cpusldo(unsigned int mvolt);
 
-
 void axp20x_power_off(void);
-int axp2101_powerkey_suspend(void);
+int  axp2101_powerkey_suspend(void);
+int  axp2101_powerkey_resume(void);
 
+int  axp2101_i2c_init(struct pmic_cfg *cfg);
+void axp2101_i2c_exit(struct pmic_cfg *cfg);
 #endif /* __LINUX_MFD_AXP20X_H */

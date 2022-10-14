@@ -158,7 +158,7 @@ void __i2c_calculate_speed(dw_scl_sda_cfg *scl_sda_cfg, uint32_t speed)
     }
 
     scl_sda_cfg->sda_hold = 0x00010001;
-	i2c_debug_dbg("hcnt = %d, lcnt = %d!\n", hcnt, lcnt);
+	// i2c_debug_dbg("hcnt = %d, lcnt = %d!\n", hcnt, lcnt);
 #endif
 }
 

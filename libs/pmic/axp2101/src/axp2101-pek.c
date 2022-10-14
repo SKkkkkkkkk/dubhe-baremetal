@@ -21,39 +21,40 @@
 
 #include "axp2101.h"
 
+#define AXP20X_PEK_STARTUP_MASK  (0x03)
+#define AXP20X_PEK_SHUTDOWN_MASK (0x0c)
 
-#define AXP20X_PEK_STARTUP_MASK		(0x03)
-#define AXP20X_PEK_SHUTDOWN_MASK	(0x0c)
+#define axp2101_PONLEVEL         (0x27)
+#define axp2101_PWROFF_EN        (0x22)
+#define axp2101_PWR_TIME_CTRL    (0x25)
+#define axp2101_VBAT_H           (0x34)
+#define axp2101_INTSTS2          (0x49)
 
-#define axp2101_PONLEVEL        (0x27)
-#define axp2101_PWROFF_EN       (0x22)
-#define axp2101_PWR_TIME_CTRL   (0x25)
-#define axp2101_VBAT_H          (0x34)
-#define axp2101_INTSTS2         (0x49)
+struct axp20x_pek *g_axp20x_pek;
 
 struct pk_dts {
-	uint32_t pmu_powkey_off_time;
-	uint32_t pmu_powkey_off_func;
-	uint32_t pmu_powkey_off_en;
-	uint32_t pmu_powkey_off_delay_time;
-	uint32_t pmu_powkey_long_time;
-	uint32_t pmu_powkey_on_time;
-	uint32_t pmu_pwrok_time;
-	uint32_t pmu_pwrnoe_time;
-	uint32_t pmu_powkey_wakeup_rising;
-	uint32_t pmu_powkey_wakeup_falling;
+    u32 pmu_powkey_off_time;
+    u32 pmu_powkey_off_func;
+    u32 pmu_powkey_off_en;
+    u32 pmu_powkey_off_delay_time;
+    u32 pmu_powkey_long_time;
+    u32 pmu_powkey_on_time;
+    u32 pmu_pwrok_time;
+    u32 pmu_pwrnoe_time;
+    u32 pmu_powkey_wakeup_rising;
+    u32 pmu_powkey_wakeup_falling;
 };
 
 struct axp20x_pek {
-	struct axp20x_dev *axp20x;
-	struct pk_dts pk_dts;
-	int irq_dbr;
-	int irq_dbf;
+    struct axp20x_dev *axp20x;
+    struct pk_dts      pk_dts;
+    int                irq_dbr;
+    int                irq_dbf;
 };
 
 struct axp20x_time {
-	unsigned int time;
-	unsigned int idx;
+    unsigned int time;
+    unsigned int idx;
 };
 
 #if 0
@@ -75,19 +76,19 @@ static const struct axp20x_time shutdown_time[] = {
 static int axp_powerkey_dt_parse(struct pk_dts *pk_dts)
 {
 
-	pk_dts->pmu_powkey_off_time       = 6000;
-	pk_dts->pmu_powkey_off_func       = 0;
-	pk_dts->pmu_powkey_off_en         = 1;
-	pk_dts->pmu_powkey_off_delay_time = 0;
-	pk_dts->pmu_powkey_long_time      = 1500;
-	pk_dts->pmu_powkey_on_time        = 1000;
-	pk_dts->pmu_pwrok_time            = 64;
-	pk_dts->pmu_pwrnoe_time           = 2000;
+    pk_dts->pmu_powkey_off_time       = 6000;
+    pk_dts->pmu_powkey_off_func       = 0;
+    pk_dts->pmu_powkey_off_en         = 1;
+    pk_dts->pmu_powkey_off_delay_time = 0;
+    pk_dts->pmu_powkey_long_time      = 1500;
+    pk_dts->pmu_powkey_on_time        = 1000;
+    pk_dts->pmu_pwrok_time            = 64;
+    pk_dts->pmu_pwrnoe_time           = 2000;
 
-	pk_dts->pmu_powkey_wakeup_rising = 0;
-	pk_dts->pmu_powkey_wakeup_falling = 0;
+    pk_dts->pmu_powkey_wakeup_rising  = 0;
+    pk_dts->pmu_powkey_wakeup_falling = 0;
 
-	return 0;
+    return 0;
 }
 
 #if 0
@@ -193,186 +194,195 @@ __nouse__ static int axp20x_pek_irq(int irq, void *pwr)
 	input_sync(idev);
 #endif
 
-	return 0;
+    return 0;
 }
 
 static int axp2201_config_set(struct axp20x_pek *axp20x_pek)
 {
-	__nouse__ struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
-	struct pk_dts *pk_dts = &axp20x_pek->pk_dts;
-	uint32_t val = 0;
+    struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
+    struct pk_dts     *pk_dts     = &axp20x_pek->pk_dts;
+    u32                val        = 0;
 
-	axp20x_i2c_read(axp2101_PONLEVEL, &val);
-	if (pk_dts->pmu_powkey_on_time < 128)
-		val &= 0x3C;
-	else if (pk_dts->pmu_powkey_on_time < 512) {
-		val &= 0x3C;
-		val |= 0x01;
-	} else if (pk_dts->pmu_powkey_on_time < 1000) {
-		val &= 0x3C;
-		val |= 0x02;
-	} else {
-		val &= 0x3C;
-		val |= 0x03;
-	}
-	axp20x_i2c_write(axp2101_PONLEVEL, val);
+    if (axp20x_dev->sts != STATUS_OK) return -1;
 
-	/* pok long time set*/
-	if (pk_dts->pmu_powkey_long_time < 1000)
-		pk_dts->pmu_powkey_long_time = 1000;
+    axp20x_i2c_read(axp2101_PONLEVEL, &val);
+    if (pk_dts->pmu_powkey_on_time < 128)
+        val &= 0x3C;
+    else if (pk_dts->pmu_powkey_on_time < 512) {
+        val &= 0x3C;
+        val |= 0x01;
+    } else if (pk_dts->pmu_powkey_on_time < 1000) {
+        val &= 0x3C;
+        val |= 0x02;
+    } else {
+        val &= 0x3C;
+        val |= 0x03;
+    }
+    axp20x_i2c_write(axp2101_PONLEVEL, val);
 
-	if (pk_dts->pmu_powkey_long_time > 2500)
-		pk_dts->pmu_powkey_long_time = 2500;
+    /* pok long time set*/
+    if (pk_dts->pmu_powkey_long_time < 1000)
+        pk_dts->pmu_powkey_long_time = 1000;
 
-	axp20x_i2c_read(axp2101_PONLEVEL, &val);
-	val &= 0xcf;
-	val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500)
-		<< 4);
-	axp20x_i2c_write(axp2101_PONLEVEL, val);
+    if (pk_dts->pmu_powkey_long_time > 2500)
+        pk_dts->pmu_powkey_long_time = 2500;
 
-	/* pek offlevel poweroff en set*/
-	if (pk_dts->pmu_powkey_off_en)
-		pk_dts->pmu_powkey_off_en = 1;
-	else
-		pk_dts->pmu_powkey_off_en = 0;
+    axp20x_i2c_read(axp2101_PONLEVEL, &val);
+    val &= 0xcf;
+    val |= (((pk_dts->pmu_powkey_long_time - 1000) / 500) << 4);
+    axp20x_i2c_write(axp2101_PONLEVEL, val);
 
-	axp20x_i2c_read(axp2101_PWROFF_EN, &val);
-	val &= 0x0D;
-	val |= (pk_dts->pmu_powkey_off_en << 1);
-	axp20x_i2c_write(axp2101_PWROFF_EN, val);
+    /* pek offlevel poweroff en set*/
+    if (pk_dts->pmu_powkey_off_en)
+        pk_dts->pmu_powkey_off_en = 1;
+    else
+        pk_dts->pmu_powkey_off_en = 0;
 
-	/*Init offlevel restart or not */
-	axp20x_i2c_read(axp2101_PWROFF_EN, &val);
-	if (pk_dts->pmu_powkey_off_func)
-		axp20x_i2c_write(axp2101_PWROFF_EN, val|0x1);
-	else
-		axp20x_i2c_write(axp2101_PWROFF_EN, val&(~0x1));
+    axp20x_i2c_read(axp2101_PWROFF_EN, &val);
+    val &= 0x0D;
+    val |= (pk_dts->pmu_powkey_off_en << 1);
+    axp20x_i2c_write(axp2101_PWROFF_EN, val);
 
-	/* pek delay set */
-	axp20x_i2c_read(axp2101_PWR_TIME_CTRL, &val);
-	val &= 0xfc;
-	if (pk_dts->pmu_pwrok_time < 32)
-		val |= ((pk_dts->pmu_pwrok_time / 8) - 1);
-	else
-		val |= ((pk_dts->pmu_pwrok_time / 32) + 1);
-	axp20x_i2c_write(axp2101_PWR_TIME_CTRL, val);
+    /*Init offlevel restart or not */
+    axp20x_i2c_read(axp2101_PWROFF_EN, &val);
+    if (pk_dts->pmu_powkey_off_func)
+        axp20x_i2c_write(axp2101_PWROFF_EN, val | 0x1);
+    else
+        axp20x_i2c_write(axp2101_PWROFF_EN, val & (~0x1));
 
-	/* pek offlevel time set */
-	if (pk_dts->pmu_powkey_off_time < 4000)
-		pk_dts->pmu_powkey_off_time = 4000;
+    /* pek delay set */
+    axp20x_i2c_read(axp2101_PWR_TIME_CTRL, &val);
+    val &= 0xfc;
+    if (pk_dts->pmu_pwrok_time < 32)
+        val |= ((pk_dts->pmu_pwrok_time / 8) - 1);
+    else
+        val |= ((pk_dts->pmu_pwrok_time / 32) + 1);
+    axp20x_i2c_write(axp2101_PWR_TIME_CTRL, val);
 
-	if (pk_dts->pmu_powkey_off_time > 10000)
-		pk_dts->pmu_powkey_off_time = 10000;
+    /* pek offlevel time set */
+    if (pk_dts->pmu_powkey_off_time < 4000) pk_dts->pmu_powkey_off_time = 4000;
 
-	axp20x_i2c_read(axp2101_PONLEVEL, &val);
-	val &= 0x33;
-	val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000
-		<< 2);
-	axp20x_i2c_write(axp2101_PONLEVEL, val);
+    if (pk_dts->pmu_powkey_off_time > 10000)
+        pk_dts->pmu_powkey_off_time = 10000;
 
-	/* vbat use all channels */
-	// regmap_write(regmap, axp2101_VBAT_H, 0x40);
-	axp20x_i2c_write(axp2101_VBAT_H, 0x40);
+    axp20x_i2c_read(axp2101_PONLEVEL, &val);
+    val &= 0x33;
+    val |= ((pk_dts->pmu_powkey_off_time - 4000) / 2000 << 2);
+    axp20x_i2c_write(axp2101_PONLEVEL, val);
 
-	return 0;
+    /* vbat use all channels */
+    // regmap_write(regmap, axp2101_VBAT_H, 0x40);
+    axp20x_i2c_write(axp2101_VBAT_H, 0x40);
+
+    return 0;
 }
 
 static void axp20x_dts_param_set(struct axp20x_pek *axp20x_pek)
 {
-	struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
+    struct axp20x_dev *axp20x_dev = axp20x_pek->axp20x;
 
-	if (!axp_powerkey_dt_parse(&axp20x_pek->pk_dts)) {
-		switch (axp20x_dev->variant) {
-		case AXP2101_ID:
-			axp2201_config_set(axp20x_pek);
-			break;
-		default:
-			printf("Setting power key for unsupported AXP variant\n");
-		}
-	}
+    if (!axp_powerkey_dt_parse(&axp20x_pek->pk_dts)) {
+        switch (axp20x_dev->variant) {
+        case AXP2101_ID:
+            axp2201_config_set(axp20x_pek);
+            break;
+        default:
+            printf("Setting power key for unsupported AXP variant\n");
+        }
+    }
 }
 
 int axp20x_pek_probe(void *pdev, void *config)
 {
-	__nouse__ struct axp20x_pek *axp20x_pek;
-	__nouse__ struct axp20x_dev *axp20x = (struct axp20x_dev *)pdev;
+    __nouse__ struct axp20x_dev *axp20x = (struct axp20x_dev *) pdev;
 
-	axp20x_pek = (struct axp20x_pek *)malloc(sizeof(struct axp20x_pek));
-	if (!axp20x_pek)
-		return -1;
+    g_axp20x_pek = (struct axp20x_pek *) malloc(sizeof(struct axp20x_pek));
+    if (!g_axp20x_pek) return -1;
 
-	axp20x_pek->axp20x = axp20x;
+    g_axp20x_pek->axp20x = axp20x;
 
-	// if (!axp20x->irq) {
-		// pr_err("axp2101-pek can not register without irq\n");
-		// return -1;
-	// }
+    // if (!axp20x->irq) {
+    // pr_err("axp2101-pek can not register without irq\n");
+    // return -1;
+    // }
 
-	axp20x_dts_param_set(axp20x_pek);
-	// error = devm_request_any_context_irq(&pdev->dev, axp20x_pek->irq_dbr,
-						 // axp20x_pek_irq, 0,
-						 // "axp20x-pek-dbr", idev);
+    axp20x_dts_param_set(g_axp20x_pek);
+    // error = devm_request_any_context_irq(&pdev->dev, axp20x_pek->irq_dbr,
+    // axp20x_pek_irq, 0,
+    // "axp20x-pek-dbr", idev);
 
-	// error = devm_request_any_context_irq(&pdev->dev, axp20x_pek->irq_dbf,
-					  // axp20x_pek_irq, 0,
-					  // "axp20x-pek-dbf", idev);
+    // error = devm_request_any_context_irq(&pdev->dev, axp20x_pek->irq_dbf,
+    // axp20x_pek_irq, 0,
+    // "axp20x-pek-dbf", idev);
 
-	return 0;
+    return 0;
+}
+
+void axp20x_pek_remove(void)
+{
+    if (g_axp20x_pek != NULL) free(g_axp20x_pek);
 }
 
 int axp2101_powerkey_suspend(void)
 {
-	uint32_t val = 0;
+    u32                val        = 0;
+    struct axp20x_dev *axp20x_dev = g_axp20x_pek->axp20x;
+    if (axp20x_dev->sts != STATUS_OK) return -1;
 
-	// SLEEP enable
-	axp20x_i2c_write(AXP2101_SLEEP_CFG, 0x01);
+    // SLEEP enable
+    printf("pmic go to sleep !!!\n");
+    axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
+    val |= 0x01;
+    axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
 
-	// IRQ Pin low to Wakeup
-	axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
-	val |= 0x10;
-	axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
+    // close voltage 80H 90H 91H
 
-	// POWERON Short Long IRQ
-	val = 0x0c;
-	axp20x_i2c_write(AXP2101_INTEN2, val);
+    axp20x_set_dcdc1(0);
+    axp20x_set_dcdc2(0);
+    axp20x_set_dcdc3(0);
+    axp20x_set_dcdc4(0);
+    axp20x_set_dcdc5(0);
+    axp20x_set_aldo1(0);
+    axp20x_set_aldo2(0);
+    axp20x_set_aldo3(0);
+    axp20x_set_aldo4(0);
+    axp20x_set_bldo1(0);
+    axp20x_set_bldo2(0);
+    axp20x_set_dldo1(0);
+    axp20x_set_dldo2(0);
+    axp20x_set_cpusldo(0);
 
-	// close voltage 80H 90H 91H
+    // IRQ Pin low to Wakeup
+    axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
+    val |= 0x10;
+    axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
 
-	axp20x_set_dcdc1(0);
-	axp20x_set_dcdc2(0);
-	axp20x_set_dcdc3(0);
-	axp20x_set_dcdc4(0);
-	axp20x_set_dcdc5(0);
-	axp20x_set_aldo1(0);
-	axp20x_set_aldo2(0);
-	axp20x_set_aldo3(0);
-	axp20x_set_aldo4(0);
-	axp20x_set_bldo1(0);
-	axp20x_set_bldo2(0);
-	axp20x_set_dldo1(0);
-	axp20x_set_dldo2(0);
-	axp20x_set_cpusldo(0);
+    // POWERON Short Long IRQ
+    val = 0x0c;
+    axp20x_i2c_write(AXP2101_INTEN2, val);
 
-	return 0;
+    return 0;
 }
 
 int axp2101_powerkey_resume(void)
 {
+    u32                val        = 0;
+    struct axp20x_dev *axp20x_dev = g_axp20x_pek->axp20x;
+    if (axp20x_dev->sts != STATUS_OK) return -1;
 
-	return 0;
+    printf("pmic go to resume !!!\n");
+
+    // IRQ Pin low to Wakeup
+    axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
+    val &= 0xef;
+    axp20x_i2c_write(AXP2101_SLEEP_CFG, val);
+
+    // POWERON Short Long IRQ
+    val = 0x00;
+    axp20x_i2c_write(AXP2101_INTEN2, val);
+    // Cleat IRQ status
+    val = 0x0c;
+    axp20x_i2c_write(AXP2101_INTSTS2, val);
+
+    return 0;
 }
-
-static struct of_device_id axp_match_table[] = {
-	{ .compatible = "x-powers,axp2585-pek" },
-	{ .compatible = "x-powers,axp2202-pek" },
-	{ .compatible = "x-powers,axp803-pek" },
-	{ .compatible = "x-powers,axp806-pek" },
-	{ .compatible = "x-powers,axp152-pek" },
-	{ /* sentinel */ },
-};
-
-__nouse__ static struct platform_driver axp20x_pek_driver = {
-	.probe		= axp20x_pek_probe,
-	.of_match_table = axp_match_table,
-	.name = "axp2101-pek",
-};
