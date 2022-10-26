@@ -1,4 +1,3 @@
-#include "pl001.h"
 #include "gic.h"
 #include "irq_ctrl.h"
 #include <stdio.h>
@@ -9,12 +8,6 @@
 	#pragma GCC diagnostic ignored "-Wmisleading-indentation"
 	#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #endif
-
-int putchar(int c)
-{
-	uart_putchar(c);
-	return 0;
-}
 
 int main()
 {

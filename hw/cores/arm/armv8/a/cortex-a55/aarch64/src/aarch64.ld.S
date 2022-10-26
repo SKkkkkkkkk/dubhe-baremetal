@@ -32,7 +32,7 @@ ENTRY(entrypoint)
 	#define __RAM_BASE 0x0e000000
 	#define __RAM_SIZE 16M
 
-    #define __DDR_BASE 0x80000000
+    #define __DDR_BASE 0x40000000
 	#define __DDR_SIZE 0xC0000000 //3G
 #endif
 

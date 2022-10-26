@@ -3,6 +3,24 @@
 
 	.globl entrypoint
 func entrypoint
+	mov	x1, #(SCTLR_I_BIT | SCTLR_A_BIT | SCTLR_SA_BIT)
+	asm_read_sctlr_elx
+	orr	x0, x0, x1
+	asm_write_sctlr_elx x1
+	isb
+
+	ldr x0, =vector_table
+	asm_write_vbar_elx x1
+	isb
+
+	mrs     x1, CurrentEL
+	cmp     x1, #(MODE_EL3 << MODE_EL_SHIFT)
+	b.ne    1f
+	mrs x0, scr_el3
+	mov x0, #0x53e                 	// #568
+	msr scr_el3, x0
+1:
+
 // #ifdef RTL
 	// Initialise the register bank
 	mov x0, xzr
@@ -37,34 +55,12 @@ func entrypoint
 	mov x29, xzr
 	mov x30, xzr
 
-	// Zero the stack pointers, link registers and status registers
-	mov     sp,       x0
-	msr     sp_el0,   xzr
-	msr     sp_el1,   xzr
-	msr     sp_el2,   xzr
-	msr     elr_el1,  xzr
-	msr     elr_el2,  xzr
-	msr     elr_el3,  xzr
-	msr 	spsr_el1, xzr
-	msr 	spsr_el2, xzr
-	msr 	spsr_el3, xzr
-
-	msr 	vttbr_el2, xzr
-
 	// Enable NEON and initialize the register bank if this
 	// feature has been implemented
 	mrs     x0, ID_AA64PFR0_EL1
 	sbfx    x5, x0, #16, #4         // Extract the floating-point field
     cmp     x5, #-1                 // x0 == -1 if FP not present
 	b.eq    rtl_init_end            // Skip FP initialization if not present
-
-	mov     x1, #(0x3 << 20)
-	msr     cpacr_el1, x1
-	mrs     x1, cptr_el3
-
-	bic     x1, x1, #(0x1 << 10)      // Ensure that CPTR_EL3.TFP is clear
-	msr     cptr_el3, x1
-	isb
 
 	fmov    d0,  xzr
 	fmov    d1,  xzr
@@ -100,19 +96,6 @@ func entrypoint
 	fmov    d31,  xzr
 rtl_init_end:
 // #endif
-
-	mrs x0, sctlr_el3 //0x30c50830
-	ldr x0, =0x30c5083A
-	msr sctlr_el3, x0
-	isb
-
-	ldr x0, =vector_table
-	msr vbar_el3, x0
-	isb
-
-	mrs x0, scr_el3
-	mov x0, #0x53e                 	// #568
-	msr scr_el3, x0
 
 	msr spsel, 1
 	bl setup_stack
@@ -155,7 +138,8 @@ data_init_end:
 	bne secondary_core
 	// bl config_mmu
 	bl main
-	b .
+dead:
+	b	dead
 endfunc entrypoint
 
 

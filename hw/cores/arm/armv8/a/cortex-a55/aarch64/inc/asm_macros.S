@@ -228,4 +228,56 @@
 #endif
 	.endm
 
+	.macro	asm_read_sysreg_elx  sysreg
+	mrs     x0, CurrentEL
+	cmp     x0, #(MODE_EL1 << MODE_EL_SHIFT)
+	b.eq    1f
+	cmp     x0, #(MODE_EL2 << MODE_EL_SHIFT)
+	b.eq    2f
+	cmp     x0, #(MODE_EL3 << MODE_EL_SHIFT)
+	b.eq    3f
+	b       .
+1:
+	mrs     x0, \sysreg\()_el1
+	b       4f
+2:
+	mrs     x0, \sysreg\()_el2
+	b       4f
+3:
+	mrs     x0, \sysreg\()_el3
+4:
+	.endm
+
+	.macro	asm_write_sysreg_elx  sysreg scratch_reg
+	mrs     \scratch_reg, CurrentEL
+	cmp     \scratch_reg, #(MODE_EL1 << MODE_EL_SHIFT)
+	b.eq    1f
+	cmp     \scratch_reg, #(MODE_EL2 << MODE_EL_SHIFT)
+	b.eq    2f
+	cmp     \scratch_reg, #(MODE_EL3 << MODE_EL_SHIFT)
+	b.eq    3f
+	b       .
+1:
+	msr     \sysreg\()_el1, x0
+	b       4f
+2:
+	msr     \sysreg\()_el2, x0
+	b       4f
+3:
+	msr     \sysreg\()_el3, x0
+4:
+	.endm
+
+	.macro asm_read_sctlr_elx
+	asm_read_sysreg_elx sctlr
+	.endm
+
+	.macro asm_write_sctlr_elx  scratch_reg
+	asm_write_sysreg_elx sctlr \scratch_reg
+	.endm
+
+	.macro asm_write_vbar_elx  scratch_reg
+	asm_write_sysreg_elx vbar \scratch_reg
+	.endm
+
 #endif /* ASM_MACROS_S */

@@ -33,10 +33,7 @@ end_vector_entry serror_spt
 	 * -----------------------------------------------------
 	 */
 vector_entry sync_exception_sph
-	mrs x0, esr_el3
-	mrs x1, far_el3
-	mrs x2, elr_el3
-	b .
+	b _sync_exception_sph
 end_vector_entry sync_exception_sph
 
 vector_entry irq_sph
@@ -95,6 +92,18 @@ vector_entry serror_aarch32
 end_vector_entry serror_aarch32
 
 
+	func _sync_exception_sph
+_sync_exception_sph:
+	asm_read_sysreg_elx esr
+	mov x1, x0
+	asm_read_sysreg_elx far
+	mov x2, x0
+	asm_read_sysreg_elx elr
+	mov x3, x0
+	b .
+endfunc _sync_exception_sph
+
+
 	func _irq_sph
 _irq_sph:
 	/* Save volatile registers. */
@@ -111,8 +120,12 @@ _irq_sph:
 	STP		X29, X30, [SP, #-0x10]!
 
 	/* Save SPSR & ELR */
-	MRS		X3, SPSR_EL3
-	MRS		X2, ELR_EL3
+	asm_read_sysreg_elx spsr
+	mov		x3, x0
+	asm_read_sysreg_elx elr
+	mov		x2, x0
+	//MRS		X3, SPSR_EL3
+	//MRS		X2, ELR_EL3
 	STP 	X2, X3, [SP, #-0x10]!
 
 	STP		Q0, Q1, [SP,#-0x20]!
@@ -153,8 +166,12 @@ _irq_sph:
 	LDP		Q0, Q1, [SP], #0x20
 
 	LDP 	X4, X5, [SP], #0x10  /* SPSR and ELR. */
-	MSR		SPSR_EL3, X5 /*_RB_ Assumes started in EL3. */
-	MSR		ELR_EL3, X4
+	//MSR		SPSR_EL3, X5 /*_RB_ Assumes started in EL3. */
+	//MSR		ELR_EL3, X4
+	mov		x0, x5
+	asm_write_sysreg_elx spsr x1
+	mov		x0, x4
+	asm_write_sysreg_elx elr x1
 
 	LDP		X29, X30, [SP], #0x10
 	LDP		X18, X19, [SP], #0x10
