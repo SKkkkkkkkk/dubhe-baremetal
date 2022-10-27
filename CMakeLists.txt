@@ -210,6 +210,7 @@ set(ENABLE_USE_NOR_FLASH OFF)
 set(ENABLE_USE_FREERTOS OFF)
 set(ENABLE_USE_PMIC OFF)
 set(ENABLE_USE_tinyCLI OFF)
+set(ENABLE_USE_SEMIHOSTING OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 
@@ -386,13 +387,23 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     endif()
 
      ### USE_tinyCLI
-     cmake_dependent_option(
+    cmake_dependent_option(
         USE_tinyCLI "Use tinyCLI" ON
         "ENABLE_USE_tinyCLI;" OFF
     )
     if(USE_tinyCLI)
         add_subdirectory(${SDK_DIR}/libs/tinyCLI)
         set(link_libs ${link_libs} tinyCLI)
+    endif()
+
+    ### USE_tinyCLI
+    cmake_dependent_option(
+        USE_SEMIHOSTING "Use semihosting" ON
+        "ENABLE_USE_SEMIHOSTING;" OFF
+    )
+    if(USE_SEMIHOSTING)
+        add_subdirectory(${SDK_DIR}/libs/semihosting)
+        set(link_libs ${link_libs} semihosting)
     endif()
 
 endif()
