@@ -18,7 +18,7 @@ ENTRY(entrypoint)
 
 #ifndef QEMU
 	#define __ROM_BASE 0x00000000
-	#define __ROM_SIZE 64K
+	#define __ROM_SIZE 256K
 
 	#define __RAM_BASE 0x20000000
 	#define __RAM_SIZE 196K
