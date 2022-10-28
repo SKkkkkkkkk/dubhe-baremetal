@@ -7,7 +7,7 @@
     extern "C" {
 #endif
 
-typedef enum { GROUP_GPIO0 = 0, GROUP_GPIO1 = 1, GROUP_GPIO2 = 2, GROUP_GPIO3 = 3 } gpio_group_t;
+typedef enum { GROUP_GPIO0 = 0, GROUP_GPIO1 = 1, GROUP_GPIO2 = 2 } gpio_group_t;
 
 typedef enum { GPIO_PIN_RESET = 0, GPIO_PIN_SET = 1 } gpio_pin_state_t;
 

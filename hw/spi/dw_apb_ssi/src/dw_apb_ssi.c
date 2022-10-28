@@ -8,10 +8,11 @@
 #include "dw_apb_ssi_regs.h"
 #include "dw_apb_gpio.h"
 
-#define BOOTSPI_BASE (0x250D0000) /*!< (BootSPI   ) Base Address */
-#define SPI0_BASE (0xF8030000UL) /*!< (SPI0      ) Base Address */
-#define SPI1_BASE (0xF8031000UL) /*!< (SPI1      ) Base Address */
-#define SPI2_BASE (0xF8032000UL) /*!< (SPI2      ) Base Address */
+#define BOOTSPI_BASE (0x25060000UL) /*!< (BootSPI   ) Base Address */
+#define SPI0_BASE 	 (0x26030000UL) /*!< (SPI0      ) Base Address */
+#define SPI1_BASE 	 (0x26040000UL) /*!< (SPI1      ) Base Address */
+#define SPI2_BASE 	 (0x26050000UL) /*!< (SPI2      ) Base Address */
+#define SPIS_BASE 	 (0x26060000UL) /*!< (SPI2      ) Base Address */
 
 #define BOOTSPI ((BOOTSPI_TypeDef *)BOOTSPI_BASE)
 #define SPI0 ((DW_APB_SSI_TypeDef *)SPI0_BASE)

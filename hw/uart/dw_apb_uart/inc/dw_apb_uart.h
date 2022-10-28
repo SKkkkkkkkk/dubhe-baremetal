@@ -6,14 +6,14 @@
 
 #ifdef M3
 #define UART0_BASE (0x21090000UL + 0x20000000UL) /*!< (UART0     ) Base Address */
-#define UART1_BASE (0x270A0000UL + 0x20000000UL) /*!< (UART1     ) Base Address */
-#define UART2_BASE (0x270B0000UL + 0x20000000UL) /*!< (UART2     ) Base Address */
-#define UART3_BASE (0x270C0000UL + 0x20000000UL) /*!< (UART3     ) Base Address */
+#define UART1_BASE (0x25070000UL + 0x20000000UL) /*!< (UART1     ) Base Address */
+#define UART2_BASE (0x25080000UL + 0x20000000UL) /*!< (UART2     ) Base Address */
+#define UART3_BASE (0x260A0000UL + 0x20000000UL) /*!< (UART3     ) Base Address */
 #else
 #define UART0_BASE (0x21090000UL) /*!< (UART0     ) Base Address */
-#define UART1_BASE (0x270A0000UL) /*!< (UART1     ) Base Address */
-#define UART2_BASE (0x270B0000UL) /*!< (UART2     ) Base Address */
-#define UART3_BASE (0x270C0000UL) /*!< (UART3     ) Base Address */
+#define UART1_BASE (0x25070000UL) /*!< (UART1     ) Base Address */
+#define UART2_BASE (0x25080000UL) /*!< (UART2     ) Base Address */
+#define UART3_BASE (0x260A0000UL) /*!< (UART3     ) Base Address */
 #define UART0 ((APE1210_UART_TypeDef *)(uintptr_t)UART0_BASE)
 #define UART1 ((APE1210_UART_TypeDef *)(uintptr_t)UART1_BASE)
 #define UART2 ((APE1210_UART_TypeDef *)(uintptr_t)UART2_BASE)

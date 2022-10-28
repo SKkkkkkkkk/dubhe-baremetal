@@ -2,19 +2,17 @@
 #include "dw_apb_gpio_regs.h"
 
 #ifdef A55
-	#define PIN_IOMUX_BASE 0x2e000800
+	#define PIN_IOMUX_BASE 0x2e000800UL
 
-	#define GPIO0_BASE (0x210A0000UL)
-	#define GPIO1_BASE (0x27000000UL)
-	#define GPIO2_BASE (0x27010000UL)
-	#define GPIO3_BASE (0x27020000UL)
+	#define GPIO0_BASE (0x2E010000UL)
+	#define GPIO1_BASE (0x25030000UL)
+	#define GPIO2_BASE (0x25040000UL)
 #else
-	#define PIN_IOMUX_BASE 0x4e000800
+	#define PIN_IOMUX_BASE 0x4e000800UL
 
-	#define GPIO0_BASE (0x410A0000UL)
-	#define GPIO1_BASE (0x47000000UL)
-	#define GPIO2_BASE (0x47010000UL)
-	#define GPIO3_BASE (0x47020000UL)
+	#define GPIO0_BASE (0x4E010000UL)
+	#define GPIO1_BASE (0x45030000UL)
+	#define GPIO2_BASE (0x45040000UL)
 #endif
 
 
@@ -22,13 +20,12 @@
 #define GPIO0 ((DW_APB_GPIO_TypeDef *)GPIO0_BASE)
 #define GPIO1 ((DW_APB_GPIO_TypeDef *)GPIO1_BASE)
 #define GPIO2 ((DW_APB_GPIO_TypeDef *)GPIO2_BASE)
-#define GPIO3 ((DW_APB_GPIO_TypeDef *)GPIO3_BASE)
 
 #if 1
 	#define GPIO_LOCK_MUTEX(x)
 	#define GPIO_UNLOCK_MUTEX(x)
 	static uint32_t mutex_for_iomux;
-	static uint32_t mutex_for_gpio_init[4];
+	static uint32_t mutex_for_gpio_init[3];
 	static uint32_t mutex_for_gpio_write;
 	void gpio_mutexs_init(void)
 	{
@@ -111,11 +108,6 @@ void gpio_init(gpio_init_config_t const *const gpio_init_config)
 		gpio = GPIO2;
 		mutex_for_gpio_init1 = (mutex_for_gpio_init[2]);
 		break;
-	
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		mutex_for_gpio_init1 = (mutex_for_gpio_init[3]);
-		break;
 
 	default:
 		return;
@@ -194,9 +186,7 @@ gpio_pin_state_t gpio_read_pin(gpio_group_t group, uint8_t pin)
 		gpio = GPIO2;
 		break;
 
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		break;
+
 
 	default:
 		return GPIO_PIN_RESET;
@@ -222,9 +212,7 @@ void gpio_write_pin(gpio_group_t group, uint8_t pin, gpio_pin_state_t pin_state)
 		gpio = GPIO2;
 		break;
 	
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		break;
+
 
 	default:
 		return;
@@ -257,9 +245,7 @@ void gpio_clear_interrput(gpio_group_t group, uint8_t pin)
 		gpio = GPIO2;
 		break;
 
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		break;
+
 
 	default:
 		return;
