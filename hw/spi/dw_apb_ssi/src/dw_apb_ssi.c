@@ -8,11 +8,11 @@
 #include "dw_apb_ssi_regs.h"
 #include "dw_apb_gpio.h"
 
-#define BOOTSPI_BASE (0x25060000UL) /*!< (BootSPI   ) Base Address */
-#define SPI0_BASE 	 (0x26030000UL) /*!< (SPI0      ) Base Address */
-#define SPI1_BASE 	 (0x26040000UL) /*!< (SPI1      ) Base Address */
-#define SPI2_BASE 	 (0x26050000UL) /*!< (SPI2      ) Base Address */
-#define SPIS_BASE 	 (0x26060000UL) /*!< (SPI2      ) Base Address */
+#ifdef A55
+	#include <ca55_chip_define.h>
+#else
+	#include <cm3_chip_define.h>
+#endif
 
 #define BOOTSPI ((BOOTSPI_TypeDef *)BOOTSPI_BASE)
 #define SPI0 ((DW_APB_SSI_TypeDef *)SPI0_BASE)

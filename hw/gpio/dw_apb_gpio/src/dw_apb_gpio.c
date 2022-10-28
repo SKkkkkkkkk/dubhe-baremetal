@@ -2,17 +2,15 @@
 #include "dw_apb_gpio_regs.h"
 
 #ifdef A55
-	#define PIN_IOMUX_BASE 0x2e000800UL
+	#include <ca55_chip_define.h>
+#else
+	#include <cm3_chip_define.h>
+#endif
 
-	#define GPIO0_BASE (0x2E010000UL)
-	#define GPIO1_BASE (0x25030000UL)
-	#define GPIO2_BASE (0x25040000UL)
+#ifdef A55
+	#define PIN_IOMUX_BASE 0x2e000800UL
 #else
 	#define PIN_IOMUX_BASE 0x4e000800UL
-
-	#define GPIO0_BASE (0x4E010000UL)
-	#define GPIO1_BASE (0x45030000UL)
-	#define GPIO2_BASE (0x45040000UL)
 #endif
 
 

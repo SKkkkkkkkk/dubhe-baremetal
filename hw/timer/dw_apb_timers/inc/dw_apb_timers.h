@@ -9,14 +9,14 @@
 #endif
 
 #include "dw_apb_timers_regs.h"
+
 #ifdef A55
-	#define TIMERX2_BASE (0x21070000UL) /*!< (Timerx2   ) Base Address */
-	#define TIMERX6_BASE (0x24040000UL) /*!< (Timerx6   ) Base Address */
+	#include <ca55_chip_define.h>
 	#define TIMERX6 ((APE1210_Timerx6_TypeDef *)TIMERX6_BASE)
 #else
-	#define TIMERX2_BASE (0x21070000UL + 0x20000000UL) /*!< (Timerx2   ) Base Address */
-	// #define TIMERX6_BASE (0x24040000UL + 0x20000000UL) /*!< (Timerx6   ) Base Address */ invisible
+	#include <cm3_chip_define.h>
 #endif
+
 #define TIMERX2 ((APE1210_Timerx2_TypeDef *)TIMERX2_BASE)
 
 
