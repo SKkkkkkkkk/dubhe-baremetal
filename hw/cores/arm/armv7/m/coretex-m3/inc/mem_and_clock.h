@@ -2,7 +2,7 @@
 #define __MEM_AND_CLOCK_H__
 
 #define __CODE_BASE 		0x00000000
-#define __SRAM_BASE			0x30000000
+#define __SRAM_BASE			0x20030000
 #define __EXTERNAL_RAM_BASE	0x60000000
 #if defined(QEMU)
 	#define __CODE_SIZE 0x00040000
