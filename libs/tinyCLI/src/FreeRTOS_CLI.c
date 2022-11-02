@@ -47,6 +47,10 @@ one of the application files:
 	#define configAPPLICATION_PROVIDES_cOutputBuffer 0
 #endif
 
+extern char __tinyCLI_CMD_START__[];
+extern char __tinyCLI_CMD_END__[];
+#define align_size __alignof__(CLI_Command_Definition_t)
+
 /*
  * The callback function that is executed when "help" is entered.  This is the
  * only default command that is always present.
@@ -174,6 +178,7 @@ BaseType_t xReturn = pdFAIL;
 BaseType_t FreeRTOS_CLIProcessCommand( const char * const pcCommandInput, char * pcWriteBuffer, size_t xWriteBufferLen  )
 {
 static const CLI_Definition_List_Item_t *pxCommand = NULL;
+const CLI_Command_Definition_t *pxCommand_Class2 = (CLI_Command_Definition_t*)((uintptr_t)__tinyCLI_CMD_START__ + (align_size - (((uintptr_t)__tinyCLI_CMD_START__)&(align_size-1))));
 BaseType_t xReturn = pdTRUE;
 const char *pcRegisteredCommandString;
 size_t xCommandStringLength;
@@ -183,6 +188,7 @@ size_t xCommandStringLength;
 
 	if( pxCommand == NULL )
 	{
+		// registered commands class 1.
 		/* Search for the command string in the list of registered commands. */
 		for( pxCommand = &xRegisteredCommands; pxCommand != NULL; pxCommand = pxCommand->pxNext )
 		{
@@ -209,12 +215,39 @@ size_t xCommandStringLength;
 						}
 					}
 
-					break;
+					goto found;
 				}
 			}
 		}
+
+		// registered commands class 2.
+		while(pxCommand_Class2 != (CLI_Command_Definition_t*)__tinyCLI_CMD_END__)
+		{
+			pcRegisteredCommandString = pxCommand_Class2->pcCommand;
+			xCommandStringLength = strlen( pcRegisteredCommandString );
+
+			if( strncmp( pcCommandInput, pcRegisteredCommandString, xCommandStringLength ) == 0 )
+			{
+				if( ( pcCommandInput[ xCommandStringLength ] == ' ' ) || ( pcCommandInput[ xCommandStringLength ] == 0x00 ) )
+				{
+					if( pxCommand_Class2->cExpectedNumberOfParameters >= 0 )
+					{
+						if( prvGetNumberOfParameters( pcCommandInput ) != pxCommand_Class2->cExpectedNumberOfParameters )
+						{
+							xReturn = pdFALSE;
+						}
+					}
+
+					pxCommand = (CLI_Definition_List_Item_t*)pxCommand_Class2;
+					goto found;
+				}
+			}
+
+			pxCommand_Class2++;
+		}
 	}
 
+found:
 	if( ( pxCommand != NULL ) && ( xReturn == pdFALSE ) )
 	{
 		/* The command was found, but the number of parameters with the command
@@ -225,7 +258,14 @@ size_t xCommandStringLength;
 	else if( pxCommand != NULL )
 	{
 		/* Call the callback function that is registered to this command. */
-		xReturn = pxCommand->pxCommandLineDefinition->pxCommandInterpreter( pcWriteBuffer, xWriteBufferLen, pcCommandInput );
+		if((pxCommand >= (CLI_Definition_List_Item_t*)__tinyCLI_CMD_START__) && (pxCommand < (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__))
+		{
+			xReturn = ((CLI_Command_Definition_t*)pxCommand)->pxCommandInterpreter( pcWriteBuffer, xWriteBufferLen, pcCommandInput );
+		}
+		else
+		{
+			xReturn = pxCommand->pxCommandLineDefinition->pxCommandInterpreter( pcWriteBuffer, xWriteBufferLen, pcCommandInput );
+		}
 
 		/* If xReturn is pdFALSE, then no further strings will be returned
 		after this one, and	pxCommand can be reset to NULL ready to search
@@ -310,27 +350,42 @@ const char *pcReturn = NULL;
 
 static BaseType_t prvHelpCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
-static const CLI_Definition_List_Item_t * pxCommand = NULL;
+static const CLI_Definition_List_Item_t * pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)0xffffffff;
 BaseType_t xReturn;
 
 	( void ) pcCommandString;
 
-	if( pxCommand == NULL )
+	if( pxCommand == (CLI_Definition_List_Item_t*)(uintptr_t)0xffffffff )
 	{
 		/* Reset the pxCommand pointer back to the start of the list. */
 		pxCommand = &xRegisteredCommands;
 	}
 
+	if( pxCommand == NULL )
+	{
+		pxCommand = (CLI_Definition_List_Item_t*)((uintptr_t)__tinyCLI_CMD_START__ + (align_size - (((uintptr_t)__tinyCLI_CMD_START__)&(align_size-1))));
+	}
+
 	/* Return the next command help string, before moving the pointer on to
 	the next command in the list. */
-	strncpy( pcWriteBuffer, pxCommand->pxCommandLineDefinition->pcHelpString, xWriteBufferLen );
-	pxCommand = pxCommand->pxNext;
+	if((pxCommand >= (CLI_Definition_List_Item_t*)__tinyCLI_CMD_START__) && (pxCommand < (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__))
+	{
+		strncpy( pcWriteBuffer, ((CLI_Command_Definition_t*)pxCommand)->pcHelpString, xWriteBufferLen );
+		pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)((uintptr_t)pxCommand + sizeof(CLI_Command_Definition_t));
+	}
+	else
+	{
+		strncpy( pcWriteBuffer, pxCommand->pxCommandLineDefinition->pcHelpString, xWriteBufferLen );
+		pxCommand = pxCommand->pxNext;
+	}
+		
 
-	if( pxCommand == NULL )
+	if( pxCommand == (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__ )
 	{
 		/* There are no more commands in the list, so there will be no more
 		strings to return after this one and pdFALSE should be returned. */
 		xReturn = pdFALSE;
+		pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)0xffffffff;
 	}
 	else
 	{

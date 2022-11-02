@@ -98,6 +98,9 @@ SECTIONS
     {
         __RODATA_START__ = .;
         *(SORT_BY_ALIGNMENT(.rodata*))
+        __tinyCLI_CMD_START__ = .;
+        KEEP(*(.tinyCLI_CMD*))
+        __tinyCLI_CMD_END__ = .;
         __RODATA_END__ = .;
         . = ALIGN(16); //.data LMA should be 16-byte aligned.
 #if (WHERE_TO_LOAD == ROM_AND_RAM)

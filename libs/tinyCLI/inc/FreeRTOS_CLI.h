@@ -89,6 +89,12 @@ typedef struct xCOMMAND_INPUT_LIST
 /* For backward compatibility. */
 #define xCommandLineInput CLI_Command_Definition_t
 
+
+#define tinyCLI_CMD(_name) \
+	CLI_Command_Definition_t tinyCLI_CMD_##_name \
+		__attribute__((used)) \
+		__section(".tinyCLI_CMD."#_name)
+
 /*
  * Register the command passed in using the pxCommandToRegister parameter.
  * Registering a command adds the command to the list of commands that are

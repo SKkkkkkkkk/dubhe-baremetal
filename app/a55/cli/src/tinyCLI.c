@@ -155,3 +155,14 @@ void vCommandConsoleTask(void *pvParameters)
 	}
 	}
 }
+
+
+tinyCLI_CMD(hello1) = { .pcCommand = "hello1",
+		.pcHelpString = "hello1\r\n",
+		.pxCommandInterpreter = print_helloworld,
+		.cExpectedNumberOfParameters = 0 };
+	
+tinyCLI_CMD(hello2) = { .pcCommand = "hello2",
+		.pcHelpString = "hello2\r\n",
+		.pxCommandInterpreter = print_helloworld,
+		.cExpectedNumberOfParameters = 0 };
