@@ -4,6 +4,7 @@
 #include "dw_apb_ssi.h"
 #include "systimer.h"
 #include "nor_flash.h"
+#include <dw_apb_gpio.h>
 
 
 #define FLASH_SECTOR_SIZE 4096
@@ -62,30 +63,71 @@ int main()
 
 	// while(1);
 
-	void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model);
-	nor_flash_test(BOOTSPI_ID, W25Q64JW);
+	// void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model);
+	// nor_flash_test(SPI0_ID, GD25LQ128);
 
 	void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model);
-	flash_fastest_read_test(BOOTSPI_ID, W25Q64JW);
+	flash_fastest_read_test(SPI0_ID, GD25LQ128);
 
-	// spi_init_config_t spi_init_config = {
-	// 	.as_master = true,
-	// 	.clock_div = 40,
-	// 	.spi_id = BOOTSPI_ID,
-	// 	.spi_mode = 3
-	// };
-	// dw_spi_init(&spi_init_config);
-
-	// uint8_t cmd[1] = {0x9f};
-	// uint8_t r_buf[3] = {0};
-	// while(1)
-	// {
-	// 	dw_spi_eeprom_read(BOOTSPI_ID, &cmd, 1, r_buf, 3);
-	// 	printf("flash id: 0x%x 0x%x 0x%x\n\r", r_buf[0], r_buf[1], r_buf[2]);
-	// 	systimer_delay(1, IN_S);
-	// }
-	// dw_spi_deinit(BOOTSPI_ID, true);
+	// void spi0_gpio_test();
+	// spi0_gpio_test();
 	return 0;
+}
+
+
+void spi0_gpio_test()
+{
+	printf("spi0_gpio_test.\n\r");
+
+	pin_set_iomux(GROUP_GPIO1, 21, 3);
+	pin_set_iomux(GROUP_GPIO1, 22, 3);
+	pin_set_iomux(GROUP_GPIO1, 23, 3);
+	pin_set_iomux(GROUP_GPIO1, 24, 3);
+	pin_set_iomux(GROUP_GPIO1, 25, 3);
+	pin_set_iomux(GROUP_GPIO1, 26, 3);
+
+	gpio_init_config_t gpio_init_config = {
+		.group = GROUP_GPIO1,
+		.pin = 21,
+		.gpio_control_mode = Software_Mode,
+		.gpio_mode = GPIO_Output_Mode
+	};
+	gpio_init(&gpio_init_config);
+
+	gpio_init_config.pin = 22;
+	gpio_init(&gpio_init_config);
+
+	gpio_init_config.pin = 23;
+	gpio_init(&gpio_init_config);
+
+	gpio_init_config.pin = 24;
+	gpio_init(&gpio_init_config);
+
+	gpio_init_config.pin = 25;
+	gpio_init(&gpio_init_config);
+
+	gpio_init_config.pin = 26;
+	gpio_init(&gpio_init_config);
+
+
+	while(1)
+	{
+		gpio_write_pin(GROUP_GPIO1, 21, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO1, 23, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO1, 24, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO1, 26, GPIO_PIN_SET);
+		systimer_delay(500, IN_US);
+		gpio_write_pin(GROUP_GPIO1, 21, GPIO_PIN_RESET);
+		gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_RESET);
+		gpio_write_pin(GROUP_GPIO1, 23, GPIO_PIN_RESET);
+		gpio_write_pin(GROUP_GPIO1, 24, GPIO_PIN_RESET);
+		gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_RESET);
+		gpio_write_pin(GROUP_GPIO1, 26, GPIO_PIN_RESET);
+		systimer_delay(500, IN_US);
+	}
+	return;
 }
 
 #else

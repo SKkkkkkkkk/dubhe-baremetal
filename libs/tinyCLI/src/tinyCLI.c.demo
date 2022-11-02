@@ -72,14 +72,6 @@ void CLIRegisterCommand(void)
 	FreeRTOS_CLIRegisterCommandStatic(&CLI_CMD_ShowTaskStats_Item);
 }
 
-void task_cli(void *arg)
-{
-	printf("this is task cli.\n\r");
-	while (1) {
-		// FreeRTOS_CLIProcessCommand()
-	}
-}
-
 #define MAX_INPUT_LENGTH 50
 #define MAX_OUTPUT_LENGTH 96
 

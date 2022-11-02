@@ -231,6 +231,8 @@ void clean_dcache_range(uintptr_t addr, size_t size);
 void inv_dcache_range(uintptr_t addr, size_t size);
 bool is_dcache_enabled(void);
 
+void invalidate_icache_all(void);
+
 void dcsw_op_louis(u_register_t op_type);
 void dcsw_op_all(u_register_t op_type);
 
@@ -600,6 +602,18 @@ static inline uint64_t el_implemented(unsigned int el)
 
 		return (read_id_aa64pfr0_el1() >> shift) & ID_AA64PFR0_ELX_MASK;
 	}
+}
+
+/* Read the count value of the system counter. */
+static inline uint64_t syscounter_read(void)
+{
+	/*
+	 * The instruction barrier is needed to guarantee that we read an
+	 * accurate value. Otherwise, the CPU might speculatively read it and
+	 * return a stale value.
+	 */
+	isb();
+	return read_cntpct_el0();
 }
 
 /*

@@ -1,17 +1,15 @@
-set(LIB_OBJS_NAME tinyCLI)
+set(LIB_OBJS_NAME crc)
 
 add_library( ${LIB_OBJS_NAME} STATIC )
 
 target_sources( ${LIB_OBJS_NAME} 
 	PRIVATE
-			src/FreeRTOS_CLI.c
+		src/crc16.c
 )
 
 target_include_directories( ${LIB_OBJS_NAME}
 	PUBLIC
 		inc
-	PRIVATE
-		src
 )
 
 target_compile_options( ${LIB_OBJS_NAME} 

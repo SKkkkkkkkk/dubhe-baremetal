@@ -313,10 +313,10 @@ int uart_sendchar(seehi_uart_no uart_no, const int c)
     return c;
 }
 
-static int uart_tstc(unsigned int base)
+int uart_tstc(unsigned int base)
 {
     uart_reg *uart_reg_ptr = (uart_reg *)(uintptr_t)base;
-    return ((readl(&uart_reg_ptr->LSR) & 0x1) != 0);
+    return (readl(&uart_reg_ptr->LSR) & 0x1);
 }
 
 // int putchar(int s)
@@ -330,7 +330,7 @@ static int uart_tstc(unsigned int base)
 //     return uart_getchar(g_uart_used);
 // }
 
-int tstc()
-{
-    return uart_tstc(g_uart_used);
-}
+// int tstc()
+// {
+//     return uart_tstc(g_uart_used);
+// }

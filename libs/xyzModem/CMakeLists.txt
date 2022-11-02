@@ -1,17 +1,15 @@
-set(LIB_OBJS_NAME tinyCLI)
+set(LIB_OBJS_NAME xyzModem)
 
 add_library( ${LIB_OBJS_NAME} STATIC )
 
 target_sources( ${LIB_OBJS_NAME} 
 	PRIVATE
-			src/FreeRTOS_CLI.c
+			src/xyzModem.c
 )
 
 target_include_directories( ${LIB_OBJS_NAME}
 	PUBLIC
 		inc
-	PRIVATE
-		src
 )
 
 target_compile_options( ${LIB_OBJS_NAME} 
@@ -27,6 +25,9 @@ if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
 			aarch64_libc
+		PRIVATE
+			crc
+			dw_apb_uart
 	)
 elseif($CACHE{CORE} STREQUAL "M3")
 	target_link_libraries(${LIB_OBJS_NAME}

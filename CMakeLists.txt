@@ -211,6 +211,8 @@ set(ENABLE_USE_FREERTOS OFF)
 set(ENABLE_USE_PMIC OFF)
 set(ENABLE_USE_tinyCLI OFF)
 set(ENABLE_USE_SEMIHOSTING OFF)
+set(ENABLE_USE_CRC OFF)
+set(ENABLE_USE_xyzModem OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 
@@ -396,7 +398,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         set(link_libs ${link_libs} tinyCLI)
     endif()
 
-    ### USE_tinyCLI
+    ### USE_SEMIHOSTING
     cmake_dependent_option(
         USE_SEMIHOSTING "Use semihosting" ON
         "ENABLE_USE_SEMIHOSTING;" OFF
@@ -404,6 +406,26 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_SEMIHOSTING)
         add_subdirectory(${SDK_DIR}/libs/semihosting)
         set(link_libs ${link_libs} semihosting)
+    endif()
+
+    ### USE_CRC
+    cmake_dependent_option(
+        USE_CRC "Use crc" ON
+        "ENABLE_USE_CRC" OFF
+    )
+    if(USE_CRC)
+        add_subdirectory(${SDK_DIR}/libs/crc)
+        set(link_libs ${link_libs} crc)
+    endif()
+
+    ### USE_xyzModem
+    cmake_dependent_option(
+        USE_xyzModem "Use xyzModem" ON
+        "ENABLE_USE_xyzModem;USE_CRC" OFF
+    )
+    if(USE_xyzModem)
+        add_subdirectory(${SDK_DIR}/libs/xyzModem)
+        set(link_libs ${link_libs} xyzModem)
     endif()
 
 endif()

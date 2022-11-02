@@ -111,6 +111,8 @@ extern int uart_getc(seehi_uart_no uart_no);
 
 extern int uart_sendchar(seehi_uart_no uart_no, const int c);
 
-extern int tstc();
+// extern int tstc();
+
+extern int uart_tstc(unsigned int base);
 
 #endif
