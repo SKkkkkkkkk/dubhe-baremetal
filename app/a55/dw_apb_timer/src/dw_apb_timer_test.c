@@ -7,8 +7,6 @@
 #include "irq_ctrl.h"
 #include "systimer.h"
 
-
-// #define SIMPALE_TEST
 #define TIMER_FREQ (20000000/100)
 
 
@@ -31,8 +29,9 @@ static volatile uint32_t timerx6_t5_i_copy = 0;
 static volatile uint32_t timerx6_t6_i_copy = 0;
 void dw_apb_timer_test(bool sample)
 {
-	// GIC_Enable();
-#ifdef SIMPALE_TEST
+
+if(sample)
+{
 	printf("dw_apb_timer_test 1.\n\r");
 	uint32_t tick = 0;
 	systimer_init();
@@ -41,7 +40,9 @@ void dw_apb_timer_test(bool sample)
 		printf("%d\n", (int)(tick++));
 		systimer_delay(1,IN_S);
 	};
-#else
+}
+else
+{
 	printf("dw_apb_timer_test 2.\n\r");
 	timer_init_config_t timer_init_config = {
 		.int_mask = 0, .loadcount = TIMER_FREQ, .timer_id = Timerx2_T1, .timer_mode = Mode_User_Defined
@@ -142,7 +143,7 @@ void dw_apb_timer_test(bool sample)
 			flag = false;
 		}
 	}
-#endif
+}
 }
 
 void timerx2_t1_irqhandler(void)
