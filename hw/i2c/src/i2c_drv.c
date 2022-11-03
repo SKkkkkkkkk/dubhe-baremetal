@@ -30,6 +30,8 @@ i2c_regs *i2c_get_base(int hwadapnr)
 		return (i2c_regs *)CONFIG_SYS_I2C2_BASE;
 	case 3:
 		return (i2c_regs *)CONFIG_SYS_I2C3_BASE;
+	case 4:
+		return (i2c_regs *)CONFIG_SYS_I2C4_BASE;
 	default:
 		i2c_debug_err("Wrong I2C-adapter number %d\n", hwadapnr);
 	}
