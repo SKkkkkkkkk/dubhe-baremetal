@@ -8,10 +8,10 @@
 #include "dw_apb_ssi_regs.h"
 #include "dw_apb_gpio.h"
 
-#define BOOTSPI_BASE (0x250D0000) /*!< (BootSPI   ) Base Address */
-#define SPI0_BASE (0xF8030000UL) /*!< (SPI0      ) Base Address */
-#define SPI1_BASE (0xF8031000UL) /*!< (SPI1      ) Base Address */
-#define SPI2_BASE (0xF8032000UL) /*!< (SPI2      ) Base Address */
+#define BOOTSPI_BASE (0x250D0000UL) /*!< (BootSPI   ) Base Address */
+#define SPI0_BASE (0x27030000UL) /*!< (SPI0      ) Base Address */
+#define SPI1_BASE (0x27040000UL) /*!< (SPI1      ) Base Address */
+#define SPI2_BASE (0x27050000UL) /*!< (SPI2      ) Base Address */
 
 #define BOOTSPI ((BOOTSPI_TypeDef *)BOOTSPI_BASE)
 #define SPI0 ((DW_APB_SSI_TypeDef *)SPI0_BASE)
@@ -87,9 +87,9 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 		pin_set_iomux(GROUP_GPIO0, 21, 0);
 		return;
 	case SPI0_ID:
-		pin_set_iomux(GROUP_GPIO1, 21, 2);
+		pin_set_iomux(GROUP_GPIO1, 21, 0);
 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-			pin_set_iomux(GROUP_GPIO1, 22, 2);
+			pin_set_iomux(GROUP_GPIO1, 22, 0);
 		else
 		{
 			gpio_init_config.group = GROUP_GPIO1;
@@ -97,15 +97,15 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 			gpio_init(&gpio_init_config);
 			pin_set_iomux(GROUP_GPIO1, 22, 3); //as gpio
 		}
-		pin_set_iomux(GROUP_GPIO1, 23, 2);
-		pin_set_iomux(GROUP_GPIO1, 24, 2);
-		pin_set_iomux(GROUP_GPIO1, 25, 2);
-		pin_set_iomux(GROUP_GPIO1, 26, 2);
+		pin_set_iomux(GROUP_GPIO1, 23, 0);
+		pin_set_iomux(GROUP_GPIO1, 24, 0);
+		pin_set_iomux(GROUP_GPIO1, 25, 0);
+		pin_set_iomux(GROUP_GPIO1, 26, 0);
 		return;
 	case SPI1_ID:
-		pin_set_iomux(GROUP_GPIO1, 27, 1);
+		pin_set_iomux(GROUP_GPIO1, 27, 0);
 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-			pin_set_iomux(GROUP_GPIO1, 28, 1);
+			pin_set_iomux(GROUP_GPIO1, 28, 0);
 		else
 		{
 			gpio_init_config.group = GROUP_GPIO1;
@@ -113,15 +113,15 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 			gpio_init(&gpio_init_config);
 			pin_set_iomux(GROUP_GPIO1, 28, 3); //as gpio
 		}
-		pin_set_iomux(GROUP_GPIO1, 29, 1);
-		pin_set_iomux(GROUP_GPIO1, 30, 1);
-		pin_set_iomux(GROUP_GPIO1, 31, 1);
-		pin_set_iomux(GROUP_GPIO2,  0, 1);
+		pin_set_iomux(GROUP_GPIO1, 29, 0);
+		pin_set_iomux(GROUP_GPIO1, 30, 0);
+		pin_set_iomux(GROUP_GPIO1, 31, 0);
+		pin_set_iomux(GROUP_GPIO2,  0, 0);
 		return;
 	case SPI2_ID:
-		pin_set_iomux(GROUP_GPIO2, 1, 1);
+		pin_set_iomux(GROUP_GPIO2, 1, 0);
 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-			pin_set_iomux(GROUP_GPIO2, 2, 1);
+			pin_set_iomux(GROUP_GPIO2, 2, 0);
 		else
 		{
 			gpio_init_config.group = GROUP_GPIO2;
@@ -129,10 +129,10 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 			gpio_init(&gpio_init_config);
 			pin_set_iomux(GROUP_GPIO2, 2, 3); //as gpio
 		}
-		pin_set_iomux(GROUP_GPIO2, 3, 1);
-		pin_set_iomux(GROUP_GPIO2, 4, 1);
-		pin_set_iomux(GROUP_GPIO2, 5, 1);
-		pin_set_iomux(GROUP_GPIO2, 6, 1);
+		pin_set_iomux(GROUP_GPIO2, 3, 0);
+		pin_set_iomux(GROUP_GPIO2, 4, 0);
+		pin_set_iomux(GROUP_GPIO2, 5, 0);
+		pin_set_iomux(GROUP_GPIO2, 6, 0);
 		return;
 	default:
 		return;
@@ -196,13 +196,13 @@ static inline void spi_disable(spi_id_t spi_id, bool is_master)
 			switch (spi_id)
 			{
 			case SPI0_ID:
-				gpio_write_pin(GROUP_GPIO0, 7, GPIO_PIN_SET);
+				gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_SET);
 				break;
 			case SPI1_ID:
-				gpio_write_pin(GROUP_GPIO2, 19, GPIO_PIN_SET);
+				gpio_write_pin(GROUP_GPIO1, 28, GPIO_PIN_SET);
 				break;
 			case SPI2_ID:
-				gpio_write_pin(GROUP_GPIO1, 17, GPIO_PIN_SET);
+				gpio_write_pin(GROUP_GPIO2, 2, GPIO_PIN_SET);
 				break;
 			default:
 				break;
@@ -260,13 +260,13 @@ static inline void spi_select_slave(spi_id_t spi_id, uint8_t slave)
 		switch (spi_id)
 		{
 		case SPI0_ID:
-			gpio_write_pin(GROUP_GPIO0, 7, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_RESET);
 			break;
 		case SPI1_ID:
-			gpio_write_pin(GROUP_GPIO2, 19, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO1, 28, GPIO_PIN_RESET);
 			break;
 		case SPI2_ID:
-			gpio_write_pin(GROUP_GPIO1, 17, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO2, 2, GPIO_PIN_RESET);
 			break;
 		default:
 			break;
@@ -1341,8 +1341,8 @@ static inline DMA_Channel_t boot_spi_eeprom_read_dma_start(void *t_buf, uint8_t 
 		.sar = (uintptr_t)(&(BOOTSPI->DR)),
 		.dar = (uintptr_t)r_buf_p,
 
-		.axi_dst_burst_length = 16,
-		.axi_src_burst_length = 16,
+		.axi_dst_burst_length = 15,
+		.axi_src_burst_length = 15,
 		.block_ts = r_size -1,
 		
 		.is_src_addr_increse = SRC_ADDR_NOCHANGE,
@@ -1418,8 +1418,8 @@ DMA_Channel_t dw_spi_eeprom_read_dma_start(spi_id_t spi_id, void *t_buf, uint8_t
 
 		//build-in dma配置
 		spix->DMACR = 0;
-		// spix->DMARDLR = 15; //16触发DMA请求
-		spix->DMARDLR = 0; //1触发DMA请求
+		spix->DMARDLR = 15; //16触发DMA请求
+		// spix->DMARDLR = 0; //1触发DMA请求
 		spix->DMACR = 1;
 
 		spix->SSIENR = 1;
@@ -1462,16 +1462,16 @@ DMA_Channel_t dw_spi_eeprom_read_dma_start(spi_id_t spi_id, void *t_buf, uint8_t
 			.sar = (uintptr_t)(&(spix->DR)),
 			.dar = (uintptr_t)r_buf_p,
 
-			.axi_dst_burst_length = 0,
-			.axi_src_burst_length = 0,
+			.axi_dst_burst_length = 15,
+			.axi_src_burst_length = 15,
 			.block_ts = r_size -1,
 			
 			.is_src_addr_increse = SRC_ADDR_NOCHANGE,
 			.is_dst_addr_increse = DST_ADDR_INCREMENT,
 			.src_transfer_width = SRC_TRANSFER_WIDTH_8,
 			.dst_transfer_width = DST_TRANSFER_WIDTH_8,
-			.dst_msize = SRC_MSIZE_1,
-			.src_msize = DST_MSIZE_1,
+			.dst_msize = DST_MSIZE_16,
+			.src_msize = SRC_MSIZE_16,
 
 			.handle_shake = handshake,
 			.dir = PER_TO_MEM
@@ -1671,8 +1671,8 @@ void dw_spi_transmit_only_dma(spi_id_t spi_id, void* t_buf, uint32_t t_size)
 
 		//build-in DMA配置
 		spix->DMACR = 0;
-		// spix->DMATDLR = 16; //<=16触发DMA请求
-		spix->DMATDLR = 31; //<=31触发DMA请求
+		spix->DMATDLR = 16; //<=16触发DMA请求
+		// spix->DMATDLR = 31; //<=31触发DMA请求
 		spix->DMACR = 2;
 
 		spi_enable(spi_id, true);
@@ -1714,14 +1714,14 @@ void dw_spi_transmit_only_dma(spi_id_t spi_id, void* t_buf, uint32_t t_size)
 										SRC_TRANSFER_WIDTH_8 << 8 |
 										DST_TRANSFER_WIDTH_8 << 11 |
 										//   SRC_MSIZE_16 << 14 |
-										DST_MSIZE_1 << 18 |
-										// DST_MSIZE_16 << 18 |
+										// DST_MSIZE_1 << 18 |
+										DST_MSIZE_16 << 18 |
 										NONPOSTED_LASTWRITE_EN << 30;
 
 		REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-										0 << (39 - 32) | //axi source burst length
+										15 << (39 - 32) | //axi source burst length
 										AWLEN_EN << (47 - 32) |
-										0 << (48 - 32) | //axi destination burst length
+										15 << (48 - 32) | //axi destination burst length
 										SRC_STATUS_DISABLE << (56 - 32) |
 										DST_STATUS_DISABLE << (57 - 32) |
 										INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
@@ -2074,15 +2074,15 @@ void dw_spi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhan
 								DST_ADDR_INCREMENT << 6 |
 								SRC_TRANSFER_WIDTH_8 << 8 |
 								DST_TRANSFER_WIDTH_8 << 11 |
-								// SRC_MSIZE_16 << 14 |
-								SRC_MSIZE_1 << 14 |
+								SRC_MSIZE_16 << 14 |
+								// SRC_MSIZE_1 << 14 |
 									//   DST_MSIZE_16 <<18  |
 								NONPOSTED_LASTWRITE_EN << 30;
 
 	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-									0 << (39 - 32) | //source burst length
+									15 << (39 - 32) | //source burst length
 									AWLEN_EN << (47 - 32) |
-									0 << (48 - 32) | //destination burst length
+									15 << (48 - 32) | //destination burst length
 									SRC_STATUS_DISABLE << (56 - 32) |
 									DST_STATUS_DISABLE << (57 - 32) |
 									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
