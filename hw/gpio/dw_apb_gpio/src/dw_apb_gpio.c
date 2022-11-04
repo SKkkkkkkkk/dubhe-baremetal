@@ -7,12 +7,6 @@
 	#include <cm3_chip_define.h>
 #endif
 
-#ifdef A55
-	#define PIN_IOMUX_BASE 0x2e000800UL
-#else
-	#define PIN_IOMUX_BASE 0x4e000800UL
-#endif
-
 
 
 #define GPIO0 ((DW_APB_GPIO_TypeDef *)GPIO0_BASE)
@@ -59,27 +53,6 @@
 	#define GPIO_LOCK_MUTEX(x) 	xSemaphoreTake( x, portMAX_DELAY )
 	#define GPIO_UNLOCK_MUTEX(x) xSemaphoreGive( x )
 #endif
-
-void pin_set_iomux(gpio_group_t group, uint8_t pin, uint8_t iomux)
-{
-	uint8_t num = group * 32 + pin;
-
-	uint32_t base = (num / 2) * 4 + PIN_IOMUX_BASE;
-
-	GPIO_LOCK_MUTEX(mutex_for_iomux);
-	uint32_t tmp = REG32(base);
-	if (num % 2 == 0) {
-		tmp &= ~(3 << 1);
-		tmp |= iomux << 1;
-		tmp |= 1 << 0;
-	} else {
-		tmp &= ~(3 << 17);
-		tmp |= iomux << 17;
-		tmp |= 1 << 16;
-	}
-	REG32(base) = tmp;
-	GPIO_UNLOCK_MUTEX(mutex_for_iomux);
-}
 
 void gpio_init(gpio_init_config_t const *const gpio_init_config)
 {

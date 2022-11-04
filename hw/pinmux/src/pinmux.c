@@ -8,9 +8,9 @@
 #endif
 
 
-int pinmux(uint8_t pin_num, uint8_t iomux)
+void pinmux(uint8_t pin_num, uint8_t iomux)
 {
-	if((pin_num>=0) && (pinmux<=30))
+	if((pin_num>=0) && (pin_num<=30))
 	{
 		uint32_t pin_ctrl_base = SYSCTRL_BASE + 0x800UL + ((pin_num-0)*4);
 		uint32_t tmp = REG32(pin_ctrl_base);
@@ -19,7 +19,7 @@ int pinmux(uint8_t pin_num, uint8_t iomux)
 		tmp |= 1 << 0;
 		REG32(pin_ctrl_base) = tmp;
 	}
-	else if((pin_num>=90) && (pinmux<=93))
+	else if((pin_num>=90) && (pin_num<=93))
 	{
 		uint32_t pin_ctrl_base = SYSCTRL_BASE + 0x87cUL + ((pin_num-90)*4);
 		uint32_t tmp = REG32(pin_ctrl_base);
@@ -28,7 +28,7 @@ int pinmux(uint8_t pin_num, uint8_t iomux)
 		tmp |= 1 << 0;
 		REG32(pin_ctrl_base) = tmp;
 	}
-	else if((pin_num>=82) && (pinmux<=89))
+	else if((pin_num>=82) && (pin_num<=89))
 	{
 		uint32_t pin_ctrl_base = SYSCTRL_BASE + 0x88cUL + ((pin_num-82)*4);
 		uint32_t tmp = REG32(pin_ctrl_base);
@@ -37,7 +37,7 @@ int pinmux(uint8_t pin_num, uint8_t iomux)
 		tmp |= 1 << 0;
 		REG32(pin_ctrl_base) = tmp;
 	}
-	else if((pin_num>=32) && (pinmux<=63))
+	else if((pin_num>=32) && (pin_num<=63))
 	{
 		uint32_t pin_ctrl_base = PERI0_REGS_BASE + 0x800UL + ((pin_num-32)*4);
 		uint32_t tmp = REG32(pin_ctrl_base);
@@ -46,7 +46,7 @@ int pinmux(uint8_t pin_num, uint8_t iomux)
 		tmp |= 1 << 0;
 		REG32(pin_ctrl_base) = tmp;
 	}
-	else if((pin_num>=64) && (pinmux<=81))
+	else if((pin_num>=64) && (pin_num<=81))
 	{
 		uint32_t pin_ctrl_base = PERI1_REGS_BASE + 0x800UL + ((pin_num-64)*4);
 		uint32_t tmp = REG32(pin_ctrl_base);
@@ -60,5 +60,5 @@ int pinmux(uint8_t pin_num, uint8_t iomux)
 
 	}
 
-	return 0;
+	return;
 }

@@ -202,6 +202,8 @@ set(ENABLE_USE_DW_APB_GPIO ON)
 set(ENABLE_USE_DW_APB_SSI OFF)
 set(ENABLE_USE_PM OFF)
 set(ENABLE_USE_I2C OFF)
+set(ENABLE_USE_PINMUX ON)
+
 
 ### LIBS
 
@@ -406,6 +408,17 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         set(link_libs ${link_libs} semihosting)
     endif()
 
+    ### USE_PINMUX
+    cmake_dependent_option(
+        USE_PINMUX "Use pinmux" ON
+        "ENABLE_USE_PINMUX;" OFF
+    )
+    if(USE_PINMUX)
+        add_subdirectory(${SDK_DIR}/hw/pinmux)
+        set(link_libs ${link_libs} pinmux)
+    endif()
+
+
 endif()
 
 ## 构建app
@@ -456,7 +469,7 @@ target_link_libraries($CACHE{PROJECT_NAME}.elf
 ## dump
 
 add_custom_target($CACHE{PROJECT_NAME}.dump ALL
-    COMMAND ${CMAKE_OBJDUMP} -dx $CACHE{PROJECT_NAME}.elf > $CACHE{PROJECT_NAME}.dump
+    COMMAND ${CMAKE_OBJDUMP} -Sx $CACHE{PROJECT_NAME}.elf > $CACHE{PROJECT_NAME}.dump
     DEPENDS $CACHE{PROJECT_NAME}.elf
     WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
 )

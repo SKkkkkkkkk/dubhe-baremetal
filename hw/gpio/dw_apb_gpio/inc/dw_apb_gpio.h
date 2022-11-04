@@ -32,14 +32,6 @@ typedef struct _gpio_init_config {
 } gpio_init_config_t;
 
 /**
- * @brief 设置引脚复用,禁止在中断中使用
- * @param group 设置gpio组
- * @param pin   设置pin
- * @param iomux 设置复用功能
- */
-void pin_set_iomux(gpio_group_t group, uint8_t pin, uint8_t iomux);
-
-/**
  * @brief 初始化gpio,禁止在中断中使用
  * @param gpio_init_config 初始化结构体对象地址
  */

@@ -1,5 +1,5 @@
-#ifndef __APE1210_TIMER_H__
-#define __APE1210_TIMER_H__
+#ifndef __DUBHE_PINMUX_H__
+#define __DUBHE_PINMUX_H__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -8,7 +8,7 @@
     extern "C" {
 #endif
 
-int pinmux(uint8_t gpio, uint8_t);
+void pinmux(uint8_t pin_num, uint8_t iomux);
 
 #ifdef __cplusplus
     }
