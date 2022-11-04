@@ -1,62 +1,77 @@
-cd app/a55/cli/
+cd app/a55/cli/;
 ./build.sh
 
-cd -
-cd app/a55/dw_apb_ssi
+cd - ;
+rm -rf build;
+cd app/a55/dw_apb_ssi;
 ./build.sh
 
-cd -
-cd app/a55/dw_apb_ssi
+cd - ;
+rm -rf build ;
+cd app/a55/dw_apb_ssi;
 ./build.sh
 
-cd -
-cd app/a55/dw_apb_timer
+cd - ;
+rm -rf build ;
+cd app/a55/dw_apb_timer;
 ./build.sh
 
-cd - 
-cd app/a55/fwu_dram
+cd - ;
+rm -rf build  ;
+cd app/a55/fwu_dram;
 ./build.sh
 
-cd - 
-cd app/a55/fwu_sram
+cd - ;
+rm -rf build ;
+cd app/a55/fwu_sram;
 ./build.sh
 
-cd - 
-cd app/a55/generic_timers
+cd - ;
+rm -rf build ;
+cd app/a55/generic_timers;
 ./build.sh
 
-cd - 
-cd app/a55/gpio
+cd - ;
+rm -rf build ;
+cd app/a55/gpio;
 ./build.sh
 
-cd - 
-cd app/a55/hello
+cd - ;
+rm -rf build ;
+cd app/a55/hello;
 ./build.sh
 
-cd - 
-cd app/a55/i2c
+cd - ;
+rm -rf build ;
+cd app/a55/i2c;
 ./build.sh
 
-cd - 
-cd app/cv32e40p/hello
+cd - ;
+rm -rf build ;
+cd app/cv32e40p/hello;
 ./build.sh
 
-cd - 
-cd app/m3/cli
+cd - ;
+rm -rf build ;
+cd app/m3/cli;
 ./build.sh
 
-cd - 
-cd app/m3/dw_apb_timer
+cd - ;
+rm -rf build ;
+cd app/m3/dw_apb_timer;
 ./build.sh
 
-cd - 
-cd app/m3/freertos_basic
+cd - ;
+rm -rf build ;
+cd app/m3/freertos_basic;
 ./build.sh
 
-cd - 
-cd app/m3/pm_demo
+cd -;
+rm -rf build;
+cd app/m3/pm_demo;
 ./build.sh
 
-cd - 
-cd app/m3/rom2xxx
+cd -;
+rm -rf build;
+cd app/m3/rom2xxx;
 ./build.sh

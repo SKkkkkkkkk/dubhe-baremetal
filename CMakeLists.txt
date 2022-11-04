@@ -80,7 +80,7 @@ set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
 set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}")
-set(link_options -static -nostartfiles --specs=nosys.specs -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
+set(link_options -static -nostartfiles -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
 
 ## 添加编译选项depends on CORE.
@@ -89,15 +89,15 @@ set(link_libs)
 
 if($CACHE{CORE} STREQUAL "A55")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
-    set(compile_options_arch -mlittle-endian -march=armv8.1-a -mcmodel=large -DA55 -nostdlib)
+    set(compile_options_arch -mlittle-endian -march=armv8.1-a -DA55 -nostdlib)
     set(link_options ${link_options})
 
 ### M3
 
 elseif($CACHE{CORE} STREQUAL "M3")
-    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/armgcc.cmake)
+    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch32gcc.cmake)
     set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
-    set(link_options ${link_options} --specs=nano.specs)
+    set(link_options ${link_options} --specs=nano.specs --specs=nosys.specs)
 
 ### CV32E40P
 
