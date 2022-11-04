@@ -1,5 +1,5 @@
-#ifndef __APE1210_TIMER_H__
-#define __APE1210_TIMER_H__
+#ifndef __DW_APB_TIMER_H__
+#define __DW_APB_TIMER_H__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -12,12 +12,12 @@
 
 #ifdef A55
 	#include <ca55_chip_define.h>
-	#define TIMERX6 ((APE1210_Timerx6_TypeDef *)TIMERX6_BASE)
+	#define TIMERX6 ((DW_APB_Timerx6_TypeDef *)TIMERX6_BASE)
 #else
 	#include <cm3_chip_define.h>
 #endif
 
-#define TIMERX2 ((APE1210_Timerx2_TypeDef *)TIMERX2_BASE)
+#define TIMERX2 ((DW_APB_Timerx2_TypeDef *)TIMERX2_BASE)
 
 
 

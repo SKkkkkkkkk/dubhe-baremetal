@@ -1,5 +1,5 @@
-#ifndef __APE1210_GPIO_H__
-#define __APE1210_GPIO_H__
+#ifndef __DW_APB_GPIO_H__
+#define __DW_APB_GPIO_H__
 #include <stdint.h>
 #include <stdbool.h>
 

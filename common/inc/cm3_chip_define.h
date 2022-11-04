@@ -106,7 +106,7 @@ extern C {
 
 
 //############################################
-
+#include "regs_type.h"
 #ifdef __cplusplus
     }
 #endif
