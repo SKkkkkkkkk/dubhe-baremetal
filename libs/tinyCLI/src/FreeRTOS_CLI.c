@@ -221,7 +221,7 @@ size_t xCommandStringLength;
 		}
 
 		// registered commands class 2.
-		while(pxCommand_Class2 != (CLI_Command_Definition_t*)__tinyCLI_CMD_END__)
+		while(pxCommand_Class2 < (CLI_Command_Definition_t*)__tinyCLI_CMD_END__)
 		{
 			pcRegisteredCommandString = pxCommand_Class2->pcCommand;
 			xCommandStringLength = strlen( pcRegisteredCommandString );
@@ -363,32 +363,32 @@ BaseType_t xReturn;
 
 	if( pxCommand == NULL )
 	{
-		pxCommand = (CLI_Definition_List_Item_t*)((uintptr_t)__tinyCLI_CMD_START__ + (align_size - (((uintptr_t)__tinyCLI_CMD_START__)&(align_size-1))));
+		if((uintptr_t)__tinyCLI_CMD_START__ == (uintptr_t)__tinyCLI_CMD_END__) // Class2 maybe empty
+			pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)__tinyCLI_CMD_END__;
+		else
+			pxCommand = (CLI_Definition_List_Item_t*)((uintptr_t)__tinyCLI_CMD_START__ + (align_size - (((uintptr_t)__tinyCLI_CMD_START__)&(align_size-1))));
 	}
 
 	/* Return the next command help string, before moving the pointer on to
 	the next command in the list. */
-	if((pxCommand >= (CLI_Definition_List_Item_t*)__tinyCLI_CMD_START__) && (pxCommand < (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__))
+	if( pxCommand == (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__ )
+	{
+		/* There are no more commands in the list, so there will be no more
+		strings to return after this one and pdFALSE should be returned. */
+		*pcWriteBuffer = '\0';
+		pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)0xffffffff;
+		xReturn = pdFALSE;
+	}
+	else if((pxCommand >= (CLI_Definition_List_Item_t*)__tinyCLI_CMD_START__) && (pxCommand < (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__))
 	{
 		strncpy( pcWriteBuffer, ((CLI_Command_Definition_t*)pxCommand)->pcHelpString, xWriteBufferLen );
 		pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)((uintptr_t)pxCommand + sizeof(CLI_Command_Definition_t));
+		xReturn = pdTRUE;
 	}
 	else
 	{
 		strncpy( pcWriteBuffer, pxCommand->pxCommandLineDefinition->pcHelpString, xWriteBufferLen );
 		pxCommand = pxCommand->pxNext;
-	}
-		
-
-	if( pxCommand == (CLI_Definition_List_Item_t*)__tinyCLI_CMD_END__ )
-	{
-		/* There are no more commands in the list, so there will be no more
-		strings to return after this one and pdFALSE should be returned. */
-		xReturn = pdFALSE;
-		pxCommand = (CLI_Definition_List_Item_t*)(uintptr_t)0xffffffff;
-	}
-	else
-	{
 		xReturn = pdTRUE;
 	}
 

@@ -9,7 +9,7 @@
 #include "systimer.h"
 
 
-#define SIMPALE_TEST
+// #define SIMPALE_TEST
 #define TIMER_FREQ (20000000/100)
 
 
