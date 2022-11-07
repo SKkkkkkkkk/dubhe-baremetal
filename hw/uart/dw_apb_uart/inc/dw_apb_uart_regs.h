@@ -1,5 +1,5 @@
-#ifndef __APE1210_UART_REGS_H__
-#define __APE1210_UART_REGS_H__
+#ifndef __DW_APB_UART_REGS_H__
+#define __DW_APB_UART_REGS_H__
 
 #include <stdint.h>
 
@@ -69,7 +69,7 @@ typedef struct {
 	__IOM uint32_t CPR; /* 0xf4 */
 	__IOM uint32_t UCR; /* 0xf8 */
 	__IOM uint32_t CTR; /* 0xfc */
-} APE1210_UART_TypeDef;
+} DW_APB_UART_TypeDef;
 
 #ifdef __cplusplus
 }

@@ -70,7 +70,7 @@ typedef enum {
 //define address offset
 //-------------------------------------------------------------------------------
 
-typedef APE1210_UART_TypeDef uart_reg;
+typedef DW_APB_UART_TypeDef uart_reg;
 
 static unsigned int g_uart_used = UART_USED;
 

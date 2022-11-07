@@ -1,16 +1,18 @@
-set(LIB_OBJS_NAME dw_apb_ssi)
+set(LIB_OBJS_NAME dw_apb_wdt)
 
 add_library(${LIB_OBJS_NAME} STATIC)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE
-		src/dw_apb_ssi.c
+		src/dw_apb_wdt.c
 )
 
 target_include_directories(${LIB_OBJS_NAME}
-	PUBLIC
+	INTERFACE
 		inc
+	PRIVATE
 		${SDK_DIR}/common/inc
+		src
 )
 
 target_compile_options(${LIB_OBJS_NAME}

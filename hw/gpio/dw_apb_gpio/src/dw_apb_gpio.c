@@ -2,19 +2,9 @@
 #include "dw_apb_gpio_regs.h"
 
 #ifdef A55
-	#define PIN_IOMUX_BASE 0x2e000800
-
-	#define GPIO0_BASE (0x210A0000UL)
-	#define GPIO1_BASE (0x27000000UL)
-	#define GPIO2_BASE (0x27010000UL)
-	#define GPIO3_BASE (0x27020000UL)
+	#include <ca55_chip_define.h>
 #else
-	#define PIN_IOMUX_BASE 0x4e000800
-
-	#define GPIO0_BASE (0x410A0000UL)
-	#define GPIO1_BASE (0x47000000UL)
-	#define GPIO2_BASE (0x47010000UL)
-	#define GPIO3_BASE (0x47020000UL)
+	#include <cm3_chip_define.h>
 #endif
 
 
@@ -22,13 +12,12 @@
 #define GPIO0 ((DW_APB_GPIO_TypeDef *)GPIO0_BASE)
 #define GPIO1 ((DW_APB_GPIO_TypeDef *)GPIO1_BASE)
 #define GPIO2 ((DW_APB_GPIO_TypeDef *)GPIO2_BASE)
-#define GPIO3 ((DW_APB_GPIO_TypeDef *)GPIO3_BASE)
 
 #if 1
 	#define GPIO_LOCK_MUTEX(x)
 	#define GPIO_UNLOCK_MUTEX(x)
 	static uint32_t mutex_for_iomux;
-	static uint32_t mutex_for_gpio_init[4];
+	static uint32_t mutex_for_gpio_init[3];
 	static uint32_t mutex_for_gpio_write;
 	void gpio_mutexs_init(void)
 	{
@@ -65,27 +54,6 @@
 	#define GPIO_UNLOCK_MUTEX(x) xSemaphoreGive( x )
 #endif
 
-void pin_set_iomux(gpio_group_t group, uint8_t pin, uint8_t iomux)
-{
-	uint8_t num = group * 32 + pin;
-
-	uint32_t base = (num / 2) * 4 + PIN_IOMUX_BASE;
-
-	GPIO_LOCK_MUTEX(mutex_for_iomux);
-	uint32_t tmp = REG32(base);
-	if (num % 2 == 0) {
-		tmp &= ~(3 << 1);
-		tmp |= iomux << 1;
-		tmp |= 1 << 0;
-	} else {
-		tmp &= ~(3 << 17);
-		tmp |= iomux << 17;
-		tmp |= 1 << 16;
-	}
-	REG32(base) = tmp;
-	GPIO_UNLOCK_MUTEX(mutex_for_iomux);
-}
-
 void gpio_init(gpio_init_config_t const *const gpio_init_config)
 {
 	DW_APB_GPIO_TypeDef *gpio;
@@ -110,11 +78,6 @@ void gpio_init(gpio_init_config_t const *const gpio_init_config)
 	case GROUP_GPIO2:
 		gpio = GPIO2;
 		mutex_for_gpio_init1 = (mutex_for_gpio_init[2]);
-		break;
-	
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		mutex_for_gpio_init1 = (mutex_for_gpio_init[3]);
 		break;
 
 	default:
@@ -194,9 +157,7 @@ gpio_pin_state_t gpio_read_pin(gpio_group_t group, uint8_t pin)
 		gpio = GPIO2;
 		break;
 
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		break;
+
 
 	default:
 		return GPIO_PIN_RESET;
@@ -222,9 +183,7 @@ void gpio_write_pin(gpio_group_t group, uint8_t pin, gpio_pin_state_t pin_state)
 		gpio = GPIO2;
 		break;
 	
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		break;
+
 
 	default:
 		return;
@@ -257,9 +216,7 @@ void gpio_clear_interrput(gpio_group_t group, uint8_t pin)
 		gpio = GPIO2;
 		break;
 
-	case GROUP_GPIO3:
-		gpio = GPIO3;
-		break;
+
 
 	default:
 		return;

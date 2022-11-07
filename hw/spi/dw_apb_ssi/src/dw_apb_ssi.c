@@ -7,11 +7,13 @@
 #include "dw_apb_ssi.h"
 #include "dw_apb_ssi_regs.h"
 #include "dw_apb_gpio.h"
+#include "pinmux.h"
 
-#define BOOTSPI_BASE (0x250D0000UL) /*!< (BootSPI   ) Base Address */
-#define SPI0_BASE (0x27030000UL) /*!< (SPI0      ) Base Address */
-#define SPI1_BASE (0x27040000UL) /*!< (SPI1      ) Base Address */
-#define SPI2_BASE (0x27050000UL) /*!< (SPI2      ) Base Address */
+#ifdef A55
+	#include <ca55_chip_define.h>
+#else
+	#include <cm3_chip_define.h>
+#endif
 
 #define BOOTSPI ((BOOTSPI_TypeDef *)BOOTSPI_BASE)
 #define SPI0 ((DW_APB_SSI_TypeDef *)SPI0_BASE)
@@ -69,70 +71,70 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 	};
 	switch (spi_init_config->spi_id) {
 	case BOOTSPI_ID:
-		pin_set_iomux(GROUP_GPIO0, 16, 0);
+		pinmux(56, 0);
 		if ( (!SPI_CS_USE_GPIO) )
 		{
-			pin_set_iomux(GROUP_GPIO0, 17, 0);
+			pinmux(57, 0);
 		}
+		else
+		{
+			gpio_init_config.group = GROUP_GPIO1;
+			gpio_init_config.pin = 25;
+			gpio_init(&gpio_init_config);
+			pinmux(57, 7); //as gpio
+		}
+		pinmux(58, 0);
+		pinmux(59, 0);
+		pinmux(60, 0);
+		pinmux(61, 0);
+		return;
+	case SPI0_ID:
+		pinmux(0, 2);
+		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
+			pinmux(1, 2);
 		else
 		{
 			gpio_init_config.group = GROUP_GPIO0;
-			gpio_init_config.pin = 17;
+			gpio_init_config.pin = 1;
 			gpio_init(&gpio_init_config);
-			pin_set_iomux(GROUP_GPIO0, 17, 3); //as gpio
+			pinmux(1, 7); //as gpio
 		}
-		pin_set_iomux(GROUP_GPIO0, 18, 0);
-		pin_set_iomux(GROUP_GPIO0, 19, 0);
-		pin_set_iomux(GROUP_GPIO0, 20, 0);
-		pin_set_iomux(GROUP_GPIO0, 21, 0);
-		return;
-	case SPI0_ID:
-		pin_set_iomux(GROUP_GPIO1, 21, 0);
-		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-			pin_set_iomux(GROUP_GPIO1, 22, 0);
-		else
-		{
-			gpio_init_config.group = GROUP_GPIO1;
-			gpio_init_config.pin = 22;
-			gpio_init(&gpio_init_config);
-			pin_set_iomux(GROUP_GPIO1, 22, 3); //as gpio
-		}
-		pin_set_iomux(GROUP_GPIO1, 23, 0);
-		pin_set_iomux(GROUP_GPIO1, 24, 0);
-		pin_set_iomux(GROUP_GPIO1, 25, 0);
-		pin_set_iomux(GROUP_GPIO1, 26, 0);
+		pinmux(2, 2);
+		pinmux(3, 2);
+		pinmux(4, 2);
+		pinmux(5, 2);
 		return;
 	case SPI1_ID:
-		pin_set_iomux(GROUP_GPIO1, 27, 0);
+		pinmux(38, 1);
 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-			pin_set_iomux(GROUP_GPIO1, 28, 0);
+			pinmux(39, 1);
 		else
 		{
 			gpio_init_config.group = GROUP_GPIO1;
-			gpio_init_config.pin = 28;
+			gpio_init_config.pin = 7;
 			gpio_init(&gpio_init_config);
-			pin_set_iomux(GROUP_GPIO1, 28, 3); //as gpio
+			pinmux(39, 7); //as gpio
 		}
-		pin_set_iomux(GROUP_GPIO1, 29, 0);
-		pin_set_iomux(GROUP_GPIO1, 30, 0);
-		pin_set_iomux(GROUP_GPIO1, 31, 0);
-		pin_set_iomux(GROUP_GPIO2,  0, 0);
+		pinmux(40, 1);
+		pinmux(41, 1);
+		pinmux(36, 1);
+		pinmux(37, 1);
 		return;
 	case SPI2_ID:
-		pin_set_iomux(GROUP_GPIO2, 1, 0);
+		pinmux(74, 1);
 		if ( (!SPI_CS_USE_GPIO) /* 不使用GPIO作为CS */ || (!spi_init_config->as_master) /* slave模式 */ )
-			pin_set_iomux(GROUP_GPIO2, 2, 0);
+			pinmux(75, 1);
 		else
 		{
 			gpio_init_config.group = GROUP_GPIO2;
-			gpio_init_config.pin = 2;
+			gpio_init_config.pin = 11;
 			gpio_init(&gpio_init_config);
-			pin_set_iomux(GROUP_GPIO2, 2, 3); //as gpio
+			pinmux(75, 3); //as gpio
 		}
-		pin_set_iomux(GROUP_GPIO2, 3, 0);
-		pin_set_iomux(GROUP_GPIO2, 4, 0);
-		pin_set_iomux(GROUP_GPIO2, 5, 0);
-		pin_set_iomux(GROUP_GPIO2, 6, 0);
+		pinmux(76, 1);
+		pinmux(77, 1);
+		pinmux(78, 1);
+		pinmux(79, 1);
 		return;
 	default:
 		return;
@@ -172,7 +174,7 @@ static inline void bootspi_disable(void)
 	BOOTSPI->SER = 0;
 	BOOTSPI->DMACR = 0;
 	if (SPI_CS_USE_GPIO)
-		gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_SET);
+		gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_SET);
 }
 
 static inline void bootspi_enable(void)
@@ -196,13 +198,13 @@ static inline void spi_disable(spi_id_t spi_id, bool is_master)
 			switch (spi_id)
 			{
 			case SPI0_ID:
-				gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_SET);
+				gpio_write_pin(GROUP_GPIO0, 1, GPIO_PIN_SET);
 				break;
 			case SPI1_ID:
-				gpio_write_pin(GROUP_GPIO1, 28, GPIO_PIN_SET);
+				gpio_write_pin(GROUP_GPIO1, 7, GPIO_PIN_SET);
 				break;
 			case SPI2_ID:
-				gpio_write_pin(GROUP_GPIO2, 2, GPIO_PIN_SET);
+				gpio_write_pin(GROUP_GPIO2, 11, GPIO_PIN_SET);
 				break;
 			default:
 				break;
@@ -242,9 +244,9 @@ static inline void bootspi_select_slave(uint8_t slave)
 	if (SPI_CS_USE_GPIO)
 	{
 		if(slave==0)
-			gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_SET);
+			gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_SET);
 		else
-			gpio_write_pin(GROUP_GPIO0, 17, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_RESET);
 	}
 	BOOTSPI->SER = slave;
 }
@@ -260,13 +262,13 @@ static inline void spi_select_slave(spi_id_t spi_id, uint8_t slave)
 		switch (spi_id)
 		{
 		case SPI0_ID:
-			gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO0, 1, GPIO_PIN_RESET);
 			break;
 		case SPI1_ID:
-			gpio_write_pin(GROUP_GPIO1, 28, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO1, 7, GPIO_PIN_RESET);
 			break;
 		case SPI2_ID:
-			gpio_write_pin(GROUP_GPIO2, 2, GPIO_PIN_RESET);
+			gpio_write_pin(GROUP_GPIO2, 11, GPIO_PIN_RESET);
 			break;
 		default:
 			break;

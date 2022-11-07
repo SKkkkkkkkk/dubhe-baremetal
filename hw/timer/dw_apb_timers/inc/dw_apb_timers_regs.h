@@ -1,5 +1,5 @@
-#ifndef __APE1210_TIMER_REGS_H__
-#define __APE1210_TIMER_REGS_H__
+#ifndef __DW_APB_TIMER_REGS_H__
+#define __DW_APB_TIMER_REGS_H__
 
 #ifdef __cplusplus
     extern "C" {
@@ -33,7 +33,7 @@ typedef struct {
 	__IOM uint32_t TIMER_2_PROT_LEVEL;
 	RESERVED(2 [6], uint32_t)
 
-} APE1210_Timerx2_TypeDef;
+} DW_APB_Timerx2_TypeDef;
 
 typedef struct {
 	__IOM uint32_t Timer1LoadCount;
@@ -96,7 +96,7 @@ typedef struct {
 	__IOM uint32_t TIMER_6_PROT_LEVEL;
 	RESERVED(2 [2], uint32_t)
 
-} APE1210_Timerx6_TypeDef;
+} DW_APB_Timerx6_TypeDef;
 
 typedef struct {
 	__IM uint32_t CVL;
@@ -105,7 +105,7 @@ typedef struct {
 	__IOM uint32_t SVH;
 	__IOM uint32_t CTL;
 	__IOM uint32_t IRQS;
-} APE1210_Timerx6_TypeDef_old;
+} DW_APB_Timerx6_TypeDef_old;
 
 #define TIMER_ENABLE_Pos 0UL
 #define TIMER_ENABLE_Msk (1UL << TIMER_ENABLE_Pos)

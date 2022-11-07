@@ -68,66 +68,7 @@ int main()
 
 	void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model);
 	flash_fastest_read_test(BOOTSPI_ID, W25Q64JW);
-
-	// void spi0_gpio_test();
-	// spi0_gpio_test();
 	return 0;
-}
-
-
-void spi0_gpio_test()
-{
-	printf("spi0_gpio_test.\n\r");
-
-	pin_set_iomux(GROUP_GPIO1, 21, 3);
-	pin_set_iomux(GROUP_GPIO1, 22, 3);
-	pin_set_iomux(GROUP_GPIO1, 23, 3);
-	pin_set_iomux(GROUP_GPIO1, 24, 3);
-	pin_set_iomux(GROUP_GPIO1, 25, 3);
-	pin_set_iomux(GROUP_GPIO1, 26, 3);
-
-	gpio_init_config_t gpio_init_config = {
-		.group = GROUP_GPIO1,
-		.pin = 21,
-		.gpio_control_mode = Software_Mode,
-		.gpio_mode = GPIO_Output_Mode
-	};
-	gpio_init(&gpio_init_config);
-
-	gpio_init_config.pin = 22;
-	gpio_init(&gpio_init_config);
-
-	gpio_init_config.pin = 23;
-	gpio_init(&gpio_init_config);
-
-	gpio_init_config.pin = 24;
-	gpio_init(&gpio_init_config);
-
-	gpio_init_config.pin = 25;
-	gpio_init(&gpio_init_config);
-
-	gpio_init_config.pin = 26;
-	gpio_init(&gpio_init_config);
-
-
-	while(1)
-	{
-		gpio_write_pin(GROUP_GPIO1, 21, GPIO_PIN_SET);
-		gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_SET);
-		gpio_write_pin(GROUP_GPIO1, 23, GPIO_PIN_SET);
-		gpio_write_pin(GROUP_GPIO1, 24, GPIO_PIN_SET);
-		gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_SET);
-		gpio_write_pin(GROUP_GPIO1, 26, GPIO_PIN_SET);
-		systimer_delay(500, IN_US);
-		gpio_write_pin(GROUP_GPIO1, 21, GPIO_PIN_RESET);
-		gpio_write_pin(GROUP_GPIO1, 22, GPIO_PIN_RESET);
-		gpio_write_pin(GROUP_GPIO1, 23, GPIO_PIN_RESET);
-		gpio_write_pin(GROUP_GPIO1, 24, GPIO_PIN_RESET);
-		gpio_write_pin(GROUP_GPIO1, 25, GPIO_PIN_RESET);
-		gpio_write_pin(GROUP_GPIO1, 26, GPIO_PIN_RESET);
-		systimer_delay(500, IN_US);
-	}
-	return;
 }
 
 #else

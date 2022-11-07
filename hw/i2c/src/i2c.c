@@ -14,11 +14,11 @@
 // static SemaphoreHandle_t g_mutex[5] = {NULL};
 // #endif
 
-static struct i2c_adapter *g_handle[4] = {NULL};
+static struct i2c_adapter *g_handle[5] = {NULL};
 
 static struct i2c_adapter *get_i2c_handle(uint32_t i2cbus)
 {
-	if (i2cbus > 3) {
+	if (i2cbus > 4) {
 		return NULL;
 	} else {
 		return g_handle[i2cbus];

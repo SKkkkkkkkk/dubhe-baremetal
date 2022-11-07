@@ -1,10 +1,10 @@
-set(LIB_OBJS_NAME dw_apb_ssi)
+set(LIB_OBJS_NAME pinmux)
 
 add_library(${LIB_OBJS_NAME} STATIC)
 
 target_sources(${LIB_OBJS_NAME} 
 	PRIVATE
-		src/dw_apb_ssi.c
+		src/pinmux.c
 )
 
 target_include_directories(${LIB_OBJS_NAME}
@@ -22,12 +22,6 @@ target_compile_options(${LIB_OBJS_NAME}
 		${compile_options_align}
 )
 
-
-target_link_libraries(${LIB_OBJS_NAME}
-	PUBLIC
-		dw_apb_gpio
-		pinmux
-)
 if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
