@@ -1336,6 +1336,10 @@ static inline DMA_Channel_t boot_spi_eeprom_read_dma_start(void *t_buf, uint8_t 
 	while((ret = dma_config(ch, &config)) != 0 );
 	dma_enable(ch);
 #else
+	uint32_t dma_sel = REG32(PERI0_REGS_BASE + 0x8);
+	dma_sel &= ~(0x3);
+	dma_sel |= 0x01;
+	REG32(PERI0_REGS_BASE + 0x8) = dma_sel;
 	DMA_Channel_t ch;
 	while((ch = get_a_free_dma_channel()) == NO_FREE_DMA_CHANNEL);
 	dma_config_t config = {
@@ -1457,6 +1461,10 @@ DMA_Channel_t dw_spi_eeprom_read_dma_start(spi_id_t spi_id, void *t_buf, uint8_t
 		while((ret = dma_config(ch, &config)) != 0 );
 		dma_enable(ch);
 #else
+		uint32_t dma_sel = REG32(PERI1_REGS_BASE + 0x200);
+		dma_sel &= ~(0xff);
+		dma_sel |= 0x55;
+		REG32(PERI1_REGS_BASE + 0x200) = dma_sel;
 		DMA_Channel_t ch;
 		while((ch = get_a_free_dma_channel()) == NO_FREE_DMA_CHANNEL);
 		dma_config_t config = {
@@ -1561,6 +1569,10 @@ static inline void bootspi_transmit_only_dma(void* t_buf, uint32_t t_size)
 	while((ret = dma_config(ch, &config)) != 0 );
 	dma_enable(ch);
 #else
+	uint32_t dma_sel = REG32(PERI0_REGS_BASE + 0x8);
+	dma_sel &= ~(0x3);
+	dma_sel |= 0x01;
+	REG32(PERI0_REGS_BASE + 0x8) = dma_sel;
 	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
 	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)t_buf;
 	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(&(BOOTSPI->DR));
@@ -1705,6 +1717,10 @@ void dw_spi_transmit_only_dma(spi_id_t spi_id, void* t_buf, uint32_t t_size)
 		while((ret = dma_config(ch, &config)) != 0 );
 		dma_enable(ch);
 #else
+		uint32_t dma_sel = REG32(PERI1_REGS_BASE + 0x200);
+		dma_sel &= ~(0xff);
+		dma_sel |= 0x55;
+		REG32(PERI1_REGS_BASE + 0x200) = dma_sel;
 		while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
 		REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)t_buf;
 		REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(&(spix->DR));
@@ -1865,6 +1881,10 @@ static inline void _bootspi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer
 	while((ret = dma_config(ch, &config)) != 0 );
 	dma_enable(ch);
 #else
+	uint32_t dma_sel = REG32(PERI0_REGS_BASE + 0x8);
+	dma_sel &= ~(0x3);
+	dma_sel |= 0x01;
+	REG32(PERI0_REGS_BASE + 0x8) = dma_sel;
 	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
 	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)(&(BOOTSPI->DR));
 	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(enhanced_transfer_format->data);
@@ -1881,9 +1901,9 @@ static inline void _bootspi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer
 								NONPOSTED_LASTWRITE_EN << 30;
 
 	REG32(DMA_BASE + CH1_CTL_32) = ARLEN_EN << (38 - 32) |
-									16 << (39 - 32) | //source burst length
+									15 << (39 - 32) | //source burst length
 									AWLEN_EN << (47 - 32) |
-									16 << (48 - 32) | //destination burst length
+									15 << (48 - 32) | //destination burst length
 									SRC_STATUS_DISABLE << (56 - 32) |
 									DST_STATUS_DISABLE << (57 - 32) |
 									INTDISABLE_COMPLETOFBLKTRANS_SHADORLLI << (58 - 32) |
@@ -2066,6 +2086,10 @@ void dw_spi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhan
 	while((ret = dma_config(ch, &config)) != 0 );
 	dma_enable(ch);
 #else
+	uint32_t dma_sel = REG32(PERI1_REGS_BASE + 0x200);
+	dma_sel &= ~(0xff);
+	dma_sel |= 0x55;
+	REG32(PERI1_REGS_BASE + 0x200) = dma_sel;
 	while((REG32(DMA_BASE + DMAC_CHENREG_0) & 1) == 1);
 	REG32(DMA_BASE + CH1_SAR_0) = (uintptr_t)(&(spix->DR));
 	REG32(DMA_BASE + CH1_DAR_0) = (uintptr_t)(enhanced_transfer_format->data);
