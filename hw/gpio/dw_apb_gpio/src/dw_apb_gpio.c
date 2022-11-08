@@ -1,12 +1,7 @@
 #include "dw_apb_gpio.h"
 #include "dw_apb_gpio_regs.h"
 
-#ifdef A55
-	#include <ca55_chip_define.h>
-#else
-	#include <cm3_chip_define.h>
-#endif
-
+#include "chip_mem_layout.h"
 
 
 #define GPIO0 ((DW_APB_GPIO_TypeDef *)GPIO0_BASE)

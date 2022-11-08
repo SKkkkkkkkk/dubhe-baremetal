@@ -13,6 +13,8 @@ target_sources(${LIB_OBJS_NAME}
 target_include_directories(${LIB_OBJS_NAME}
 	PUBLIC
 		inc
+	PRIVATE
+		src
 )
 
 target_compile_options(${LIB_OBJS_NAME}

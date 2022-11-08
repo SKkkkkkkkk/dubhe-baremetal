@@ -69,9 +69,9 @@ static inline void systimer_init(void)
     timer_init_config.timer_id = Timerx2_T1;
     timer_init(&timer_init_config);
     void SysTimer_IRQHandler(void);
-    NVIC_SetPriority(Interrupt6_IRQn, 0);
-	NVIC_SetVector(Interrupt6_IRQn, (uint32_t)(uintptr_t)SysTimer_IRQHandler);
-	NVIC_EnableIRQ(Interrupt6_IRQn);
+    NVIC_SetPriority(Timerx2_T1_IRQn, 0);
+	NVIC_SetVector(Timerx2_T1_IRQn, (uint32_t)(uintptr_t)SysTimer_IRQHandler);
+	NVIC_EnableIRQ(Timerx2_T1_IRQn);
     timer_enable(Timerx2_T1);
 #else
     #error "unsupport core."

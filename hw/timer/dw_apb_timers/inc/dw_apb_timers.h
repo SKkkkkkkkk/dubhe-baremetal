@@ -10,11 +10,9 @@
 
 #include "dw_apb_timers_regs.h"
 
+#include "chip_mem_layout.h"
 #ifdef A55
-	#include <ca55_chip_define.h>
 	#define TIMERX6 ((DW_APB_Timerx6_TypeDef *)TIMERX6_BASE)
-#else
-	#include <cm3_chip_define.h>
 #endif
 
 #define TIMERX2 ((DW_APB_Timerx2_TypeDef *)TIMERX2_BASE)

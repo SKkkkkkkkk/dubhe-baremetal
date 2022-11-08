@@ -4,21 +4,7 @@
 #include <stdint.h>
 #include "dw_apb_uart_regs.h"
 
-
-#ifdef A55
-	#include <ca55_chip_define.h>
-	#define TIMERX6 ((DW_APB_Timerx6_TypeDef *)TIMERX6_BASE)
-#else
-	#include <cm3_chip_define.h>
-#endif
-
-
-#ifdef A55
-	#include <ca55_chip_define.h>
-	#define TIMERX6 ((DW_APB_Timerx6_TypeDef *)TIMERX6_BASE)
-#else
-	#include <cm3_chip_define.h>
-#endif
+#include "chip_mem_layout.h"
 
 #define UART0 ((DW_APB_UART_TypeDef *)(uintptr_t)UART0_BASE)
 #define UART1 ((DW_APB_UART_TypeDef *)(uintptr_t)UART1_BASE)

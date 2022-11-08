@@ -74,18 +74,18 @@ void dw_apb_timer_test(bool sample)
 	// timer_init(&timer_init_config);
 
 	void timerx2_t1_irqhandler(void);
-	NVIC_SetPriority(Interrupt6_IRQn, 0);
-	NVIC_SetVector(Interrupt6_IRQn, (uint32_t)(uintptr_t)timerx2_t1_irqhandler);
-	NVIC_EnableIRQ(Interrupt6_IRQn);
+	NVIC_SetPriority(Timerx2_T1_IRQn, 0);
+	NVIC_SetVector(Timerx2_T1_IRQn, (uint32_t)(uintptr_t)timerx2_t1_irqhandler);
+	NVIC_EnableIRQ(Timerx2_T1_IRQn);
 	// GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0);
 	// IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
 	// IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
 	// IRQ_Enable(Timerx2_T1_IRQn);
 
 	void timerx2_t2_irqhandler(void);
-	NVIC_SetPriority(Interrupt7_IRQn, 0);
-	NVIC_SetVector(Interrupt7_IRQn, (uint32_t)(uintptr_t)timerx2_t2_irqhandler);
-	NVIC_EnableIRQ(Interrupt7_IRQn);
+	NVIC_SetPriority(Timerx2_T2_IRQn, 0);
+	NVIC_SetVector(Timerx2_T2_IRQn, (uint32_t)(uintptr_t)timerx2_t2_irqhandler);
+	NVIC_EnableIRQ(Timerx2_T2_IRQn);
 	// GIC_SetTarget(Timerx2_T2_IRQn, 1 << 0);
 	// IRQ_SetHandler(Timerx2_T2_IRQn, timerx2_t2_irqhandler);
 	// IRQ_SetPriority(Timerx2_T2_IRQn, 0 << 3);

@@ -1,9 +1,4 @@
-#ifdef A55
-	#include <ca55_chip_define.h>
-#else
-	#include <cm3_chip_define.h>
-#endif
-
+#include "chip_mem_layout.h"
 #include <regs_type.h>
 #include "dw_apb_wdt_regs.h"
 

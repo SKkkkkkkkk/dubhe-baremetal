@@ -8,7 +8,7 @@
 #ifndef UTILS_DEF_H
 #define UTILS_DEF_H
 
-#include <utils_def_exp.h>
+#include "_utils_def_exp.h"
 
 /* Compute the number of elements in the given array */
 #define ARRAY_SIZE(a)				\

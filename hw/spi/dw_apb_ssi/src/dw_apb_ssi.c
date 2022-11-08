@@ -9,12 +9,7 @@
 #include "dw_apb_gpio.h"
 #include "pinmux.h"
 
-#ifdef A55
-	#include <ca55_chip_define.h>
-#else
-	#include <cm3_chip_define.h>
-#endif
-
+#include "chip_mem_layout.h"
 #define BOOTSPI ((BOOTSPI_TypeDef *)BOOTSPI_BASE)
 #define SPI0 ((DW_APB_SSI_TypeDef *)SPI0_BASE)
 #define SPI1 ((DW_APB_SSI_TypeDef *)SPI1_BASE)

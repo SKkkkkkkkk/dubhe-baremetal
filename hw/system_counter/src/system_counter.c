@@ -20,12 +20,7 @@
 
 
 #include "system_counter.h"
-#ifdef A55
-	#include <ca55_chip_define.h>
-#else
-	#include <cm3_chip_define.h>
-#endif
-
+#include "chip_mem_layout.h"
 struct memory_mapped_timer_module
 {
         volatile uint32_t CNTCR;                  // +0x0000 - RW - Counter Control Register

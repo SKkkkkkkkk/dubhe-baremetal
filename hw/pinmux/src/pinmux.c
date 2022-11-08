@@ -1,12 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifdef A55
-	#include <ca55_chip_define.h>
-#else
-	#include <cm3_chip_define.h>
-#endif
-
+#include "chip_mem_layout.h"
 
 void pinmux(uint8_t pin_num, uint8_t iomux)
 {
