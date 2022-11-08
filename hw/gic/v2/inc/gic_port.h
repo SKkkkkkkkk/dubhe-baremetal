@@ -62,6 +62,7 @@
 		Timerx6_T6_IRQn		= (5+OFFSET_SPIs),
 		Timerx2_T1_IRQn		= (6+OFFSET_SPIs),
 		Timerx2_T2_IRQn		= (7+OFFSET_SPIs),
+		INT_MAILBOX_AP_INTR = (9+OFFSET_SPIs)
 	} IRQn_Type;
 #else
 	typedef enum IRQn
