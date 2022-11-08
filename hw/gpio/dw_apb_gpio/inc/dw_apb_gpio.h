@@ -1,5 +1,5 @@
-#ifndef __APE1210_GPIO_H__
-#define __APE1210_GPIO_H__
+#ifndef __DW_APB_GPIO_H__
+#define __DW_APB_GPIO_H__
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -7,7 +7,7 @@
     extern "C" {
 #endif
 
-typedef enum { GROUP_GPIO0 = 0, GROUP_GPIO1 = 1, GROUP_GPIO2 = 2, GROUP_GPIO3 = 3 } gpio_group_t;
+typedef enum { GROUP_GPIO0 = 0, GROUP_GPIO1 = 1, GROUP_GPIO2 = 2 } gpio_group_t;
 
 typedef enum { GPIO_PIN_RESET = 0, GPIO_PIN_SET = 1 } gpio_pin_state_t;
 
@@ -30,14 +30,6 @@ typedef struct _gpio_init_config {
 	gpio_group_t group;
 	uint8_t pin;
 } gpio_init_config_t;
-
-/**
- * @brief 设置引脚复用,禁止在中断中使用
- * @param group 设置gpio组
- * @param pin   设置pin
- * @param iomux 设置复用功能
- */
-void pin_set_iomux(gpio_group_t group, uint8_t pin, uint8_t iomux);
 
 /**
  * @brief 初始化gpio,禁止在中断中使用

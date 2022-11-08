@@ -4,21 +4,27 @@
 #include <stdint.h>
 #include "dw_apb_uart_regs.h"
 
-#ifdef M3
-#define UART0_BASE (0x21090000UL + 0x20000000UL) /*!< (UART0     ) Base Address */
-#define UART1_BASE (0x270A0000UL + 0x20000000UL) /*!< (UART1     ) Base Address */
-#define UART2_BASE (0x270B0000UL + 0x20000000UL) /*!< (UART2     ) Base Address */
-#define UART3_BASE (0x270C0000UL + 0x20000000UL) /*!< (UART3     ) Base Address */
+
+#ifdef A55
+	#include <ca55_chip_define.h>
+	#define TIMERX6 ((DW_APB_Timerx6_TypeDef *)TIMERX6_BASE)
 #else
-#define UART0_BASE (0x21090000UL) /*!< (UART0     ) Base Address */
-#define UART1_BASE (0x270A0000UL) /*!< (UART1     ) Base Address */
-#define UART2_BASE (0x270B0000UL) /*!< (UART2     ) Base Address */
-#define UART3_BASE (0x270C0000UL) /*!< (UART3     ) Base Address */
-#define UART0 ((APE1210_UART_TypeDef *)(uintptr_t)UART0_BASE)
-#define UART1 ((APE1210_UART_TypeDef *)(uintptr_t)UART1_BASE)
-#define UART2 ((APE1210_UART_TypeDef *)(uintptr_t)UART2_BASE)
-#define UART3 ((APE1210_UART_TypeDef *)(uintptr_t)UART3_BASE)
+	#include <cm3_chip_define.h>
 #endif
+
+
+#ifdef A55
+	#include <ca55_chip_define.h>
+	#define TIMERX6 ((DW_APB_Timerx6_TypeDef *)TIMERX6_BASE)
+#else
+	#include <cm3_chip_define.h>
+#endif
+
+#define UART0 ((DW_APB_UART_TypeDef *)(uintptr_t)UART0_BASE)
+#define UART1 ((DW_APB_UART_TypeDef *)(uintptr_t)UART1_BASE)
+#define UART2 ((DW_APB_UART_TypeDef *)(uintptr_t)UART2_BASE)
+#define UART3 ((DW_APB_UART_TypeDef *)(uintptr_t)UART3_BASE)
+
 /*-----------------------------------------------------------------------
  * parameter definition clk
  *-----------------------------------------------------------------------*/
@@ -111,6 +117,8 @@ extern int uart_getc(seehi_uart_no uart_no);
 
 extern int uart_sendchar(seehi_uart_no uart_no, const int c);
 
-extern int tstc();
+// extern int tstc();
+
+extern int uart_tstc(unsigned int base);
 
 #endif

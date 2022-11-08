@@ -18,10 +18,10 @@ ENTRY(entrypoint)
 
 #ifndef QEMU
 	#define __ROM_BASE 0x00000000
-	#define __ROM_SIZE 64K
+	#define __ROM_SIZE 256K
 
-	#define __RAM_BASE 0x00200000
-	#define __RAM_SIZE 128K
+	#define __RAM_BASE 0x20000000
+	#define __RAM_SIZE 196K
 
 	#define __DDR_BASE 0x40000000
 	#define __DDR_SIZE 0xC0000000
@@ -98,6 +98,9 @@ SECTIONS
     {
         __RODATA_START__ = .;
         *(SORT_BY_ALIGNMENT(.rodata*))
+        __tinyCLI_CMD_START__ = .;
+        KEEP(*(.tinyCLI_CMD*))
+        __tinyCLI_CMD_END__ = .;
         __RODATA_END__ = .;
         . = ALIGN(16); //.data LMA should be 16-byte aligned.
 #if (WHERE_TO_LOAD == ROM_AND_RAM)

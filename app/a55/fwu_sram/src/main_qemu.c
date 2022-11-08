@@ -9,7 +9,10 @@
 
 int main()
 {
-	printf("hello world.\n\r");
+	printf("git hash: "GIT_HASH"\n\r");
+	printf("FWU SRAM:\n\r");
+	printf("\tddr init.\n\r");
+	printf("\tgo to FWU DDR.\n\r");
 	return 0;
 }
 

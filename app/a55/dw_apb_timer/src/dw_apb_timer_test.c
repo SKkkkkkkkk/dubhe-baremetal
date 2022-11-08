@@ -7,8 +7,6 @@
 #include "irq_ctrl.h"
 #include "systimer.h"
 
-
-// #define SIMPALE_TEST
 #define TIMER_FREQ (20000000/100)
 
 
@@ -31,8 +29,9 @@ static volatile uint32_t timerx6_t5_i_copy = 0;
 static volatile uint32_t timerx6_t6_i_copy = 0;
 void dw_apb_timer_test(bool sample)
 {
-	// GIC_Enable();
-#ifdef SIMPALE_TEST
+
+if(sample)
+{
 	printf("dw_apb_timer_test 1.\n\r");
 	uint32_t tick = 0;
 	systimer_init();
@@ -41,7 +40,9 @@ void dw_apb_timer_test(bool sample)
 		printf("%d\n", (int)(tick++));
 		systimer_delay(1,IN_S);
 	};
-#else
+}
+else
+{
 	printf("dw_apb_timer_test 2.\n\r");
 	timer_init_config_t timer_init_config = {
 		.int_mask = 0, .loadcount = TIMER_FREQ, .timer_id = Timerx2_T1, .timer_mode = Mode_User_Defined
@@ -83,19 +84,19 @@ void dw_apb_timer_test(bool sample)
 	IRQ_Enable(Timerx2_T1_IRQn);
 
 	void timerx2_t2_irqhandler(void);
-	GIC_SetTarget(Timerx2_T2_IRQn, 1 << 1);
+	GIC_SetTarget(Timerx2_T2_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx2_T2_IRQn, timerx2_t2_irqhandler);
 	IRQ_SetPriority(Timerx2_T2_IRQn, 0 << 3);
 	IRQ_Enable(Timerx2_T2_IRQn);
 
 	void timerx6_t1_irqhandler(void);
-	GIC_SetTarget(Timerx6_T1_IRQn, 1 << 2);
+	GIC_SetTarget(Timerx6_T1_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T1_IRQn, timerx6_t1_irqhandler);
 	IRQ_SetPriority(Timerx6_T1_IRQn, 0 << 3);
 	IRQ_Enable(Timerx6_T1_IRQn);
 
 	void timerx6_t2_irqhandler(void);
-	GIC_SetTarget(Timerx6_T2_IRQn, 1 << 3);
+	GIC_SetTarget(Timerx6_T2_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T2_IRQn, timerx6_t2_irqhandler);
 	IRQ_SetPriority(Timerx6_T2_IRQn, 0 << 3);
 	IRQ_Enable(Timerx6_T2_IRQn);
@@ -107,19 +108,19 @@ void dw_apb_timer_test(bool sample)
 	IRQ_Enable(Timerx6_T3_IRQn);
 
 	void timerx6_t4_irqhandler(void);
-	GIC_SetTarget(Timerx6_T4_IRQn, 1 << 1);
+	GIC_SetTarget(Timerx6_T4_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T4_IRQn, timerx6_t4_irqhandler);
 	IRQ_SetPriority(Timerx6_T4_IRQn, 0 << 3);
 	IRQ_Enable(Timerx6_T4_IRQn);
 
 	void timerx6_t5_irqhandler(void);
-	GIC_SetTarget(Timerx6_T5_IRQn, 1 << 2);
+	GIC_SetTarget(Timerx6_T5_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T5_IRQn, timerx6_t5_irqhandler);
 	IRQ_SetPriority(Timerx6_T5_IRQn, 0 << 3);
 	IRQ_Enable(Timerx6_T5_IRQn);
 
 	void timerx6_t6_irqhandler(void);
-	GIC_SetTarget(Timerx6_T6_IRQn, 1 << 3);
+	GIC_SetTarget(Timerx6_T6_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T6_IRQn, timerx6_t6_irqhandler);
 	IRQ_SetPriority(Timerx6_T6_IRQn, 0 << 3);
 	IRQ_Enable(Timerx6_T6_IRQn);
@@ -142,7 +143,7 @@ void dw_apb_timer_test(bool sample)
 			flag = false;
 		}
 	}
-#endif
+}
 }
 
 void timerx2_t1_irqhandler(void)

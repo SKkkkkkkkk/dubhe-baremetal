@@ -10,6 +10,7 @@ target_sources(${LIB_NAME}
 target_include_directories(${LIB_NAME}
 	PUBLIC
 		inc
+		${SDK_DIR}/common/inc
 )
 
 target_compile_options(${LIB_NAME}

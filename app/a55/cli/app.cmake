@@ -1,12 +1,12 @@
 # 添加app sources
 set(app_src
 	${CMAKE_CURRENT_LIST_DIR}/src/main.c
+	${CMAKE_CURRENT_LIST_DIR}/src/tinyCLI.c
 )
 
 # 添加app include dirs
 set(app_inc
 	${CMAKE_CURRENT_LIST_DIR}/inc
-	${CMAKE_CURRENT_LIST_DIR}/src/cli/
 )
 
 # 添加模块

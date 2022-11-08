@@ -7,5 +7,3 @@ set(app_src
 set(app_inc
 	${CMAKE_CURRENT_LIST_DIR}/inc
 )
-
-# 添加模块

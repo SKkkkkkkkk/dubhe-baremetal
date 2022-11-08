@@ -1,5 +1,7 @@
 #if defined (A55) || (RI5CY)
 
+#include <ca55_chip_define.h>
+
 #define __GIC_PRESENT		 1U
 #ifdef A55
 	#ifdef QEMU
@@ -8,7 +10,7 @@
 		#define __GIC_PRIO_BITS 	 5U
 		#define IRQ_GIC_LINE_COUNT   128U
 	#else
-		#define GIC400_BASE			 (0x24010000UL)
+		#define GIC400_BASE			 (GIC_BASE)
 		#define GIC_DISTRIBUTOR_BASE (GIC400_BASE + 0x1000UL)
 		#define GIC_INTERFACE_BASE   (GIC400_BASE + 0x2000UL)
 		#define __GIC_PRIO_BITS 	 5U

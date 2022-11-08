@@ -7,7 +7,6 @@ target_sources(${LIB_NAME}
 		aarch64/src/entrypoint.S
 		aarch64/src/exceptions.S
 		aarch64/src/cache_helpers.S
-		aarch64/src/mmu_test.S
 )
 
 target_include_directories(${LIB_NAME}

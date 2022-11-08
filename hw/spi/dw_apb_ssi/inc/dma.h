@@ -1,8 +1,6 @@
 #ifndef __DMA_H__
 #define __DMA_H__
 
-#define DMAC0_BASE 0x41100000
-#define DMAC1_BASE 0x24000000
 #if defined(A55)
 	#define DMA_BASE (DMAC1_BASE)
 #elif defined(M3)

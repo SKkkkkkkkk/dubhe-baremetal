@@ -4,7 +4,6 @@ add_library( ${LIB_OBJS_NAME} STATIC )
 
 target_sources( ${LIB_OBJS_NAME} 
 	PRIVATE
-			src/tinyCLI.c
 			src/FreeRTOS_CLI.c
 )
 

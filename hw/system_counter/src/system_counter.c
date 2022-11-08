@@ -20,6 +20,11 @@
 
 
 #include "system_counter.h"
+#ifdef A55
+	#include <ca55_chip_define.h>
+#else
+	#include <cm3_chip_define.h>
+#endif
 
 struct memory_mapped_timer_module
 {
@@ -37,7 +42,7 @@ struct memory_mapped_timer_module
 // ------------------------------------------------------------
 
 
-struct memory_mapped_timer_module * const counter_module = (void*)0x2E020000;
+struct memory_mapped_timer_module * const counter_module = (void*)SYSTEMCOUNTER_BASE;
 
 // Sets the address of memory mapped counter module
 // addr - virtual address of counter module

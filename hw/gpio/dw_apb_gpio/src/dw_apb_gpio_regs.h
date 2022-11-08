@@ -1,5 +1,5 @@
-#ifndef __APE1210_GPIO_REGS_H__
-#define __APE1210_GPIO_REGS_H__
+#ifndef __DW_APB_GPIO_REGS_H__
+#define __DW_APB_GPIO_REGS_H__
 
 #include "regs_type.h"
 typedef struct _DW_APB_GPIO {

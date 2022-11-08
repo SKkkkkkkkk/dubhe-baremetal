@@ -100,6 +100,9 @@ SECTIONS
     *(.dtors)
 
     *(.rodata*)
+    __tinyCLI_CMD_START__ = .;
+    KEEP(*(.tinyCLI_CMD*))
+    __tinyCLI_CMD_END__ = .;
 
     KEEP(*(.eh_frame*))
 #if (WHERE_TO_LOAD == ROM_AND_RAM)

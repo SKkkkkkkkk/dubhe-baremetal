@@ -6,11 +6,11 @@
 
 void task1(void* arg)
 {
-	// static int i = 0;
+	static int i = 0;
 	while(1)
 	{
-		printf("1\n\r");
-		// vTaskDelay(1000);
+		printf("%d\n\r", i++);
+		vTaskDelay(1000);
 	}
 }
 

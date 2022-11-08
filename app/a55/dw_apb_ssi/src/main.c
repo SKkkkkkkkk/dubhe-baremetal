@@ -4,6 +4,7 @@
 #include "dw_apb_ssi.h"
 #include "systimer.h"
 #include "nor_flash.h"
+#include <dw_apb_gpio.h>
 
 
 #define FLASH_SECTOR_SIZE 4096
@@ -67,24 +68,6 @@ int main()
 
 	void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model);
 	flash_fastest_read_test(BOOTSPI_ID, W25Q64JW);
-
-	// spi_init_config_t spi_init_config = {
-	// 	.as_master = true,
-	// 	.clock_div = 40,
-	// 	.spi_id = BOOTSPI_ID,
-	// 	.spi_mode = 3
-	// };
-	// dw_spi_init(&spi_init_config);
-
-	// uint8_t cmd[1] = {0x9f};
-	// uint8_t r_buf[3] = {0};
-	// while(1)
-	// {
-	// 	dw_spi_eeprom_read(BOOTSPI_ID, &cmd, 1, r_buf, 3);
-	// 	printf("flash id: 0x%x 0x%x 0x%x\n\r", r_buf[0], r_buf[1], r_buf[2]);
-	// 	systimer_delay(1, IN_S);
-	// }
-	// dw_spi_deinit(BOOTSPI_ID, true);
 	return 0;
 }
 

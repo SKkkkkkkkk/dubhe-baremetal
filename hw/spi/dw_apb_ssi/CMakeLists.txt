@@ -26,6 +26,7 @@ target_compile_options(${LIB_OBJS_NAME}
 target_link_libraries(${LIB_OBJS_NAME}
 	PUBLIC
 		dw_apb_gpio
+		pinmux
 )
 if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}

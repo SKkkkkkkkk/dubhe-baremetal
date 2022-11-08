@@ -80,7 +80,7 @@ set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
 set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}")
-set(link_options -static -nostartfiles --specs=nosys.specs -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
+set(link_options -static -nostartfiles -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
 
 ## 添加编译选项depends on CORE.
@@ -89,15 +89,15 @@ set(link_libs)
 
 if($CACHE{CORE} STREQUAL "A55")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
-    set(compile_options_arch -mlittle-endian -march=armv8.1-a -mcmodel=large -DA55 -nostdlib)
+    set(compile_options_arch -mlittle-endian -march=armv8.1-a -DA55 -nostdlib)
     set(link_options ${link_options})
 
 ### M3
 
 elseif($CACHE{CORE} STREQUAL "M3")
-    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/armgcc.cmake)
+    set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch32gcc.cmake)
     set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
-    set(link_options ${link_options} --specs=nano.specs)
+    set(link_options ${link_options} --specs=nano.specs --specs=nosys.specs)
 
 ### CV32E40P
 
@@ -202,6 +202,9 @@ set(ENABLE_USE_DW_APB_GPIO ON)
 set(ENABLE_USE_DW_APB_SSI OFF)
 set(ENABLE_USE_PM OFF)
 set(ENABLE_USE_I2C OFF)
+set(ENABLE_USE_PINMUX ON)
+set(ENABLE_USE_WDT OFF)
+
 
 ### LIBS
 
@@ -211,6 +214,8 @@ set(ENABLE_USE_FREERTOS OFF)
 set(ENABLE_USE_PMIC OFF)
 set(ENABLE_USE_tinyCLI OFF)
 set(ENABLE_USE_SEMIHOSTING OFF)
+set(ENABLE_USE_CRC OFF)
+set(ENABLE_USE_xyzModem OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 
@@ -396,7 +401,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         set(link_libs ${link_libs} tinyCLI)
     endif()
 
-    ### USE_tinyCLI
+    ### USE_SEMIHOSTING
     cmake_dependent_option(
         USE_SEMIHOSTING "Use semihosting" ON
         "ENABLE_USE_SEMIHOSTING;" OFF
@@ -405,6 +410,47 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/libs/semihosting)
         set(link_libs ${link_libs} semihosting)
     endif()
+
+    ### USE_CRC
+    cmake_dependent_option(
+        USE_CRC "Use crc" ON
+        "ENABLE_USE_CRC" OFF
+    )
+    if(USE_CRC)
+        add_subdirectory(${SDK_DIR}/libs/crc)
+        set(link_libs ${link_libs} crc)
+    endif()
+
+    ### USE_xyzModem
+    cmake_dependent_option(
+        USE_xyzModem "Use xyzModem" ON
+        "ENABLE_USE_xyzModem;USE_CRC" OFF
+    )
+    if(USE_xyzModem)
+        add_subdirectory(${SDK_DIR}/libs/xyzModem)
+        set(link_libs ${link_libs} xyzModem)
+    endif()
+
+    ### USE_PINMUX
+    cmake_dependent_option(
+        USE_PINMUX "Use pinmux" ON
+        "ENABLE_USE_PINMUX;" OFF
+    )
+    if(USE_PINMUX)
+        add_subdirectory(${SDK_DIR}/hw/pinmux)
+        set(link_libs ${link_libs} pinmux)
+    endif()
+
+    ### USE_WDT
+    cmake_dependent_option(
+        USE_WDT "Use dw_apb_wdt" ON
+        "ENABLE_USE_WDT" OFF
+    )
+    if(USE_WDT)
+        add_subdirectory(${SDK_DIR}/hw/wdt/dw_apb_wdt)
+        set(link_libs ${link_libs} dw_apb_wdt)
+    endif()
+
 
 endif()
 
@@ -456,7 +502,7 @@ target_link_libraries($CACHE{PROJECT_NAME}.elf
 ## dump
 
 add_custom_target($CACHE{PROJECT_NAME}.dump ALL
-    COMMAND ${CMAKE_OBJDUMP} -dx $CACHE{PROJECT_NAME}.elf > $CACHE{PROJECT_NAME}.dump
+    COMMAND ${CMAKE_OBJDUMP} -Sx $CACHE{PROJECT_NAME}.elf > $CACHE{PROJECT_NAME}.dump
     DEPENDS $CACHE{PROJECT_NAME}.elf
     WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
 )
