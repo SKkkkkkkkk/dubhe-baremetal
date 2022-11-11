@@ -52,6 +52,10 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+# Build Timestamp
+string(TIMESTAMP BUILD_TIMESTAMP "%Y.%m.%d %H:%M:%S")
+message(STATUS ${BUILD_TIMESTAMP} )
+
 # 打印工程配置信息
 
 message(STATUS "Project     : $CACHE{PROJECT_NAME}")
@@ -79,7 +83,7 @@ endif()
 set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
-set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}")
+set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}" -DBUILD_TIMESTAMP="${BUILD_TIMESTAMP}")
 set(link_options -static -nostartfiles -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
 
