@@ -36,7 +36,7 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/src/m3.ld.S
 		${CMAKE_CURRENT_SOURCE_DIR}/inc/mem_and_clock.h
 	COMMAND 
-		arm-none-eabi-cpp -P -x assembler-with-cpp -D__LINKER__ -I${CMAKE_CURRENT_SOURCE_DIR}/inc/
+		${CMAKE_CPP} -P -x assembler-with-cpp -D__LINKER__ -I${CMAKE_CURRENT_SOURCE_DIR}/inc/
 		${compile_options_board}
 		${CMAKE_CURRENT_SOURCE_DIR}/src/m3.ld.S
 		-o ${CMAKE_CURRENT_BINARY_DIR}/m3.ld

@@ -14,9 +14,9 @@ int main()
 	if (xTaskCreate(task1, "task1", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
 		while (1)
 			;
-	// if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
-	// 	while (1)
-	// 		;
+	if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
+		while (1)
+			;
 	vTaskStartScheduler();
 	return 0;
 }

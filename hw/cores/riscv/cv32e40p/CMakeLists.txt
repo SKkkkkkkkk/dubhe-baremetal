@@ -26,7 +26,7 @@ add_custom_command(
 	DEPENDS 
 		${CMAKE_CURRENT_SOURCE_DIR}/cv32e40p.ld.S
 	COMMAND 
-		arm-none-eabi-cpp -P -x assembler-with-cpp -D__LINKER__
+		${CMAKE_CPP} -P -x assembler-with-cpp -D__LINKER__
 		${compile_options_board}
 		${CMAKE_CURRENT_SOURCE_DIR}/cv32e40p.ld.S
 		-o ${CMAKE_CURRENT_BINARY_DIR}/cv32e40p.ld
