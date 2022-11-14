@@ -13,7 +13,7 @@ int main()
 	uint32_t i = 0;
 	while(1)
 	{
-		printf("%us\n\r", i++);
+		printf("%lus\n\r", i++);
 		systimer_delay(1, IN_S);
 		wdt0_feed();
 	}
