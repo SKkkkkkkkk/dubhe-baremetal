@@ -1,6 +1,6 @@
 # 添加app sources
 set(app_src
-	${CMAKE_CURRENT_LIST_DIR}/src/main.c
+	${CMAKE_CURRENT_LIST_DIR}/src/default_pon_a55.c
 )
 
 # 添加app include dirs

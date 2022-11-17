@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEBUG_PMU   0
+#define DEBUG_PMU   1
 #define PPU_CORE0_BASE      0x00000
 #define PPU_CORE1_BASE      0x01000
 #define PPU_CORE2_BASE      0x02000
