@@ -56,7 +56,7 @@ typedef enum IRQn
 		// Timerx6_T6_IRQn		= 5,
 		Timerx2_T1_IRQn		= 6,
 		Timerx2_T2_IRQn		= 7,
-		WDT_IRQn			    = 8,
+		WDT0_IRQn			    = 8,
 		Mailbox_IRQn		  = 9,
 		RTC_IRQn			    = 10,
 

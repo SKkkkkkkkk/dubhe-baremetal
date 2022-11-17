@@ -20,10 +20,13 @@ typedef struct {
 	__IM uint32_t COMP_TYPE;
 } DW_APB_WDT_TypeDef;
 
-#define WDT_EN_Pos 0UL
-#define WDT_EN_Msk (1UL << WDT_EN_Pos)
+#define WDT_EN_Pos 0U
+#define WDT_EN_Msk (1U << WDT_EN_Pos)
 
-#define RMOD_Pos 1UL
-#define RMOD_MsK (1UL << RMOD_Pos)
+#define RMOD_Pos 1U
+#define RMOD_MsK (1U << RMOD_Pos)
+
+#define RPL_Pos 2U
+#define RPL_Msk (7U << RPL_Pos)
 
 #endif

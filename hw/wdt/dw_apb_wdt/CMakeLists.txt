@@ -8,7 +8,7 @@ target_sources(${LIB_OBJS_NAME}
 )
 
 target_include_directories(${LIB_OBJS_NAME}
-	INTERFACE
+	PUBLIC
 		inc
 	PRIVATE
 		${SDK_DIR}/common/inc

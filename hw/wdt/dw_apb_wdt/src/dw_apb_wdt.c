@@ -1,58 +1,77 @@
+#include <stdio.h>
+#include <assert.h>
 #include "chip_mem_layout.h"
-#include <regs_type.h>
+#include "regs_type.h"
 #include "dw_apb_wdt_regs.h"
+#include "dw_apb_wdt.h"
 
 #define WDT0 ((DW_APB_WDT_TypeDef *)WDT0_BASE)
 #ifdef A55
 	#define WDT1 ((DW_APB_WDT_TypeDef *)WDT1_BASE)
 #endif
 
-/*
-0--ffff
-1--1_FFFF
-2--3_FFFF
-...
-f--7FFF_FFFF
-*/
-
-void wdt0_start(uint8_t time)
+static inline DW_APB_WDT_TypeDef* get_wdt_by_id(wdt_id_t id)
 {
-	if (WDT0->CR & WDT_EN_Msk)
+	DW_APB_WDT_TypeDef* wdt;
+	switch (id)
+	{
+	case WDT0_ID:
+		wdt = WDT0;
+		break;
+	#ifdef A55
+	case WDT1_ID:
+		wdt = WDT1;
+		break;
+	#endif
+	default:
+		wdt = NULL;
+		// break;
+	}
+	return wdt;
+}
+
+/* extern */
+void wdt_setup(wdt_id_t id, uint8_t rpl, uint8_t rmod, uint8_t timeout)
+{
+	DW_APB_WDT_TypeDef* wdt = get_wdt_by_id(id);
+	assert(wdt);
+	if (wdt->CR & WDT_EN_Msk)
 		return;
-	WDT0->TORR = time;
-	WDT0->CRR = 0x76UL;
 
-	WDT0->CR &= ~RMOD_MsK;
-	WDT0->CR |= WDT_EN_Msk;
+	/*
+		0--ffff
+		1--1_FFFF
+		2--3_FFFF
+		...
+		f--7FFF_FFFF
+	*/
+	wdt->TORR = timeout;
+	wdt->CRR = 0x76UL;
+
+	uint32_t tmp = 0;
+	tmp |= rpl << RPL_Pos;
+	tmp |= rmod << RMOD_Pos;
+	tmp |= WDT_EN_Msk;
+	wdt->CR = tmp;
 }
 
-
-/**
- * @brief 喂狗
- */
-void wdt0_feed(void)
+void wdt_reset(wdt_id_t id)
 {
-	WDT0->CRR = 0x76UL;
+	DW_APB_WDT_TypeDef* wdt = get_wdt_by_id(id);
+	assert(wdt);
+	wdt->CR = 0;
 }
 
-#ifdef A55
-void wdt1_start(uint8_t time)
+void wdt_feed(wdt_id_t id)
 {
-	if (WDT1->CR & WDT_EN_Msk)
-		return;
-	WDT1->TORR = time;
-	WDT1->CRR = 0x76UL;
-
-	WDT1->CR &= ~RMOD_MsK;
-	WDT1->CR |= WDT_EN_Msk;
+	DW_APB_WDT_TypeDef* wdt = get_wdt_by_id(id);
+	assert(wdt);
+	wdt->CRR = 0x76UL;
 }
 
-
-/**
- * @brief 喂狗
- */
-void wdt1_feed(void)
+void wdt_clear_irq(wdt_id_t id)
 {
-	WDT1->CRR = 0x76UL;
+	DW_APB_WDT_TypeDef* wdt = get_wdt_by_id(id);
+	assert(wdt);
+	(void)wdt->EOI;
 }
-#endif

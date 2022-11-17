@@ -7,30 +7,44 @@
 
 #include <stdint.h>
 
-/*
-void wdt_start(uint8_t time)的time代表的时间如下：
-0--ffff
-1--1_FFFF
-2--3_FFFF
-...
-f--7FFF_FFFF
-*/
+typedef enum { 
+    WDT0_ID = 0,
+    #ifdef A55
+    WDT1_ID = 1
+    #endif
+} wdt_id_t;
 
 /**
- * @brief 开启系统看门狗
- * @param time 定时时间
+ * @brief 看门狗配置并启动.
+ * @param id 选择wdt, WDT0_ID or WDT1_ID.
+ * @param rpl Reset pulse length. 祥见wdt_databook, Control Register.
+ * @param rmod Response mode. 祥见wdt_databook, Control Register.
+ * @param timeout  Timeout period for initialization. 祥见wdt_databook, Timeout Range Register.
+ * @return void
  */
-void wdt0_start(uint8_t time);
+void wdt_setup(wdt_id_t id, uint8_t rpl, uint8_t rmod, uint8_t timeout);
 
 /**
- * @brief 喂狗
+ * @brief 复位看门狗.
+ * @param id 选择wdt, WDT0_ID or WDT1_ID.
+ * @return void
  */
-void wdt0_feed(void);
+void wdt_reset(wdt_id_t id);
 
-#ifdef A55
-void wdt1_start(uint8_t time);
-void wdt1_feed(void);
-#endif
+/**
+ * @brief 喂狗.
+ * @param id 选择wdt, WDT0_ID or WDT1_ID.
+ * @return void
+ */
+void wdt_feed(wdt_id_t id);
+
+/**
+ * @brief 清楚看门狗中断.
+ * @param id 选择wdt, WDT0_ID or WDT1_ID.
+ * @return void
+ */
+void wdt_clear_irq(wdt_id_t id);
+
 
 #ifdef __cplusplus
     }
