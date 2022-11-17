@@ -208,6 +208,7 @@ set(ENABLE_USE_PM OFF)
 set(ENABLE_USE_I2C OFF)
 set(ENABLE_USE_PINMUX ON)
 set(ENABLE_USE_WDT OFF)
+set(ENABLE_USE_PMU OFF)
 
 
 ### LIBS
@@ -453,6 +454,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_WDT)
         add_subdirectory(${SDK_DIR}/hw/wdt/dw_apb_wdt)
         set(link_libs ${link_libs} dw_apb_wdt)
+    endif()
+
+    ### USE_PMU
+    cmake_dependent_option(
+        USE_PMU "Use seehi pmu" ON
+        "ENABLE_USE_PMU" OFF
+    )
+    if(USE_PMU)
+        add_subdirectory(${SDK_DIR}/hw/pmu)
+        set(link_libs ${link_libs} pmu)
     endif()
 
 
