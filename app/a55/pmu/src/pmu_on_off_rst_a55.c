@@ -10,15 +10,15 @@ int gic_cnt = 0;
 int err_cnt = 0;
 void pmu_irqhandler (void) {
     uint32_t exp;
-    printf("PMU interrupt occurred! gic_cnt:%d",gic_cnt);
+    printf("PMU interrupt occurred! gic_cnt:%d\n",gic_cnt);
     //IRQ_Disable(INT_PMU_INTR);
     uint32_t tmp = get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR);
-    printf("read PMU_ISR:%x",tmp);
+    printf("read PMU_ISR:%x\n",tmp);
     if(gic_cnt == 0) {
         //default power on interrupt
         exp = get_pmu_isr(PMU);
         if(tmp == exp) {
-            printf("all default power on PD power up");
+            printf("all default power on PD power up\n");
             //check each pd ISR and clear PPU_ISR
             for(int i=0; i<PDNUM; i++) {
                 if(((exp >> i) & 1) == 1) {
@@ -37,7 +37,7 @@ void pmu_irqhandler (void) {
               0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
               0x1 << PMU_ISR_PPU_VPU_IRQ_LSB;
         if((tmp & exp) == exp) {
-            printf("all off PD power up");
+            printf("all off PD power up\n");
             for(int i=0; i<PDNUM; i++) {
                 if(((exp >> i) & 1) == 1) {
                     err_cnt += check_pmu_irq(i,get_pmu_isr(i),0xffffffff,1);
@@ -47,10 +47,26 @@ void pmu_irqhandler (void) {
             }
         }
     } else if(gic_cnt == 2) {
-        exp = 0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
-              0x1 << PMU_ISR_PPU_PERI0_IRQ_LSB;
+        exp = 0x1 << PMU_ISR_PPU_CORE1_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_CORE0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_CORE2_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_CORE3_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_CLUSTER_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_VPU_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_ISP_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_GPU_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_LP_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_NPU0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_NPU1_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_PERI0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_PERI1_IRQ_LSB;
+
         if((tmp & exp) == exp) {
-            printf("PD rst done");
+            printf("PD rst done\n");
             for(int i=0; i<PDNUM; i++) {
                 if(((exp >> i) & 1) == 1) {
                     err_cnt += check_pmu_irq(i,get_pmu_isr(i),0xffffffff,1);
@@ -60,15 +76,60 @@ void pmu_irqhandler (void) {
             }
         }
     } else if(gic_cnt == 3) {
-        exp = 0x1 << PMU_ISR_PPU_PERI1_IRQ_LSB |
-              0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB;
+        exp = 0x1 << PMU_ISR_PPU_CORE1_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_CORE0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_CORE2_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_CORE3_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_CLUSTER_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_VPU_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_ISP_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_GPU_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_LP_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_NPU0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_NPU1_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_PERI0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_PERI1_IRQ_LSB;
+
         if((tmp & exp) == exp) {
-            printf("PD power off done");
+            printf("PD power off done\n");
             for(int i=0; i<PDNUM; i++) {
                 if(((exp >> i) & 1) == 1) {
                     err_cnt += check_pmu_irq(i,get_pmu_isr(i),0xffffffff,1);
                     err_cnt += check_pmu_reg(i,PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_pwsr(i,OFF));
                     err_cnt += check_pmu_reg(PMU,PMU_PD_CORE0_CR_PPU_PSTATE_ADDR+i*4, get_pmu_cr(i,OFF));
+                }
+            }
+        }
+    } else if(gic_cnt == 4) {
+        exp = 0x1 << PMU_ISR_PPU_CORE1_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_CORE0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_CORE2_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_CORE3_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_CLUSTER_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_VPU_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_ISP_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_GPU_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_LP_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_NPU0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_NPU1_IRQ_LSB |
+              // 0x1 << PMU_ISR_PPU_PERI0_IRQ_LSB |
+              0x1 << PMU_ISR_PPU_PERI1_IRQ_LSB;
+
+        if((tmp & exp) == exp) {
+            printf("PD power on done\n");
+            for(int i=0; i<PDNUM; i++) {
+                if(((exp >> i) & 1) == 1) {
+                    err_cnt += check_pmu_irq(i,get_pmu_isr(i),0xffffffff,1);
+                    err_cnt += check_pmu_reg(i,PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_pwsr(i,ON));
+                    err_cnt += check_pmu_reg(PMU,PMU_PD_CORE0_CR_PPU_PSTATE_ADDR+i*4, get_pmu_cr(i,ON));
                 }
             }
         }
@@ -95,21 +156,36 @@ int main (void)
 	IRQ_SetPriority(PMU_IRQn, 0 << 3);
 	IRQ_Enable(PMU_IRQn);
 
-    printf("gic_cnt is %d, err_cnt is %d", gic_cnt, err_cnt);
-    while (gic_cnt <= 3) {
+    printf("gic_cnt is %d, err_cnt is %d\n", gic_cnt, err_cnt);
+    while (gic_cnt <= 4) {
       if(gic_cnt == 0) {
       } else if(gic_cnt == 1) {
+		printf("///////////////open other pd\n");
         set_pmu_off_pd2on();
       } else if(gic_cnt == 2) {
-        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_DDR1_IRQ_LSB));
-        set_pmu_reg(PERI0,PPU_PWPR_OP_DYN_EN_ADDR,RST);
-        set_pmu_reg(DDR1,PPU_PWPR_OP_DYN_EN_ADDR,RST);
+		printf("////////////reset other pd\n");
+        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
+        for(int i=0; i<PDNUM; i++) {
+			if(i == CORE0 || i == AP || i == DDR0 || i == PERI0)
+				continue;
+			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,RST);
+		}
       } else if(gic_cnt == 3) {
-        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_DEWARP_IRQ_LSB));
-        set_pmu_reg(PERI1,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
-        set_pmu_reg(PERI0,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
-        set_pmu_reg(LP,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
-        set_pmu_reg(DEWARP,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
+		printf("///////////////close other pd\n");
+        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
+        for(int i=0; i<PDNUM; i++) {
+			if(i == CORE0 || i == AP || i == DDR0 || i == PERI0)
+				continue;
+			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
+		}
+      } else if(gic_cnt == 4) {
+		printf("///////////////open other pd\n");
+        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
+        for(int i=0; i<PDNUM; i++) {
+			if(i == CORE0 || i == AP || i == DDR0 || i == PERI0)
+				continue;
+			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,ON);
+		}
       }
       while(1) {
         asm volatile("nop");
@@ -117,6 +193,7 @@ int main (void)
             break;
         }
       }
+	  systimer_delay(1, IN_S);
       local_gic_cnt = gic_cnt;
     }
 

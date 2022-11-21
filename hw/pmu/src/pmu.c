@@ -227,10 +227,10 @@ void set_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value)
 int get_pmu_reg(uint8_t pid, uint32_t addr)
 {
   int reg_addr = addr + get_pmu_base(pid);
-#if DEBUG_PMU
-  printf("start get pid%0d addr 0x%x\n",pid,reg_addr);
-#endif
   int val = REG32(reg_addr);
+#if DEBUG_PMU
+  printf("start get pid%0d addr 0x%x val 0x%x\n",pid,reg_addr, val);
+#endif
   return(val);
 }
 
