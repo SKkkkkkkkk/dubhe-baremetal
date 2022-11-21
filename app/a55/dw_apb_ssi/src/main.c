@@ -64,10 +64,10 @@ int main()
 	// while(1);
 
 	void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model);
-	nor_flash_test(BOOTSPI_ID, W25Q64JW);
+	nor_flash_test(SPI0_ID, GD25LQ64);
 
 	void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model);
-	flash_fastest_read_test(BOOTSPI_ID, W25Q64JW);
+	flash_fastest_read_test(SPI0_ID, GD25LQ64);
 	return 0;
 }
 

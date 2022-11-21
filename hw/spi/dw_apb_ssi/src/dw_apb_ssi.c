@@ -2045,8 +2045,8 @@ void dw_spi_enhanced_read_dma(spi_id_t spi_id, enhanced_transfer_format_t *enhan
 
 		//build-in dma配置
 		spix->DMACR = 0;
-		// spix->DMARDLR = 15; //16触发DMA请求
-		spix->DMARDLR = 0; //1触发DMA请求
+		spix->DMARDLR = 15; //16触发DMA请求
+		// spix->DMARDLR = 0; //1触发DMA请求
 		spix->DMACR = 1;
 
 		//配置接收数据量

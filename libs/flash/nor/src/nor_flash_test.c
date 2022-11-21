@@ -242,7 +242,7 @@ void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model)
 	// #endif
 	
 	uint8_t flash_id[3];
-	uint16_t spi_div = 2;
+	uint16_t spi_div = 4;
 	if(!flash_init(spi_id, spi_div, 3, flash_model))
 	{
 		printf("\tflash_init error.\n\r");
