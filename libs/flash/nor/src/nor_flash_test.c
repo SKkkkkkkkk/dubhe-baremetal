@@ -93,8 +93,12 @@ void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 #endif
 	
 	// flash_reset(spi_id);
-	flash_read_id(spi_id, _flash_id, 3);
-	printf("flash_id: 0x%x 0x%x 0x%x\n\r", _flash_id[0], _flash_id[1], _flash_id[2]);
+	// while(1)
+	// {
+		flash_read_id(spi_id, _flash_id, 3);
+		printf("flash_id: 0x%x 0x%x 0x%x\n\r", _flash_id[0], _flash_id[1], _flash_id[2]);
+	// }
+
 	if(flash_model == P25Q40UJ)
 	{
 		for(uint32_t i = 0;i<P25Q40UJ_SIZE;i++)
@@ -227,7 +231,7 @@ if((flash_model==GD25LQ255)||(flash_model==W25Q256JW))
 	#define BLOCK_SIZE_DMA (2048U)
 */
 #define CASE5_ADDR (OFF_RW_ADDR+10)
-#define CASE5_SIZE (1024*1024-1)
+#define CASE5_SIZE (4096*2-1)
 static uint8_t case5_r_buf[CASE5_SIZE] /* 使用DMA时，接收首地址和大小需要对齐DU_CACHE_LINE_SIZE */ __attribute__((aligned(64))) /*__attribute__((section(".noncache_mem.case5_r_buf")))*/ = {0};
 static uint8_t case5_w_buf[CASE5_SIZE] /*__attribute__((section(".noncache_mem.case5_w_buf")))*/ = {0};
 void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model)
@@ -278,7 +282,7 @@ void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model)
 
 	for(uint32_t i = 0;i<CASE5_SIZE;i++)
 		case5_w_buf[i] = i%256;
-	for(uint32_t i = 0;i<257;i++)
+	for(uint32_t i = 0;i<(CASE5_SIZE/4096+1);i++)
 		flash_sector_erase(spi_id, (CASE5_ADDR&0xfffff000)+4096*i);
 	FLASH_WRITE(spi_id, CASE5_ADDR, case5_w_buf, CASE5_SIZE);
 	

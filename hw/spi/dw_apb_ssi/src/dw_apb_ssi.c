@@ -124,7 +124,7 @@ static inline void spix_pinmux(spi_init_config_t const * const spi_init_config)
 			gpio_init_config.group = GROUP_GPIO2;
 			gpio_init_config.pin = 11;
 			gpio_init(&gpio_init_config);
-			pinmux(75, 3); //as gpio
+			pinmux(75, 7); //as gpio
 		}
 		pinmux(76, 1);
 		pinmux(77, 1);
