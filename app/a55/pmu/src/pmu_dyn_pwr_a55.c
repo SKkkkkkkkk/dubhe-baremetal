@@ -108,7 +108,7 @@ int main(void)
   // systimer_delay(1, IN_S);
   // systimer_delay(1, IN_S);
 
-  set_power_off_a55(CORE0);
+  // set_power_off_a55(CORE0);
   while(1) {
 	  pwsr = get_pmu_reg(CORE0,PPU_PWPR_OP_DYN_EN_ADDR);
 	  if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
