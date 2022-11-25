@@ -3,11 +3,15 @@
 #include "systimer.h"
 #include "gic.h"
 #include "irq_ctrl.h"
+#include "chip_mem_layout.h"
+#include "regs_type.h"
+
 
 int main()
 {
+	printf("reset reg: 0x%x\n\r", REG32(SYSCTRL_BASE+0x410));
 	GIC_DistInit();
-  	GIC_CPUInterfaceInit(); //per CPU
+	GIC_CPUInterfaceInit(); //per CPU
 
 	printf("wdt test.\n\r");
 
