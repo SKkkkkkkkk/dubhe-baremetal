@@ -6,7 +6,7 @@
 #include "gic.h"
 #include "pmu.h"
 
-#define USE_GIC 0
+#define USE_GIC 1
 
 int gic_pass = 0;
 #if USE_GIC
