@@ -1,7 +1,6 @@
+#include "m3.h"
 #include <stdio.h>
 #include "systimer.h"
-// #include "irq_ctrl.h"
-// #include "gic.h"
 #include "pmu.h"
 
 
