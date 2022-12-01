@@ -1,20 +1,17 @@
-#include <fip_update.h>
-#include <ymodem_update.h>
+#include "fip_update.h"
+#include "uart_update.h"
 
-int normal_fwu_update_fip()
+int fip_update(enum input_device in, enum output_device out)
 {
-	int ret;
-	enum input_device i_device = UART;
-	enum output_device o_device = NOR_FLASH;
-	switch (i_device)
+	int ret = -1;
+	switch (in)
 	{
 	case UART:
-		ret = ymodem_update(o_device);
+		ret = uart_update(out);
 		break;
 	case USB:
-		//ret = usb_update();
 		printf("USB: Todo...\n\r");
-		assert(0);
+		//ret = usb_update();
 		break;
 	default:
 		break;

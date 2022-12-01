@@ -29,6 +29,6 @@ static inline bool is_valid_header(fip_toc_header_t *header)
 }
 
 
-int normal_fwu_update_fip(void);
+int fip_update(enum input_device in, enum output_device out);
 
 #endif
