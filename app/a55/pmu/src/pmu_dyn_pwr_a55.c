@@ -5,6 +5,9 @@
 #include "gic.h"
 #include "pmu.h"
 
+#define ALL_SECOND_CORE_OFF				1
+#define ALL_SECOND_CORE_ON_OFF			1
+#define CORE0_SELF_OFF					0
 
 void set_power_off_a55(uint8_t pid)
 {
@@ -48,12 +51,13 @@ void POWER_OFF_SEQ(void)
 void core1_c_entry(void)
 {
     printf("hello_world core1\n");
+	set_power_off_a55(CORE1);
     uint32_t pwsr = 1;
     while(1) {
       pwsr = get_pmu_reg(CORE1,PPU_PWPR_OP_DYN_EN_ADDR);
       if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        break;
         printf("start enter wfi core1\n");
+        break;
       }
     }
     POWER_OFF_SEQ();
@@ -63,12 +67,13 @@ void core1_c_entry(void)
 void core2_c_entry(void)
 {
     printf("hello_world core2\n");
+	set_power_off_a55(CORE2);
     uint32_t pwsr = 1;
     while(1) {
       pwsr = get_pmu_reg(CORE2,PPU_PWPR_OP_DYN_EN_ADDR);
       if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        break;
         printf("start enter wfi core2\n");
+        break;
       }
     }
     POWER_OFF_SEQ();
@@ -78,12 +83,13 @@ void core2_c_entry(void)
 void core3_c_entry(void)
 {
     printf("hello_world core3\n");
+	set_power_off_a55(CORE3);
     uint32_t pwsr = 1;
     while(1) {
       pwsr = get_pmu_reg(CORE3,PPU_PWPR_OP_DYN_EN_ADDR);
       if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        break;
         printf("start enter wfi core3\n");
+        break;
       }
     }
     POWER_OFF_SEQ();
@@ -96,23 +102,43 @@ int main(void)
   printf("test %s ...\n", __FILE__); 
   systimer_init();
 
+#if ALL_SECOND_CORE_OFF
   wakeup_core(3, core3_c_entry); //core3 enter to WFI
+  systimer_delay(1, IN_S);
   wakeup_core(2, core2_c_entry); //core2 enter to WFI
+  systimer_delay(1, IN_S);
   wakeup_core(1, core1_c_entry); //core1 enter to WFI
   systimer_delay(1, IN_S);
-  set_power_off_a55(CORE1);
-  systimer_delay(1, IN_S);
-  set_power_off_a55(CORE2);
-  systimer_delay(1, IN_S);
-  set_power_off_a55(CORE3);
-  systimer_delay(1, IN_S);
-  while(1) {
-      pwsr = get_pmu_reg(CORE0,PPU_PWPR_OP_DYN_EN_ADDR);
-      if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        break;
-        printf("start enter wfi core0\n");
-      }
+
+  printf("auto power off\n");
+#endif
+
+#if ALL_SECOND_CORE_ON_OFF
+  for(int i=0; i<5; i++){
+	  printf("sleep %ds\n", i+1);
+	  systimer_delay(1, IN_S);
   }
+  printf("auto power on\n");
+  set_power_on_a55(CORE1);
+  systimer_delay(1, IN_S);
+  set_power_on_a55(CORE2);
+  systimer_delay(1, IN_S);
+  set_power_on_a55(CORE3);
+  systimer_delay(1, IN_S);
+#endif
+
+#if CORE0_SELF_OFF
+  set_power_off_a55(AP);
+  set_power_off_a55(CORE0);
+#endif
+  while(1) {
+	  pwsr = get_pmu_reg(CORE0,PPU_PWPR_OP_DYN_EN_ADDR);
+	  if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+		printf("start enter wfi core0\n");
+		break;
+	  }
+  }
+  printf("poweroff core0\n");
   POWER_OFF_SEQ(); //core0 enter WFI
   for(int i=0; i<4; i++) {
     asm volatile("nop");

@@ -219,7 +219,7 @@ void set_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value)
 {
   int reg_addr = addr + get_pmu_base(pid);
 #if DEBUG_PMU
-  printf("start set pid%0d addr 0x%x value 0x%x\n",pid,reg_addr,value);
+  printf("start set pid%0d addr 0x%x value 0x%x\n",pid,(unsigned int)reg_addr,(unsigned int)value);
 #endif
   REG32(reg_addr) = value;
 }
@@ -229,7 +229,7 @@ int get_pmu_reg(uint8_t pid, uint32_t addr)
   int reg_addr = addr + get_pmu_base(pid);
   int val = REG32(reg_addr);
 #if DEBUG_PMU
-  // printf("start get pid%0d addr 0x%x val 0x%x\n",pid,reg_addr, val);
+  // printf("start get pid%0d addr 0x%x val 0x%x\n",(unsigned int)pid,(unsigned int)reg_addr, val);
 #endif
   return(val);
 }
@@ -239,11 +239,11 @@ int check_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value)
   int act = get_pmu_reg(pid,addr);
   if(act == value) {
 #if DEBUG_PMU
-    printf("OK! pid%0d check addr 0x%x value 0x%x pass\n",pid,addr,value);
+    printf("OK! pid%0d check addr 0x%x value 0x%x pass\n",pid,(unsigned int)addr,(unsigned int)value);
 #endif
     return 0;
   } else {
-    printf("ERROR!! pid%0d check addr 0x%x value 0x%x, exp 0x%x\n",pid,addr,act,value);
+    printf("ERROR!! pid%0d check addr 0x%x value 0x%x, exp 0x%x\n",pid,(unsigned int)addr,act,(unsigned int)value);
     return 1;
   }
 }
@@ -251,11 +251,11 @@ int check_pmu_irq(uint8_t pid, uint32_t isr, uint32_t aisr, uint8_t clr)
 {
   uint32_t  fail = 0;
   uint32_t  rval;
-  printf("start check ppu%d, isr:0x%x aisr:0x%x\n", pid, isr, aisr);
+  printf("start check ppu%d, isr:0x%x aisr:0x%x\n", pid, (unsigned int)isr, (unsigned int)aisr);
   if(isr != 0xffffffff) {
     rval = get_pmu_reg(pid,PPU_ISR_OTHER_IRQ_ADDR);
     if(isr != rval) {
-      printf("ERROR!! get act isr:0x%x\n",rval);
+      printf("ERROR!! get act isr:0x%x\n",(unsigned int)rval);
       fail++;
     }
     if(clr > 0) {
@@ -265,7 +265,7 @@ int check_pmu_irq(uint8_t pid, uint32_t isr, uint32_t aisr, uint8_t clr)
   if(aisr != 0xffffffff) {
     rval = get_pmu_reg(pid,PPU_AISR_UNSPT_POLICY_IRQ_ADDR);
     if(aisr != rval) {
-      printf("ERROR!! get act aisr:0x%x\n",rval);
+      printf("ERROR!! get act aisr:0x%x\n",(unsigned int)rval);
       fail++;
     }
     if(clr > 0) {
