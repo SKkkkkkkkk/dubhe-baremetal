@@ -33,6 +33,9 @@
     extern "C" {
 #endif
 /* *INDENT-ON* */
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <tinyCLI_port.h>
 
 #ifndef configSUPPORT_MALLOC
@@ -40,9 +43,6 @@
 #endif
 
 #ifndef FREERTOS
-	#include <stdint.h>
-	#include <stdbool.h>
-
 	typedef long BaseType_t;
 	typedef unsigned long UBaseType_t;
 	#define pdFALSE                                  ( ( BaseType_t ) 0 )
@@ -140,6 +140,7 @@ char *FreeRTOS_CLIGetOutputBuffer( void );
  */
 const char *FreeRTOS_CLIGetParameter( const char *pcCommandString, UBaseType_t uxWantedParameter, BaseType_t *pxParameterStringLength );
 
+void star_tinyCLI(void);
 /* *INDENT-OFF* */
 #ifdef __cplusplus
     }

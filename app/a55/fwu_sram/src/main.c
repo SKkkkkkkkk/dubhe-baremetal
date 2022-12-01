@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
-#include <arch_features.h>
+#include "arch_features.h"
+#include "FreeRTOS_CLI.h"
+#include "system_counter.h"
 
 static inline void setpc(uint64_t pc)
 {
@@ -17,11 +19,16 @@ static inline void setpc(uint64_t pc)
 
 int main()
 {
+	initSystemCounter(0, 0);
+	printf("FWU_SRAM: "BUILD_TIMESTAMP"\n\r");
 	printf("git hash: "GIT_HASH"\n\r");
-	printf("FWU SRAM:\n\r");
-	printf("\tddr init.\n\r");
-	printf("\tgo to FWU DDR.\n\r");
-	setpc(0x40300000UL);
+	
+	// 1. init ddr
+	printf("ddr init.\n\r");
+
+	// 2. load and run fwu_dram
+	int load_and_run(bool use_cli);
+	load_and_run(true);
 	return 0;
 }
 

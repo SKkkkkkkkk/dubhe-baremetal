@@ -1,11 +1,14 @@
 #ifndef QEMU
 #include <stdio.h>
-#include <regs_type.h>
-#include <arch_helpers.h>
+#include "arch_features.h"
+#include "FreeRTOS_CLI.h"
+#include "system_counter.h"
 
 int main()
 {
-	REG32(0x2E020000 + CNTCR_OFF) = CNTCR_FCREQ(0U) | CNTCR_EN;
+	initSystemCounter(0, 0);
+	printf("FWU_DRAM: "BUILD_TIMESTAMP"\n\r");
+	printf("git hash: "GIT_HASH"\n\r");
 	void CLIRegisterCommand(void);
 	void vCommandConsoleTask(void *pvParameters);
 	CLIRegisterCommand();

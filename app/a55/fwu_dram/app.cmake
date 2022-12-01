@@ -13,7 +13,6 @@ set(app_inc
 )
 
 # 添加模块
-set(ENABLE_USE_FREERTOS ON)
 set(ENABLE_USE_tinyCLI ON)
 set(ENABLE_USE_CRC ON)
 set(ENABLE_USE_xyzModem ON)

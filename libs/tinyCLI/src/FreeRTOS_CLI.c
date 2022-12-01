@@ -432,3 +432,95 @@ BaseType_t xLastCharacterWasSpace = pdFALSE;
 	return cParameters;
 }
 
+
+
+/********/
+#include <stdio.h>
+
+#pragma weak star_tinyCLI
+
+#define MAX_INPUT_LENGTH 50
+#define MAX_OUTPUT_LENGTH 96
+
+static const char *const pcWelcomeMessage = "Command server.Type Help to view a list of registered commands.";
+static char clrline[MAX_INPUT_LENGTH + 1];
+void star_tinyCLI(void)
+{
+	// Peripheral_Descriptor_t xConsole;
+	int8_t cRxedChar, cInputIndex = 0;
+	BaseType_t xMoreDataToFollow;
+	/* The input and output buffers are declared static to keep them off the stack. */
+	static char pcOutputString[MAX_OUTPUT_LENGTH], pcInputString[MAX_INPUT_LENGTH];
+
+	/* This code assumes the peripheral being used as the console has already
+    been opened and configured, and is passed into the task as the task
+    parameter.  Cast the task parameter to the correct type. */
+	// xConsole = ( Peripheral_Descriptor_t ) pvParameters;
+
+	/* Send a welcome message to the user knows they are connected. */
+	// FreeRTOS_write( xConsole, pcWelcomeMessage, strlen( pcWelcomeMessage ) );
+	printf("%s\n\r", pcWelcomeMessage);
+
+	memset(clrline, ' ', MAX_INPUT_LENGTH);
+	clrline[MAX_INPUT_LENGTH] = 0;
+
+	putchar('>');
+	for (;;) 
+	{
+		cRxedChar = getchar();
+
+		if (cRxedChar == '\r') 
+		{
+			printf("\n\r");
+
+			if (cInputIndex == 0) 
+			{
+				putchar('>');
+				continue;
+			}
+
+			do 
+			{
+				xMoreDataToFollow = FreeRTOS_CLIProcessCommand(
+					pcInputString, /* The command string.*/
+					pcOutputString, /* The output buffer. */
+					MAX_OUTPUT_LENGTH /* The size of the output buffer. */
+				);
+				printf("%s", pcOutputString);
+			} while (xMoreDataToFollow != pdFALSE);
+
+			cInputIndex = 0;
+			memset(pcInputString, 0x00, MAX_INPUT_LENGTH);
+			putchar('>');
+		}
+		else 
+		{
+			if ((cRxedChar>=32) && (cRxedChar<=126)) // 可显示字符
+			{
+				if (cInputIndex < MAX_INPUT_LENGTH) 
+				{
+					pcInputString[cInputIndex] = cRxedChar;
+					putchar(cRxedChar);
+					cInputIndex++;
+				}
+			}
+			else if ((cRxedChar == '\b') || (cRxedChar == 127)) // 退格&删除
+			{
+				if (cInputIndex > 0) 
+				{
+					cInputIndex--;
+					pcInputString[cInputIndex] = 0;
+					putchar('\b');
+					putchar(' ');
+					putchar('\b');
+				}
+			}
+			else //不支持的字符
+			{
+
+			}
+	}
+	}
+}
+
+
