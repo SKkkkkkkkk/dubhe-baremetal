@@ -144,6 +144,7 @@ void dw_apb_timer_test(bool sample)
 		// 	// 			timerx6_t3_i_copy, timerx6_t4_i_copy, timerx6_t5_i_copy, timerx6_t6_i_copy);
 		// 	flag = false;
 		// }
+		__WFI();
 	}
 #endif
 }

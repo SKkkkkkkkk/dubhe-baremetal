@@ -55,6 +55,18 @@ extern void SystemInit (void);
  */
 extern void SystemCoreClockUpdate (void);
 
+
+static inline void cm3_icache_switch(bool on)
+{
+	REG32(LP_CFG_BASE + 0x0300) = on;
+	return;
+}
+
+static inline bool is_cm3_icache_enable()
+{
+  return REG32(LP_CFG_BASE + 0x0300);
+}
+
 #ifdef __cplusplus
 }
 #endif
