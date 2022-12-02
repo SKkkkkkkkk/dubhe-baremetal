@@ -342,3 +342,25 @@ void clear_all_ppu_isr(void)
     set_pmu_reg(i,PPU_ISR_OTHER_IRQ_ADDR,0xffffffff);
   }
 }
+
+void set_pmu_fw_warm_rst(uint8_t pid)
+{
+  printf("NOTE : start fw warm rst pid:0x%x ...\n",pid);
+  uint32_t addr = PMU_PD_CORE0_CR_PPU_PSTATE_ADDR + 4*pid;
+  uint32_t value = get_pmu_reg(PMU, addr);
+  if(value != get_pmu_cr(pid,ON)) {
+    printf("ERROR : value:0x%x is not ON\n", (unsigned int)value);
+  }
+  value = (value & 0xfffffffc) | 0x1;
+  set_pmu_reg(PMU, addr, value);
+  while(1) {
+    if(((get_pmu_reg(PMU,PMU_PD_QACK_PPU_QACCEPTN_ADDR) >> pid) & 0x1) == 0) {
+      printf("fw rst qchannel handshake done\n");
+      break;
+    }
+  }
+  set_pmu_reg(PMU, addr, value & 0xfffffff7); //rst
+  value = value | 0x3;
+  set_pmu_reg(PMU, addr, value); //rst release
+  set_pmu_reg(PMU, addr, value & 0xfffffffe); //qreqn assert
+}

@@ -16,6 +16,7 @@ int err_cnt = 0;
 int count = 0;
 static volatile uint32_t timerx2_t1_i = 0U;
 #define GPIO0                GPIO0_BASE
+#define GIC_INTREFACE        0
 
 #define TIMER_FREQ (20000000)
 
@@ -67,6 +68,9 @@ void core1_c_entry(void)
 	printf("core1 0x2e000ff4 = 0x%x\n", REG32(0x2e000ff4));
 	if( REG32(0x2e000ff4) == 0){
 		REG32(0x2e000ff4) = 0x5a5a5a01;
+#if GIC_INTREFACE
+		GIC_DisableInterface();
+#endif
 		set_power_off_a55(CORE1);
 		uint32_t pwsr = 1;
 		while(1) {
@@ -78,6 +82,9 @@ void core1_c_entry(void)
 		}
 		POWER_OFF_SEQ();
 	}else{
+#if GIC_INTREFACE
+		GIC_EnableInterface();
+#endif
 		printf("core1 is wakeup\n");
 	}
     while(1);
@@ -89,6 +96,9 @@ void core2_c_entry(void)
 	printf("core2 0x2e000ff8 = 0x%x\n", REG32(0x2e000ff8));
 	if( REG32(0x2e000ff8) == 0){
 		REG32(0x2e000ff8) = 0x5a5a5a02;
+#if GIC_INTREFACE
+		GIC_DisableInterface();
+#endif
 		set_power_off_a55(CORE2);
 		uint32_t pwsr = 1;
 		while(1) {
@@ -100,6 +110,9 @@ void core2_c_entry(void)
 		}
 		POWER_OFF_SEQ();
 	}else{
+#if GIC_INTREFACE
+		GIC_EnableInterface();
+#endif
 		printf("core2 is wakeup\n");
 	}
     while(1);
@@ -111,6 +124,9 @@ void core3_c_entry(void)
 	printf("core3 0x2e000ffc = 0x%x\n", REG32(0x2e000ffc));
 	if( REG32(0x2e000ffc) == 0){
 		REG32(0x2e000ffc) = 0x5a5a5a03;
+#if GIC_INTREFACE
+		GIC_DisableInterface();
+#endif
 		set_power_off_a55(CORE3);
 		uint32_t pwsr = 1;
 		while(1) {
@@ -122,6 +138,9 @@ void core3_c_entry(void)
 		}
 		POWER_OFF_SEQ();
 	}else{
+#if GIC_INTREFACE
+		GIC_EnableInterface();
+#endif
 		printf("core3 is wakeup\n");
 	}
     while(1);
@@ -304,6 +323,8 @@ int main (void)
 	int local_gic_cnt = gic_cnt;
 	printf("core0 0x2e000ff0 = 0x%x\n", REG32(0x2e000ff0));
 	if( REG32(0x2e000ff0) == 0){
+		printf("core0 is cold boot\n");
+
 		REG32(0x2e000ff0) = 0x5a5a5a00;
 		//open each PPU ISR
 		set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
@@ -318,6 +339,13 @@ int main (void)
 		IRQ_Enable(PMU_IRQn);
 	}else{
 		printf("core0 is wakeup\n");
+#if GIC_INTREFACE
+		GIC_EnableInterface();
+#endif
+		GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0);
+		IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
+		IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
+		IRQ_Enable(Timerx2_T1_IRQn);
         wakeup_core(3, core3_c_entry); //core3 enter to WFI
 		systimer_delay(1, IN_S);
         wakeup_core(2, core2_c_entry); //core2 enter to WFI
@@ -345,6 +373,9 @@ int main (void)
 		systimer_delay(1, IN_S);
         // set_power_off_seq();
         // seehi_cmd(0xff000000);
+#if GIC_INTREFACE
+		GIC_DisableInterface();
+#endif
 		set_power_off_a55(AP);
 		set_power_off_a55(CORE0);
 		timer_enable(Timerx2_T1);

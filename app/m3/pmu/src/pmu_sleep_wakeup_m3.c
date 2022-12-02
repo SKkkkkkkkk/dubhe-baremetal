@@ -10,9 +10,11 @@ int err_cnt = 0;
 int count = 0;
 #define GPIO0                GPIO0_BASE
 
-#define WAKEUP_PIN         0
-#define WAKEUP_PIN_GROUP   (WAKEUP_PIN / 32)
-#define WAKEUP_PIN_NUM     (WAKEUP_PIN % 32)
+#define WAKEUP_PIN			0
+#define WAKEUP_PIN_GROUP	(WAKEUP_PIN / 32)
+#define WAKEUP_PIN_NUM		(WAKEUP_PIN % 32)
+#define DEBUG_REGS			(0x4e000ee0)
+#define DUMP_LOG(x)			(REG32(DEBUG_REGS) = (0x1UL << (x)) | REG32(DEBUG_REGS))
 
 void irq_handler_gpio(void)
 {
@@ -93,13 +95,13 @@ void set_power_off_seq(void)
     set_pmu_reg(PMU,PMU_PDSEQ_1_LOGICID_ADDR,(PERI0 << 8 | OFF));
     set_pmu_reg(PMU,PMU_PDSEQ_2_LOGICID_ADDR,(DDR1 << 8 | OFF));
     set_pmu_reg(PMU,PMU_PDSEQ_3_LOGICID_ADDR,(DDR0 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_4_LOGICID_ADDR,(CORE3 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_5_LOGICID_ADDR,(CORE2 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_6_LOGICID_ADDR,(CORE1 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_7_LOGICID_ADDR,(CORE0 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_8_LOGICID_ADDR,(AP << 8 | OFF));
+    // set_pmu_reg(PMU,PMU_PDSEQ_4_LOGICID_ADDR,(CORE3 << 8 | OFF));
+    // set_pmu_reg(PMU,PMU_PDSEQ_5_LOGICID_ADDR,(CORE2 << 8 | OFF));
+    // set_pmu_reg(PMU,PMU_PDSEQ_6_LOGICID_ADDR,(CORE1 << 8 | OFF));
+    // set_pmu_reg(PMU,PMU_PDSEQ_7_LOGICID_ADDR,(CORE0 << 8 | OFF));
+    // set_pmu_reg(PMU,PMU_PDSEQ_8_LOGICID_ADDR,(AP << 8 | OFF));
     set_pmu_reg(PMU,PMU_PDSEQ_9_LOGICID_ADDR,(LP << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, (10 << 4 | 1));
+    set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, (5 << 4 | 1));
 }
 
 void set_default_power_on_seq(void)
@@ -184,16 +186,26 @@ int main (void)
     //open each PPU ISR
     set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
-	void pmu_irqhandler(void);
-	NVIC_SetPriority(PMU_IRQn, 0);
-	NVIC_SetVector(PMU_IRQn, (unsigned int)(uintptr_t)pmu_irqhandler);
-	NVIC_EnableIRQ(PMU_IRQn);
+	printf("core0 0x4e000ff0 = 0x%x\n", (unsigned int)REG32(DEBUG_REGS + 0x20));
+	if( REG32(DEBUG_REGS + 0x20) == 0){
 
-	void irq_handler_gpio(void);
-	NVIC_SetPriority(GPIO0_IRQn, 0);
-	NVIC_SetVector(GPIO0_IRQn, (unsigned int)(uintptr_t)irq_handler_gpio);
-	NVIC_EnableIRQ(GPIO0_IRQn);
+		printf("m3 is cold boot\n");
+		REG32(DEBUG_REGS + 0x20) = 0x5a5a5a00;
+		REG32(DEBUG_REGS) = 0;
 
+		void pmu_irqhandler(void);
+		NVIC_SetPriority(PMU_IRQn, 0);
+		NVIC_SetVector(PMU_IRQn, (unsigned int)(uintptr_t)pmu_irqhandler);
+		NVIC_EnableIRQ(PMU_IRQn);
+
+		void irq_handler_gpio(void);
+		NVIC_SetPriority(GPIO0_IRQn, 0);
+		NVIC_SetVector(GPIO0_IRQn, (unsigned int)(uintptr_t)irq_handler_gpio);
+		NVIC_EnableIRQ(GPIO0_IRQn);
+
+	}else{
+		printf("m3 is wakeup\n");
+	}
     printf("NOTE gic_cnt is %d, err_cnt is %d", gic_cnt, err_cnt);
 
     while (gic_cnt <= 2) {
@@ -202,7 +214,10 @@ int main (void)
         // set_rtc_wakeup();
 		set_gpio_wakeup();
         set_pmu_wakeup(4); //set wakeup target:lp
+		DUMP_LOG(0);
         set_power_off_seq();
+		DUMP_LOG(1);
+        asm volatile("wfi");
       } else if(gic_cnt == 2) {
         // rtc_int_clr();
 		*((unsigned int *) (GPIO0 + 0x4c)) = 0xffffffff; //clear gpio interrupt
@@ -221,7 +236,7 @@ int main (void)
     if(err_cnt == 0) {
         TEST_PASS;
     } else {
-		systimer_delay(10, IN_US);
+		systimer_delay(1, IN_S);
         TEST_FAIL;
     }
     return 0;

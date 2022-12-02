@@ -8,6 +8,22 @@
 
 int gic_cnt = 0;
 int err_cnt = 0;
+
+void isp_fw_rst(void)
+{
+      set_pmu_power_on(IMG);
+      set_pmu_power_on(ISP);
+      reg32(ISP_BASE+ISP_IMSC) = 0x5;
+      printf("ISP.ISP_IMSC is set to 0x%x",reg32(ISP_BASE+ISP_IMSC));
+      set_pmu_fw_warm_rst(ISP);
+      if(reg32(ISP_BASE+ISP_IMSC) != 0) {
+          printf("ERROR, ISP.ISP_IMSC is 0x%x, not rst",reg32(ISP_BASE+ISP_IMSC));
+          err_cnt++;
+      } else {
+          printf("ISP.ISP_IMSC is 0x%x, rsted",reg32(ISP_BASE+ISP_IMSC));
+      }
+}
+
 void pmu_irqhandler (void) {
     uint32_t exp;
     printf("PMU interrupt occurred! gic_cnt:%d\n",gic_cnt);
