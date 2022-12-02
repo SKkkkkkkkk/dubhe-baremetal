@@ -290,8 +290,8 @@ void set_pmu_off_pd2on()
 
 void set_pmu_wakeup(uint8_t target)
 {
-  set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0x30)); //spi0
-  set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0x2f)); //spi1
+  set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0x7)); //timer0_intr0
+  // set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0x2f)); //spi1
   set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0x9));  //rtc
   set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x36)); //uart3
   set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); //gpio0_0
