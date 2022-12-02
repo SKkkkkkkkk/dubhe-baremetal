@@ -192,6 +192,9 @@ typedef enum IRQn
 #endif
 #define __Vendor_SysTickConfig    0U        /* Set to 1 if different SysTick Config is used */
 
+#include <stdio.h>
+#include <stdbool.h>
+#include "chip_mem_layout.h"
 #include "core_cm3.h"                       /* Processor and core peripherals */
 #include "system_m3.h"                  /* System Header */
 
