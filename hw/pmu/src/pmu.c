@@ -295,7 +295,7 @@ void set_pmu_wakeup(uint8_t target)
   set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0x9));  //rtc
   set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x36)); //uart3
   set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); //gpio0_0
-  set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0x6d)); //gpio0_1
+  set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0x5e)); //gpio0_16
 }
 
 void set_pmu_power_on(uint8_t pid)

@@ -55,6 +55,7 @@
 #define ON    0x8
 #define OFF   0x0
 #define RST   0x9
+#define RCV   0xa
 //OP_POLICY
 #define OP0   0x0
 #define OP1   0x1
@@ -79,6 +80,7 @@ extern void set_pmu_power_on(uint8_t pid);
 extern void set_pmu_power_off(uint8_t pid);
 extern void set_pmu_warm_rst(uint8_t pid);
 extern void clear_all_ppu_isr(void);
+extern void set_pmu_fw_warm_rst(uint8_t pid);
 
 #ifdef FPGA
     #define TEST_PASS do { \

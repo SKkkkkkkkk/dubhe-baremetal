@@ -16,11 +16,11 @@ int err_cnt = 0;
 int count = 0;
 static volatile uint32_t timerx2_t1_i = 0U;
 #define GPIO0                GPIO0_BASE
-#define GIC_INTREFACE        0
+#define GIC_INTREFACE        1
 
 #define TIMER_FREQ (20000000)
 
-#define WAKEUP_PIN         0
+#define WAKEUP_PIN         16
 #define WAKEUP_PIN_GROUP   (WAKEUP_PIN / 32)
 #define WAKEUP_PIN_NUM     (WAKEUP_PIN % 32)
 
@@ -164,7 +164,7 @@ void irq_handler_gpio(void)
 
 void set_gpio_wakeup(void)
 {
-	pinmux(0, 7); //gpio0_0
+	pinmux(WAKEUP_PIN, 7); //gpio0_0
 
 	void irq_handler_gpio(void);
 	GIC_SetTarget(GPIO0_IRQn, 1 << 0);
@@ -342,10 +342,10 @@ int main (void)
 #if GIC_INTREFACE
 		GIC_EnableInterface();
 #endif
-		GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0);
-		IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
-		IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
-		IRQ_Enable(Timerx2_T1_IRQn);
+		// GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0);
+		// IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
+		// IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
+		// IRQ_Enable(Timerx2_T1_IRQn);
         wakeup_core(3, core3_c_entry); //core3 enter to WFI
 		systimer_delay(1, IN_S);
         wakeup_core(2, core2_c_entry); //core2 enter to WFI

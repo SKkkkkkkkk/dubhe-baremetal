@@ -100,7 +100,7 @@ void set_power_off_seq(void)
     // set_pmu_reg(PMU,PMU_PDSEQ_6_LOGICID_ADDR,(CORE1 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_7_LOGICID_ADDR,(CORE0 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_8_LOGICID_ADDR,(AP << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_9_LOGICID_ADDR,(LP << 8 | OFF));
+    set_pmu_reg(PMU,PMU_PDSEQ_4_LOGICID_ADDR,(LP << 8 | OFF));
     set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, (5 << 4 | 1));
 }
 
@@ -128,10 +128,10 @@ void set_default_power_on_seq(void)
 
 void pmu_irqhandler (void) {
     unsigned int exp;
-    printf("NOTE PMU interrupt occurred! gic_cnt:%d",gic_cnt);
+    printf("NOTE PMU interrupt occurred! gic_cnt:%d\n",gic_cnt);
     //IRQ_Disable(INT_PMU_INTR);
     unsigned int tmp = get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR);
-    printf("read PMU_ISR:%x",tmp);
+    printf("read PMU_ISR:%x\n",tmp);
     if(gic_cnt == 0) {
         //default power on interrupt
         exp = get_pmu_isr(PMU); //0x7d961f;
@@ -142,9 +142,9 @@ void pmu_irqhandler (void) {
         for(int i=0; i<20; i++) {
             if(get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR) == exp) {
                 if(gic_cnt == 0) {
-                    printf("NOTE all default power on PD power up");
+                    printf("NOTE all default power on PD power up\n");
                 } else {
-                    printf("NOTE enter power on LP");
+                    printf("NOTE enter power on LP\n");
                 }
                 break;
             }
@@ -159,7 +159,7 @@ void pmu_irqhandler (void) {
     } else if(gic_cnt == 2) {
         exp = 0x1efff;
         if(tmp == exp) {
-            printf("NOTE all PD power up again");
+            printf("NOTE all PD power up again\n");
             for(int i=0; i<PDNUM; i++) {
                 if(((exp >> i) & 1) == 1) {
                     err_cnt += check_pmu_irq(i,get_pmu_isr(i),0xffffffff,1);
@@ -186,7 +186,7 @@ int main (void)
     //open each PPU ISR
     set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
-	printf("core0 0x4e000ff0 = 0x%x\n", (unsigned int)REG32(DEBUG_REGS + 0x20));
+	printf("m3 core 0x4e000ff0 = 0x%x\n", (unsigned int)REG32(DEBUG_REGS + 0x20));
 	if( REG32(DEBUG_REGS + 0x20) == 0){
 
 		printf("m3 is cold boot\n");
@@ -206,14 +206,14 @@ int main (void)
 	}else{
 		printf("m3 is wakeup\n");
 	}
-    printf("NOTE gic_cnt is %d, err_cnt is %d", gic_cnt, err_cnt);
+    printf("NOTE gic_cnt is %d, err_cnt is %d\n", gic_cnt, err_cnt);
 
     while (gic_cnt <= 2) {
       if(gic_cnt == 0) {
       } else if(gic_cnt == 1) {
         // set_rtc_wakeup();
 		set_gpio_wakeup();
-        set_pmu_wakeup(4); //set wakeup target:lp
+        set_pmu_wakeup(2); //set wakeup target:lp
 		DUMP_LOG(0);
         set_power_off_seq();
 		DUMP_LOG(1);
