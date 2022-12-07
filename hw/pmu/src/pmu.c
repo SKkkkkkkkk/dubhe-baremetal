@@ -298,7 +298,7 @@ void set_pmu_wakeup(uint8_t src, uint8_t target)
   // set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0x5e)); //gpio0_16
 
   if((src == 0) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0x7));  }//timerx2_0
-  if((src == 1) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0x2f)); }//spi1
+  if((src == 1) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0x5e)); }//gpio0_16
   if((src == 2) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0x9));  }//rtc
   if((src == 3) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x36)); }//uart3
   if((src == 4) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); }//gpio0_0
