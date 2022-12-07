@@ -74,7 +74,7 @@ extern int check_pmu_irq(uint8_t pid, uint32_t isr, uint32_t aisr, uint8_t clr);
 extern void set_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value);
 extern int  get_pmu_reg(uint8_t pid, uint32_t addr);
 extern int  check_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value);
-extern void set_pmu_wakeup(uint8_t target);
+extern void set_pmu_wakeup(uint8_t src, uint8_t target);
 extern void set_pmu_off_pd2on();
 extern void set_pmu_power_on(uint8_t pid);
 extern void set_pmu_power_off(uint8_t pid);

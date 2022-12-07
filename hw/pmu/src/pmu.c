@@ -219,7 +219,7 @@ void set_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value)
 {
   int reg_addr = addr + get_pmu_base(pid);
 #if DEBUG_PMU
-  printf("start set pid%0d addr 0x%x value 0x%x\n",pid,(unsigned int)reg_addr,(unsigned int)value);
+  printf("start set %s:pid%0d addr 0x%x value 0x%x\n",get_pmu_name(pid), pid,(unsigned int)reg_addr,(unsigned int)value);
 #endif
   REG32(reg_addr) = value;
 }
@@ -229,7 +229,7 @@ int get_pmu_reg(uint8_t pid, uint32_t addr)
   int reg_addr = addr + get_pmu_base(pid);
   int val = REG32(reg_addr);
 #if DEBUG_PMU
-  // printf("start get pid%0d addr 0x%x val 0x%x\n",(unsigned int)pid,(unsigned int)reg_addr, val);
+  // printf("start get %s:pid%0d addr 0x%x val 0x%x\n",get_pmu_name(pid), (unsigned int)pid,(unsigned int)reg_addr, val);
 #endif
   return(val);
 }
@@ -239,11 +239,11 @@ int check_pmu_reg(uint8_t pid, uint32_t addr, uint32_t value)
   int act = get_pmu_reg(pid,addr);
   if(act == value) {
 #if DEBUG_PMU
-    printf("OK! pid%0d check addr 0x%x value 0x%x pass\n",pid,(unsigned int)addr,(unsigned int)value);
+    printf("OK! %s:pid%0d check addr 0x%x value 0x%x pass\n",get_pmu_name(pid), pid,(unsigned int)addr,(unsigned int)value);
 #endif
     return 0;
   } else {
-    printf("ERROR!! pid%0d check addr 0x%x value 0x%x, exp 0x%x\n",pid,(unsigned int)addr,act,(unsigned int)value);
+    printf("ERROR!! %s:pid%0d check addr 0x%x value 0x%x, exp 0x%x\n",get_pmu_name(pid), pid,(unsigned int)addr,act,(unsigned int)value);
     return 1;
   }
 }
@@ -251,7 +251,7 @@ int check_pmu_irq(uint8_t pid, uint32_t isr, uint32_t aisr, uint8_t clr)
 {
   uint32_t  fail = 0;
   uint32_t  rval;
-  printf("start check ppu%d, isr:0x%x aisr:0x%x\n", pid, (unsigned int)isr, (unsigned int)aisr);
+  printf("start check %s:ppu%d, isr:0x%x aisr:0x%x\n",get_pmu_name(pid), pid, (unsigned int)isr, (unsigned int)aisr);
   if(isr != 0xffffffff) {
     rval = get_pmu_reg(pid,PPU_ISR_OTHER_IRQ_ADDR);
     if(isr != rval) {
@@ -288,14 +288,21 @@ void set_pmu_off_pd2on()
   set_pmu_reg(PMU,PMU_PU_CR_NUM_PD_ADDR,   (7 << 4 | 1));
 }
 
-void set_pmu_wakeup(uint8_t target)
+void set_pmu_wakeup(uint8_t src, uint8_t target)
 {
-  set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0x7)); //timer0_intr0
+  // set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0x7)); //timer0_intr0
   // set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0x2f)); //spi1
-  set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0x9));  //rtc
-  set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x36)); //uart3
-  set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); //gpio0_0
-  set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0x5e)); //gpio0_16
+  // set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0x9));  //rtc
+  // set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x36)); //uart3
+  // set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); //gpio0_0
+  // set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0x5e)); //gpio0_16
+
+  if((src == 0) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0x7));  }//timerx2_0
+  if((src == 1) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0x2f)); }//spi1
+  if((src == 2) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0x9));  }//rtc
+  if((src == 3) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x36)); }//uart3
+  if((src == 4) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); }//gpio0_0
+  if((src == 5) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0x6d)); }//gpio0_1
 }
 
 void set_pmu_power_on(uint8_t pid)
@@ -308,16 +315,29 @@ void set_pmu_power_on(uint8_t pid)
       break;
     }
   }
+  if(pid == DDR0) {
+    PMU_SET_PMU_DDR_CR_DATA_RETENTION0(0);
+  }
+  if(pid == DDR1) {
+    PMU_SET_PMU_DDR_CR_DATA_RETENTION1(0);
+  }
 }
 
 
 void set_pmu_power_off(uint8_t pid)
 {
-  printf("NOTE : start power off pid:0x%x ...\n",pid);
+  printf("NOTE : start power off %spid:0x%x ...\n",get_pmu_name(pid), pid);
+  if(pid == DDR0) {
+    PMU_SET_PMU_DDR_CR_DATA_RETENTION0(1);
+  }
+  if(pid == DDR1) {
+    PMU_SET_PMU_DDR_CR_DATA_RETENTION1(1);
+  }
+  
   set_pmu_reg(pid,PPU_PWPR_OP_DYN_EN_ADDR, OFF);
   while(1) {
     if(get_pmu_reg(pid,PPU_PWSR_OP_DYN_STATUS_ADDR) == get_pmu_pwsr(pid,OFF)) {
-      printf("NOTE : finish power off pid:0x%x\n",pid);
+      printf("NOTE : finish power off %s:pid:0x%x\n",get_pmu_name(pid), pid);
       break;
     }
   }
@@ -326,26 +346,19 @@ void set_pmu_power_off(uint8_t pid)
 
 void set_pmu_warm_rst(uint8_t pid)
 {
-  printf("NOTE : start warm rst pid:0x%x ...\n",pid);
+  printf("NOTE : start warm rst %s:pid:0x%x ...\n",get_pmu_name(pid), pid);
   set_pmu_reg(pid,PPU_PWPR_OP_DYN_EN_ADDR, RST);
   while(1) {
     if((get_pmu_reg(pid,PPU_ISR_OTHER_IRQ_ADDR) & 0x1) == 1) {
-      printf("NOTE : finish warm rst pid:0x%x\n",pid);
+      printf("NOTE : finish warm rst %s:pid:0x%x\n",get_pmu_name(pid), pid);
       break;
     }
   }
 }
 
-void clear_all_ppu_isr(void)
-{
-  for(int i=0; i<PDNUM; i++) {
-    set_pmu_reg(i,PPU_ISR_OTHER_IRQ_ADDR,0xffffffff);
-  }
-}
-
 void set_pmu_fw_warm_rst(uint8_t pid)
 {
-  printf("NOTE : start fw warm rst pid:0x%x ...\n",pid);
+  printf("NOTE : start fw warm rst %s:pid:0x%x ...\n",get_pmu_name(pid), pid);
   uint32_t addr = PMU_PD_CORE0_CR_PPU_PSTATE_ADDR + 4*pid;
   uint32_t value = get_pmu_reg(PMU, addr);
   if(value != get_pmu_cr(pid,ON)) {
@@ -363,4 +376,12 @@ void set_pmu_fw_warm_rst(uint8_t pid)
   value = value | 0x3;
   set_pmu_reg(PMU, addr, value); //rst release
   set_pmu_reg(PMU, addr, value & 0xfffffffe); //qreqn assert
+}
+
+
+void clear_all_ppu_isr(void)
+{
+  for(int i=0; i<PDNUM; i++) {
+    set_pmu_reg(i,PPU_ISR_OTHER_IRQ_ADDR,0xffffffff);
+  }
 }

@@ -117,7 +117,7 @@ void pmu_irqhandler (void) {
               0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
               0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB |
               0x1 << PMU_ISR_PPU_ISP_IRQ_LSB |
-              // 0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
+			  0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
               0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
               0x1 << PMU_ISR_PPU_GPU_IRQ_LSB |
               0x1 << PMU_ISR_PPU_LP_IRQ_LSB |
@@ -146,7 +146,7 @@ void pmu_irqhandler (void) {
               0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
               0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB |
               0x1 << PMU_ISR_PPU_ISP_IRQ_LSB |
-              // 0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
+			  0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
               0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
               0x1 << PMU_ISR_PPU_GPU_IRQ_LSB |
               0x1 << PMU_ISR_PPU_LP_IRQ_LSB |
@@ -175,7 +175,7 @@ void pmu_irqhandler (void) {
               0x1 << PMU_ISR_PPU_IMG_IRQ_LSB |
               0x1 << PMU_ISR_PPU_DEWARP_IRQ_LSB |
               0x1 << PMU_ISR_PPU_ISP_IRQ_LSB |
-              // 0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
+			  0x1 << PMU_ISR_PPU_DDR0_IRQ_LSB |
               0x1 << PMU_ISR_PPU_DDR1_IRQ_LSB |
               0x1 << PMU_ISR_PPU_GPU_IRQ_LSB |
               0x1 << PMU_ISR_PPU_LP_IRQ_LSB |
@@ -224,6 +224,7 @@ int main (void)
 		printf("///////////////open other pd\n");
         set_pmu_off_pd2on();
       } else if(gic_cnt == 2) {
+		printf("///////////////reset core1 - core3 pd\n");
         for(int i=0; i<PDNUM; i++) {
 			if(i == CORE1 || i== CORE2 || i == CORE3){
 				set_warm_rst_a55(i);
@@ -232,7 +233,7 @@ int main (void)
 		printf("////////////reset other pd\n");
         set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
         for(int i=0; i<PDNUM; i++) {
-			if(i == CORE0 || i == CORE1 || i== CORE2 || i == CORE3 || i == AP || i == DDR0 || i == PERI0)
+			if(i == CORE0 || i == CORE1 || i== CORE2 || i == CORE3 || i == AP || i == PERI0)
 				continue;
 
 #ifdef USE_SW_RST
@@ -248,7 +249,7 @@ int main (void)
 		printf("///////////////close other pd\n");
         set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
         for(int i=0; i<PDNUM; i++) {
-			if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3 || i == AP || i == DDR0 || i == PERI0)
+			if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3 || i == AP || i == PERI0)
 				continue;
 			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
 		}
@@ -256,7 +257,7 @@ int main (void)
 		printf("///////////////open other pd\n");
         set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
         for(int i=0; i<PDNUM; i++) {
-			if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3 || i == AP || i == DDR0 || i == PERI0)
+			if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3 || i == AP || i == PERI0)
 				continue;
 			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,ON);
 		}

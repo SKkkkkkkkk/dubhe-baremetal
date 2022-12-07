@@ -188,12 +188,14 @@ void timerx2_t1_irqhandler(void)
 	(void)TIMERX2->Timer1EOI;
 	++timerx2_t1_i;
     printf("timerx2_t1_irqhandler in irq %d.\n", timerx2_t1_i);
+	printf("irq TimersRawIntStatus 0x%x\n", TIMERX2->TimersRawIntStatus);
+	printf("irq TimersIntStatus 0x%x\n", TIMERX2->TimersIntStatus);
 }
 
 void set_timerx2_wakeup(void)
 {
 	void timerx2_t1_irqhandler(void);
-	GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0);
+	GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0); //core0
 	IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
 	IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
 	IRQ_Enable(Timerx2_T1_IRQn);
@@ -205,7 +207,6 @@ void set_timerx2_wakeup(void)
 		.timer_mode = Mode_User_Defined
 	};
 	timer_init(&timer_init_config);
-
 }
 
 void set_power_off_seq(void)
@@ -321,6 +322,7 @@ int main (void)
 	systimer_init();
 
 	int local_gic_cnt = gic_cnt;
+
 	printf("core0 0x2e000ff0 = 0x%x\n", REG32(0x2e000ff0));
 	if( REG32(0x2e000ff0) == 0){
 		printf("core0 is cold boot\n");
@@ -333,7 +335,7 @@ int main (void)
 		GIC_CPUInterfaceInit(); //per CPU
 
 		void pmu_irqhandler(void);
-		GIC_SetTarget(PMU_IRQn, 1 << 0);
+		GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
 		IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
 		IRQ_SetPriority(PMU_IRQn, 0 << 3);
 		IRQ_Enable(PMU_IRQn);
@@ -342,15 +344,28 @@ int main (void)
 #if GIC_INTREFACE
 		GIC_EnableInterface();
 #endif
-		// GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0);
-		// IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
-		// IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
-		// IRQ_Enable(Timerx2_T1_IRQn);
-        wakeup_core(3, core3_c_entry); //core3 enter to WFI
+		GIC_DistInit();
+		GIC_CPUInterfaceInit(); //per CPU
+
+		void pmu_irqhandler(void);
+		GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
+		IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
+		IRQ_SetPriority(PMU_IRQn, 0 << 3);
+		IRQ_Enable(PMU_IRQn);
+		printf("wakeup TimersRawIntStatus 0x%x\n", TIMERX2->TimersRawIntStatus);
+		printf("wakeup TimersIntStatus 0x%x\n", TIMERX2->TimersIntStatus);
+		GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0); //core0
+		IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
+		IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
+		IRQ_Enable(Timerx2_T1_IRQn);
+		set_power_on_a55(3);
+		wakeup_core(3, core3_c_entry); //core3 enter to WFI
 		systimer_delay(1, IN_S);
-        wakeup_core(2, core2_c_entry); //core2 enter to WFI
+		set_power_on_a55(2);
+		wakeup_core(2, core2_c_entry); //core2 enter to WFI
 		systimer_delay(1, IN_S);
-        wakeup_core(1, core1_c_entry); //core1 enter to WFI
+		set_power_on_a55(1);
+		wakeup_core(1, core1_c_entry); //core1 enter to WFI
 		systimer_delay(1, IN_S);
 	}
 
@@ -364,13 +379,14 @@ int main (void)
 		set_pmu_reg(PMU,PMU_PU_CR_NUM_PD_ADDR, 0); //clear PU_EN
         set_gpio_wakeup();
 		set_timerx2_wakeup();
-        set_pmu_wakeup(3); //set wakeup target:a55+pmic
+        set_pmu_wakeup(0, 0x44); //set wakeup target:a55 core0
+		timer_enable(Timerx2_T1);
         wakeup_core(3, core3_c_entry); //core3 enter to WFI
 		systimer_delay(1, IN_S);
         wakeup_core(2, core2_c_entry); //core2 enter to WFI
 		systimer_delay(1, IN_S);
         wakeup_core(1, core1_c_entry); //core1 enter to WFI
-		systimer_delay(1, IN_S);
+		systimer_delay(4, IN_S);
         // set_power_off_seq();
         // seehi_cmd(0xff000000);
 #if GIC_INTREFACE
@@ -378,7 +394,6 @@ int main (void)
 #endif
 		set_power_off_a55(AP);
 		set_power_off_a55(CORE0);
-		timer_enable(Timerx2_T1);
 		printf("core0 enter wfi !!\n");
         POWER_OFF_SEQ(); //core0 enter WFI
       } else if(gic_cnt == 3) {
