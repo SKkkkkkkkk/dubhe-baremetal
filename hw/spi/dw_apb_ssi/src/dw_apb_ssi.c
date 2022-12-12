@@ -14,6 +14,7 @@
 #define SPI0 ((DW_APB_SSI_TypeDef *)SPI0_BASE)
 #define SPI1 ((DW_APB_SSI_TypeDef *)SPI1_BASE)
 #define SPI2 ((DW_APB_SSI_TypeDef *)SPI2_BASE)
+#define SPIS ((DW_APB_SSI_TypeDef *)SPIS_BASE)
 
 #ifdef A55
 	#include "arch_features.h"
@@ -2206,3 +2207,177 @@ Data_phase:
 // 	dw_spi_enhanced_read(TEST_SPI_ID, &enhanced_transfer_format);
 // 	dw_spi_deinit(TEST_SPI_ID, true);
 // }
+
+
+
+
+/****************bootspi作主机 spi1作从机 TEST***********************/
+static uint8_t m_txbuf[32] = {0};
+static uint8_t m_rxbuf[32] = {0};
+static uint8_t s_txbuf[32] = {0};
+static uint8_t s_rxbuf[32] = {0};
+
+void master_slave_test(void)
+{
+
+	// MST PINMUX
+	pinmux(56, 0);
+	pinmux(57, 0);
+	pinmux(58, 0);
+	pinmux(59, 0);
+	pinmux(60, 0);
+	pinmux(61, 0);
+
+	// SLV PINMUX
+	pinmux(70, 2);
+	pinmux(71, 2);
+	pinmux(72, 2);
+	pinmux(73, 2);
+
+	// gpio_init_config_t gpio_init_config = {
+	// 	.gpio_control_mode = Software_Mode,
+	// 	.gpio_mode = GPIO_Output_Mode
+	// };
+	// gpio_init_config.group = GROUP_GPIO2;
+	// gpio_init_config.pin = 6;
+	// gpio_init(&gpio_init_config);
+
+	// gpio_init_config.pin = 7;
+	// gpio_init(&gpio_init_config);
+
+	// gpio_init_config.pin = 8;
+	// gpio_init(&gpio_init_config);
+
+	// gpio_init_config.pin = 9;
+	// gpio_init(&gpio_init_config);
+
+	// while(1)
+	// {
+	// 	gpio_write_pin(GROUP_GPIO2, 6, GPIO_PIN_RESET);
+	// 	gpio_write_pin(GROUP_GPIO2, 7, GPIO_PIN_RESET);
+	// 	gpio_write_pin(GROUP_GPIO2, 8, GPIO_PIN_RESET);
+	// 	gpio_write_pin(GROUP_GPIO2, 9, GPIO_PIN_RESET);
+
+	// 	gpio_write_pin(GROUP_GPIO2, 6, GPIO_PIN_SET);
+	// 	gpio_write_pin(GROUP_GPIO2, 7, GPIO_PIN_SET);
+	// 	gpio_write_pin(GROUP_GPIO2, 8, GPIO_PIN_SET);
+	// 	gpio_write_pin(GROUP_GPIO2, 9, GPIO_PIN_SET);
+	// }
+
+    // Normal_SPI_Type* SPIS = (Normal_SPI_Type*)SPI1BASE;
+    // uint32_t a0 = (uint32_t)SPIS;
+    // uint32_t a1 = (uint32_t)&(SPIS->S_CTRLR0);
+    // uint32_t a2 = sizeof(*SPIS);
+
+    // mprintf("%x\n",a0);
+    // mprintf("%x\n",a1);
+    // mprintf("%x\n",a2);
+
+    for(uint8_t i=0;i<32;i++)
+        m_txbuf[i] = i;
+    for(uint8_t i=31,j=0;j<32;i--,j++)
+        s_txbuf[j] = (uint8_t)i;
+
+    /*******bootspi主机初始化*********/
+    //从MAP模式切换为配置模式
+    BOOTSPI->MAP = 1UL;
+
+    //diable spi才能写CTRLR01
+    BOOTSPI->SSIENR = 0;
+
+    //取消选择从机
+    BOOTSPI->SER = 0UL;
+
+	//配置CTRLR0
+	uint32_t ctrl0 = BOOTSPI->CTRLR0;
+
+	//使用SPI协议
+	ctrl0 &= (~SPI_FRF_Msk);
+
+	//SPI Mode
+	ctrl0 &= ~(3UL << 6UL);
+	ctrl0 |= 3 << 6UL;
+
+	//TMOD T_R
+	ctrl0 &= ~SPI_TMOD_Msk;
+
+	//SRL testint_mode 需要清0
+	ctrl0 &= ~SPI_SRL_Msk;
+
+	//DFS_32 目前只支持8bit
+	ctrl0 &= ~SPI_DFS_32_Msk;
+	ctrl0 |= (8 - 1) << SPI_DFS_32_Pos;
+
+	//SSTE Slave Select Toggle Enable
+	ctrl0 &= ~SPI_SSTE_Msk;
+
+	BOOTSPI->CTRLR0 = ctrl0;
+
+    //设置波特率
+    BOOTSPI->BAUDR = 24UL;
+
+    //设置FIFO Threshold
+    BOOTSPI->RXFTLR = 0UL;
+    BOOTSPI->TXFTLR = 0UL;
+
+	//unmask interrupts for poll transfer 
+    BOOTSPI->IMR = 0x3FUL;   //ISR
+
+    //enable spi
+    BOOTSPI->SSIENR = 1UL;
+
+    
+    /*******spi1从机初始化*********/
+    //diable spi才能写CTRLR01
+    SPIS->SSIENR = 0;
+
+    //配置spi
+    SPIS->CTRLR0 = ctrl0;
+
+    //设置FIFO Threshold
+    SPIS->RXFLR = 0UL;
+    SPIS->TXFLR = 0UL;
+
+    //unmask interrupts for poll transfer 
+    SPIS->IMR = 0x3fUL;
+
+    //enable spi
+    SPIS->SSIENR = 1UL;    
+
+    /***********主机准备发送的数据***************/
+    for(uint8_t i=0;i<32;i++)
+        BOOTSPI->DR = m_txbuf[i]; //DR必须SPI Enable之后才能写
+
+    /***********从机准备发送的数据***************/
+    for(uint8_t i=0;i<32;i++)
+        SPIS->DR = s_txbuf[i]; //DR必须SPI Enable之后才能写
+    
+    //选择从机,开始传输
+    BOOTSPI->SER = 1UL;
+
+    //传输完毕
+    while( !( BOOTSPI->SR & (1UL << SR_TFE) ) );
+    while( ( BOOTSPI->SR & (1UL << SR_BUSY) ) );
+
+    while( !( SPIS->SR & (1UL << SR_TFE) ) );
+    while( ( SPIS->SR & (1UL << SR_BUSY) ) );
+
+
+    for(uint32_t i=0;i<32;i++)
+        m_rxbuf[i] = BOOTSPI->DR;
+    for(uint32_t i=0;i<32;i++)
+        printf("0x%x\n\r",m_rxbuf[i]);
+
+    for(uint32_t i=0;i<32;i++)
+        s_rxbuf[i] = SPIS->DR;
+    for(uint32_t i=0;i<32;i++)
+        printf("0x%x\n\r",s_rxbuf[i]);
+
+    //diable BOOTSPI
+    BOOTSPI->SSIENR = 0;
+    //取消选择从机
+    BOOTSPI->SER = 0UL;
+    //disable SPIS
+    SPIS->SSIENR = 0UL;
+	while(1) asm volatile("");
+}
