@@ -252,12 +252,6 @@ void pmu_irqhandler (void) {
     printf("read PMU_ISR:%x\n",tmp);
     if(gic_cnt == 0) {
         //default power on interrupt
-		// systimer_delay(2, IN_S);
-        // for(int i=0; i<=4; i++) {
-            // err_cnt += check_pmu_irq(i, get_pmu_isr(i), 0xffffffff, 0);
-            // err_cnt += check_pmu_reg(i, PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_default_pwsr(i));
-        // }
-		// printf("AP.aisr is 0x%x \n", get_pmu_reg(AP,PPU_AISR_LPIP_TIMEOUT_IRQ_ADDR));
         exp = get_pmu_isr(PMU);
         if(((tmp >> PMU_IMR_PMU_WAKEUP_1_MASK_LSB) & 0x1) == 1) {
             gic_cnt = 2; //jump gic_cnt=2 power off operation
@@ -347,7 +341,10 @@ int main (void)
 	printf("test %s ...\n", __FILE__); 
 	systimer_init();
 
-	int local_gic_cnt = gic_cnt;
+	uint32_t tmp;
+    uint32_t exp;
+
+	set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
 	printf("core0 0x2e000ff0 = 0x%x\n", REG32(0x2e000ff0));
 	if( REG32(0x2e000ff0) == 0){
@@ -355,23 +352,37 @@ int main (void)
 
 		REG32(0x2e000ff0) = 0x5a5a5a00;
 		//open each PPU ISR
-		set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
+		exp = get_pmu_isr(PMU);
+		tmp = get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR);
+		while(tmp != exp){
+			tmp = get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR);
+		}
+
+		for(int i=0; i<PDNUM; i++) {
+			if(((exp >> i) & 1) == 1) {
+				err_cnt += check_pmu_irq(i, get_pmu_isr(i), 0xffffffff, 1);
+				err_cnt += check_pmu_reg(i, PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_default_pwsr(i));
+			}
+		}
+        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,0xffffffff);
 
 		GIC_DistInit();
 		GIC_CPUInterfaceInit(); //per CPU
 
-		void pmu_irqhandler(void);
-		GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
-		IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
-		IRQ_SetPriority(PMU_IRQn, 0 << 3);
-		IRQ_Enable(PMU_IRQn);
+		// void pmu_irqhandler(void);
+		// GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
+		// IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
+		// IRQ_SetPriority(PMU_IRQn, 0 << 3);
+		// IRQ_Enable(PMU_IRQn);
+		
+		gic_cnt = 2;
 	}else{
 		printf("core0 is wakeup 0x%x\n", get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR));
 #if GIC_INTREFACE
 		GIC_EnableInterface();
 #endif
-		//open each PPU ISR
-		set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
+
+		// clear_all_ppu_isr();
 
 		GIC_DistInit();
 		GIC_CPUInterfaceInit(); //per CPU
@@ -386,11 +397,19 @@ int main (void)
 		wakeup_core(1, core1_c_entry); //core1 enter to WFI
 		systimer_delay(1, IN_S);
 
+		for(int i=0; i<PDNUM; i++) {
+			if(i == AP || i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3) {
+				err_cnt += check_pmu_irq(i,0x87,0xffffffff,0);
+				err_cnt += check_pmu_reg(i,PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_pwsr(i,ON+OP4));
+				err_cnt += check_pmu_reg(PMU,PMU_PD_CORE0_CR_PPU_PSTATE_ADDR+i*4, get_pmu_cr(i,ON+OP4));
+			}
+		}
+
 		void pmu_irqhandler(void);
-		GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
-		IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
-		IRQ_SetPriority(PMU_IRQn, 0 << 3);
-		IRQ_Enable(PMU_IRQn);
+		// GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
+		// IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
+		// IRQ_SetPriority(PMU_IRQn, 0 << 3);
+		// IRQ_Enable(PMU_IRQn);
 #if TIMER_WAKEUP
 		// printf("wakeup TimersRawIntStatus 0x%x\n", TIMERX2->TimersRawIntStatus);
 		// printf("wakeup TimersIntStatus 0x%x\n", TIMERX2->TimersIntStatus);
@@ -405,33 +424,28 @@ int main (void)
 		IRQ_SetPriority(GPIO0_IRQn, 0 << 3);
 		IRQ_Enable(GPIO0_IRQn);
 #endif
-		// set_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR,0xffffffff);
+		gic_cnt = 3;
 	}
 
     printf("NOTE gic_cnt is %d, err_cnt is %d\n", gic_cnt, err_cnt);
 
-    while (gic_cnt <= 3) {
-      if(gic_cnt == 0) {
-      } else if(gic_cnt == 1) {
-        set_pmu_off_pd2on();
-      } else if(gic_cnt == 2) {
+	if(gic_cnt == 2){
 		set_pmu_reg(PMU,PMU_PU_CR_NUM_PD_ADDR, 0); //clear PU_EN
-        set_gpio_wakeup();
-		set_timerx2_wakeup();
-        set_pmu_wakeup(0, 0x44); //set wakeup timer target:a55 core0
-        set_pmu_wakeup(1, 0x44); //set wakeup gpio0_16 target:a55 core0
+        // set_gpio_wakeup();
+		// set_timerx2_wakeup();
+        // set_pmu_wakeup(0, 0x44); //set wakeup timer target:a55 core0
+        // set_pmu_wakeup(1, 0x44); //set wakeup gpio0_16 target:a55 core0
 #if TIMER_WAKEUP
 		timer_enable(Timerx2_T1);
+		systimer_delay(6, IN_S);
 #endif
-		systimer_delay(2, IN_S);
         wakeup_core(3, core3_c_entry); //core3 enter to WFI
-		systimer_delay(1, IN_S);
+		systimer_delay(10, IN_MS);
         wakeup_core(2, core2_c_entry); //core2 enter to WFI
-		systimer_delay(1, IN_S);
+		systimer_delay(10, IN_MS);
         wakeup_core(1, core1_c_entry); //core1 enter to WFI
-		systimer_delay(1, IN_S);
-		set_power_off_seq();
-		systimer_delay(1, IN_S);
+		systimer_delay(10, IN_MS);
+		// set_power_off_seq();
         // seehi_cmd(0xff000000);
 #if GIC_INTREFACE
 		GIC_DisableInterface();
@@ -449,30 +463,13 @@ int main (void)
 #endif
         set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, 0); //clear PD_EN
 		printf("set_default_power_on_seq !!\n");
-        set_default_power_on_seq();
+        // set_default_power_on_seq();
       }
-      while(1) {
-        // asm volatile("wfi");
-        if(local_gic_cnt != gic_cnt) {
-			break;
-        }
-		systimer_delay(1, IN_S);
-      }
-      local_gic_cnt = gic_cnt;
-    }
 
     if(err_cnt == 0) {
         TEST_PASS;
     } else {
         printf("ERROR err_cnt is %d\n", err_cnt);
-		while(1){
-		systimer_delay(2, IN_S);
-		printf("////////////////////////////////////////\n");
-		printf("%s, isr = 0x%x\n",get_pmu_name(0), get_pmu_reg(0,PPU_ISR_OTHER_IRQ_ADDR));
-		printf("%s, isr = 0x%x\n",get_pmu_name(1), get_pmu_reg(1,PPU_ISR_OTHER_IRQ_ADDR));
-		printf("%s, isr = 0x%x\n",get_pmu_name(2), get_pmu_reg(2,PPU_ISR_OTHER_IRQ_ADDR));
-		printf("%s, isr = 0x%x\n",get_pmu_name(3), get_pmu_reg(3,PPU_ISR_OTHER_IRQ_ADDR));
-		}
         TEST_FAIL;
     }
     return 0;
