@@ -51,48 +51,66 @@ void POWER_OFF_SEQ(void)
 void core1_c_entry(void)
 {
     printf("hello_world core1\n");
-	set_power_off_a55(CORE1);
-    uint32_t pwsr = 1;
-    while(1) {
-      pwsr = get_pmu_reg(CORE1,PPU_PWPR_OP_DYN_EN_ADDR);
-      if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        printf("start enter wfi core1\n");
-        break;
-      }
-    }
-    POWER_OFF_SEQ();
+	printf("core1 0x2e000ff4 = 0x%x\n", REG32(0x2e000ff4));
+	if( REG32(0x2e000ff4) == 0){
+		REG32(0x2e000ff4) = 0x5a5a5a01;
+		set_power_off_a55(CORE1);
+		uint32_t pwsr = 1;
+		while(1) {
+			pwsr = get_pmu_reg(CORE1,PPU_PWPR_OP_DYN_EN_ADDR);
+			if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+				printf("start enter wfi core1\n");
+				break;
+			}
+		}
+		POWER_OFF_SEQ();
+	}else{
+		printf("core1 is wakeup\n");
+	}
     while(1);
 }
 
 void core2_c_entry(void)
 {
     printf("hello_world core2\n");
-	set_power_off_a55(CORE2);
-    uint32_t pwsr = 1;
-    while(1) {
-      pwsr = get_pmu_reg(CORE2,PPU_PWPR_OP_DYN_EN_ADDR);
-      if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        printf("start enter wfi core2\n");
-        break;
-      }
-    }
-    POWER_OFF_SEQ();
+	printf("core2 0x2e000ff8 = 0x%x\n", REG32(0x2e000ff8));
+	if( REG32(0x2e000ff8) == 0){
+		REG32(0x2e000ff8) = 0x5a5a5a02;
+		set_power_off_a55(CORE2);
+		uint32_t pwsr = 1;
+		while(1) {
+			pwsr = get_pmu_reg(CORE2,PPU_PWPR_OP_DYN_EN_ADDR);
+			if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+				printf("start enter wfi core2\n");
+				break;
+			}
+		}
+		POWER_OFF_SEQ();
+	}else{
+		printf("core2 is wakeup\n");
+	}
     while(1);
 }
 
 void core3_c_entry(void)
 {
     printf("hello_world core3\n");
-	set_power_off_a55(CORE3);
-    uint32_t pwsr = 1;
-    while(1) {
-      pwsr = get_pmu_reg(CORE3,PPU_PWPR_OP_DYN_EN_ADDR);
-      if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-        printf("start enter wfi core3\n");
-        break;
-      }
-    }
-    POWER_OFF_SEQ();
+	printf("core3 0x2e000ffc = 0x%x\n", REG32(0x2e000ffc));
+	if( REG32(0x2e000ffc) == 0){
+		REG32(0x2e000ffc) = 0x5a5a5a03;
+		set_power_off_a55(CORE3);
+		uint32_t pwsr = 1;
+		while(1) {
+			pwsr = get_pmu_reg(CORE3,PPU_PWPR_OP_DYN_EN_ADDR);
+			if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+				printf("start enter wfi core3\n");
+				break;
+			}
+		}
+		POWER_OFF_SEQ();
+	}else{
+		printf("core3 is wakeup\n");
+	}
     while(1);
 }
 
