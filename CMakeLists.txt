@@ -209,6 +209,7 @@ set(ENABLE_USE_I2C OFF)
 set(ENABLE_USE_PINMUX ON)
 set(ENABLE_USE_WDT OFF)
 set(ENABLE_USE_PMU OFF)
+set(ENABLE_USE_MAILBOX OFF)
 
 
 ### LIBS
@@ -464,6 +465,17 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_PMU)
         add_subdirectory(${SDK_DIR}/hw/pmu)
         set(link_libs ${link_libs} pmu)
+    endif()
+
+
+    ### USE_MAILBOX (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_MAILBOX "Use Mailbox" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_MAILBOX}" OFF
+    )
+    if(USE_MAILBOX)
+        add_subdirectory(${SDK_DIR}/hw/mailbox)
+        set(link_libs ${link_libs} mailbox)
     endif()
 
 

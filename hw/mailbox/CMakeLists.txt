@@ -1,4 +1,4 @@
-set(LIB_OBJS_NAME mbox)
+set(LIB_OBJS_NAME mailbox)
 
 add_library(${LIB_OBJS_NAME} STATIC)
 
@@ -10,6 +10,7 @@ target_sources(${LIB_OBJS_NAME}
 target_include_directories(${LIB_OBJS_NAME}
 	PUBLIC
 		inc
+		${SDK_DIR}/common/inc
 )
 
 target_compile_options(${LIB_OBJS_NAME}
