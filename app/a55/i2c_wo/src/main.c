@@ -4,12 +4,16 @@
 #include "irq_ctrl.h"
 #include "gic.h"
 #include "i2c_wo.h"
+#include "pinmux.h"
 
 int main()
 {
     int ret;
     printf("test %s ...\n", __FILE__);
     systimer_init();
+
+    pinmux(84, 3);
+    pinmux(85, 3);
 
     i2c_wo_init(0x34); // AXP2101_SLAVE_ADDR
     i2c_wo_delay(500);
