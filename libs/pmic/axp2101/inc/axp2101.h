@@ -42,6 +42,8 @@ enum {
 
 extern int axp_debug_mask;
 
+#define AXP2101_SLAVE_ADDR			0x34
+
 #define AXP20X_DATACACHE(m)         (0x04 + (m))
 
 /* Power supply */

@@ -100,6 +100,7 @@ extern C {
 #define PMU_BASE                       UL(0x04E040000)
 #define ADC_BASE                       UL(0x04E060000)
 #define CLCI_BASE                      UL(0x04E070000)
+#define I2C_WO_BASE                    UL(0x04E080000)
 #define DDR_BASE                       UL(0x060000000)
 #define SOC_BASE                       UL(0x040000000)
 #define SYS_BASE                       SYSCTRL_BASE

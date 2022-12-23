@@ -209,6 +209,7 @@ set(ENABLE_USE_I2C OFF)
 set(ENABLE_USE_PINMUX ON)
 set(ENABLE_USE_WDT OFF)
 set(ENABLE_USE_PMU OFF)
+set(ENABLE_USE_I2C_WO OFF)
 set(ENABLE_USE_MAILBOX OFF)
 
 
@@ -467,6 +468,15 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         set(link_libs ${link_libs} pmu)
     endif()
 
+	### USE_I2C_WO
+    cmake_dependent_option(
+        USE_I2C_WO "Use seehi i2c wo" ON
+		"ENABLE_USE_I2C_WO" OFF
+    )
+    if(USE_I2C_WO)
+        add_subdirectory(${SDK_DIR}/hw/i2c_wo)
+        set(link_libs ${link_libs} i2c_wo)
+    endif()
 
     ### USE_MAILBOX (BOARD!=QEMU)
     cmake_dependent_option(

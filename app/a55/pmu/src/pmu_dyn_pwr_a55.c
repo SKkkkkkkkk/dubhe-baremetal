@@ -8,6 +8,23 @@
 #define ALL_SECOND_CORE_OFF				1
 #define ALL_SECOND_CORE_ON_OFF			1
 #define CORE0_SELF_OFF					0
+#define AP_OP_MODE_TEST					1
+
+void set_opmode_change_a55(uint8_t stat)
+{   
+    set_pmu_reg(AP,PPU_IMR_STA_DENY_IRQ_MASK_ADDR,0xffffffff);
+    set_pmu_reg(AP,PPU_AIMR_LPIP_TIMEOUT_IRQ_MASK_ADDR,0xffffffff);
+    set_pmu_reg(AP,PPU_PWPR_OP_DYN_EN_ADDR,(1 << PPU_PWPR_OP_DYN_EN_LSB |
+                                           stat << PPU_PWPR_OP_POLICY_LSB |
+                                             1 << PPU_PWPR_PWR_DYN_EN_LSB | ON));
+    while(1) {
+        uint32_t val = get_pmu_reg(AP,PPU_ISR_OTHER_IRQ_ADDR);
+        if((val & 0x1) == 0x1) {
+            printf("AP change to opmode 0x%x done\n",stat);
+            break;
+        }
+    }
+}
 
 void set_power_off_a55(uint8_t pid)
 {
@@ -119,6 +136,20 @@ int main(void)
   uint32_t pwsr = 1;
   printf("test %s ...\n", __FILE__); 
   systimer_init();
+
+#if AP_OP_MODE_TEST
+  set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,0xffffffff);
+  set_opmode_change_a55(OP3);
+  printf("AP status 0x%x\n", get_pmu_reg(AP, PPU_PWSR_OP_STATUS_ADDR));
+  set_opmode_change_a55(OP2);
+  printf("AP status 0x%x\n", get_pmu_reg(AP, PPU_PWSR_OP_STATUS_ADDR));
+  set_opmode_change_a55(OP1);
+  printf("AP status 0x%x\n", get_pmu_reg(AP, PPU_PWSR_OP_STATUS_ADDR));
+  set_opmode_change_a55(OP0);
+  printf("AP status 0x%x\n", get_pmu_reg(AP, PPU_PWSR_OP_STATUS_ADDR));
+  set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,0xfffe0000);
+  set_pmu_reg(AP,PPU_AISR_LPIP_TIMEOUT_IRQ_ADDR,0);
+#endif
 
 #if ALL_SECOND_CORE_OFF
   wakeup_core(3, core3_c_entry); //core3 enter to WFI
