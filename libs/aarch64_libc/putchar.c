@@ -11,7 +11,10 @@
 #else
 	#include "dw_apb_uart.h"
 #endif
+
 static bool putchar_init_flag = false;
+#define CONSOLE_BAUDRATE 115200U
+
 
 __attribute__((weak)) int putchar(int c)
 {
@@ -22,7 +25,7 @@ __attribute__((weak)) int putchar(int c)
 		// 	.data_bits = 8,
 		// 	.stop_bits = 1,
 		// 	.parity = false,
-		// 	.baudrate = 115200
+		// 	.baudrate = CONSOLE_BAUDRATE
 		// };
 		// if(uart_configure(&_uart_config) != UART_OK)
 		// 	while(1);
@@ -35,7 +38,7 @@ __attribute__((weak)) int putchar(int c)
 #else
 	if(!putchar_init_flag)
 	{
-		if(seehi_uart_config_baudrate(115200, 20000000, SEEHI_UART1)!=0)
+		if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART1)!=0)
 			while(1);
 		putchar_init_flag = true;
 	}
@@ -55,7 +58,7 @@ __attribute__((weak)) int getchar()
 		// 	.data_bits = 8,
 		// 	.stop_bits = 1,
 		// 	.parity = false,
-		// 	.baudrate = 115200
+		// 	.baudrate = CONSOLE_BAUDRATE
 		// };
 		// if(uart_configure(&_uart_config) != UART_OK)
 		// 	while(1);
@@ -68,7 +71,7 @@ __attribute__((weak)) int getchar()
 #else
 	if(!putchar_init_flag)
 	{
-		if(seehi_uart_config_baudrate(115200, 20000000, SEEHI_UART1)!=0)
+		if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART1)!=0)
 			while(1);
 		putchar_init_flag = true;
 	}

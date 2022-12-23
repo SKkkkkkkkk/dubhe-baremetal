@@ -9,6 +9,8 @@ extern int errno;
 	#error "A55 has the aarch64_libc, don't use newlib."
 #endif
 
+#define CONSOLE_BAUDRATE 115200U
+
 #if defined QEMU
 	#include "pl011.h"
 	static bool uart_init = false;
@@ -67,7 +69,7 @@ extern int errno;
 	{
 		if(!uart_init)
 		{
-			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART0)!=0)
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART0)!=0)
 			{
 				uart_init = false;
 				return 0;
@@ -89,7 +91,7 @@ extern int errno;
 	{
 		if(!uart_init)
 		{
-			if(seehi_uart_config_baudrate(SEEHI_UART_BAUDRATE_115200, 20000000, SEEHI_UART0)!=0)
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART0)!=0)
 			{
 				uart_init = false;
 				return 0;

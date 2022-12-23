@@ -416,12 +416,14 @@ void print_sysinfo()
 
 int main()
 {
+	printf("Build Info: "BUILD_TIMESTAMP"\n\r");
+	printf("Git Hash: "GIT_HASH"\n\r");
 	printf(" ****************************** \n");
 	print_sysinfo();
 	printf(" ****************************** \n");
 
 	while (1) {
-		/* code */
+		__asm__ volatile("wfi");
 	};
 	return 0;
 }
