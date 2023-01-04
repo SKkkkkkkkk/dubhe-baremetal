@@ -16,7 +16,7 @@ int err_cnt = 0;
 int count = 0;
 static volatile uint32_t timerx2_t1_i = 0U;
 #define GPIO0                GPIO0_BASE
-// #define GIC_INTREFACE			1
+#define GIC_INTREFACE			0
 #define TIMER_WAKEUP			0
 #define GPIO_WAKEUP				1
 
@@ -182,7 +182,6 @@ void set_gpio_wakeup(void)
         // .gpio_mode = GPIO_Input_Mode,
     };
     gpio_init(&gpio_init_config);
-
 }
 
 void timerx2_t1_irqhandler(void)
@@ -431,20 +430,25 @@ int main (void)
 
 	if(gic_cnt == 2){
 		set_pmu_reg(PMU,PMU_PU_CR_NUM_PD_ADDR, 0); //clear PU_EN
-        // set_gpio_wakeup();
-		// set_timerx2_wakeup();
-        // set_pmu_wakeup(0, 0x44); //set wakeup timer target:a55 core0
-        // set_pmu_wakeup(1, 0x44); //set wakeup gpio0_16 target:a55 core0
+#if GPIO_WAKEUP
+		set_gpio_wakeup();
+#endif
+#if TIMER_WAKEUP
+		set_timerx2_wakeup();
+#endif
+		set_pmu_wakeup(0, 0x44); //set wakeup timer target:a55 core0
+		set_pmu_wakeup(1, 0x44); //set wakeup gpio0_16 target:a55 core0
 #if TIMER_WAKEUP
 		timer_enable(Timerx2_T1);
 		systimer_delay(6, IN_S);
 #endif
         wakeup_core(3, core3_c_entry); //core3 enter to WFI
-		systimer_delay(10, IN_MS);
+		systimer_delay(100, IN_MS);
         wakeup_core(2, core2_c_entry); //core2 enter to WFI
-		systimer_delay(10, IN_MS);
+		systimer_delay(100, IN_MS);
         wakeup_core(1, core1_c_entry); //core1 enter to WFI
-		systimer_delay(10, IN_MS);
+		systimer_delay(100, IN_MS);
+		set_power_off_a55(DDR0);
 		// set_power_off_seq();
         // seehi_cmd(0xff000000);
 #if GIC_INTREFACE
@@ -461,6 +465,7 @@ int main (void)
 #if TIMER_WAKEUP
 		IRQ_Disable(Timerx2_T1_IRQn);
 #endif
+		set_power_on_a55(DDR0);
         set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, 0); //clear PD_EN
 		printf("set_default_power_on_seq !!\n");
         // set_default_power_on_seq();
