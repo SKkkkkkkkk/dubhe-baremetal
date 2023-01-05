@@ -26,6 +26,7 @@
 #include "utils_def.h"
 
 struct axp20x_dev *axp20x;
+struct axp20x_dev _axp20x;
 
 static struct of_device_id axp20x_i2c_of_match[] = {
     {.compatible = "x-powers,axp152", .data = (void *) AXP152_ID},
@@ -125,7 +126,7 @@ static int axp20x_i2c_probe(void *i2c, void *id)
 {
     __nouse__ int ret;
 
-    axp20x = malloc(sizeof(struct axp20x_dev));
+    axp20x = &_axp20x;
     if (!axp20x) return -1;
 
     axp20x->sts = STATUS_NONE;
@@ -150,7 +151,7 @@ static int axp20x_i2c_remove(void *i2c)
 {
     axp20x_device_remove(axp20x);
 
-    if (axp20x != NULL) free(axp20x);
+    // if (axp20x != NULL) free(axp20x);
 
     return 0;
 }

@@ -17,17 +17,19 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "axp2101.h"
 #include "utils_def.h"
 
 struct regulator_delay *g_rdev_delay;
+struct regulator_delay _rdev_delay;
 
 #define of_match_ptr(_ptr)            (_ptr)
 
-#define UINT8_C(x)                    x
-#define UINT16_C(x)                   x
-#define UINT32_C(x)                   x##U
+// #define UINT8_C(x)                    x
+// #define UINT16_C(x)                   x
+// #define UINT32_C(x)                   x##U
 
 #define AXP20X_IO_ENABLED             0x03
 #define AXP20X_IO_DISABLED            0x07
@@ -154,13 +156,19 @@ struct regulator_delay {
     u32 final;
 };
 
+
+static int _abs(int num)
+{
+    return num < 0 ? -num : num;
+}
+
 static int axp2101_set_voltage_time_sel(struct regulator_desc *desc,
                                         unsigned int           old_selector,
                                         unsigned int           new_selector)
 {
     struct regulator_delay *delay = (struct regulator_delay *) desc->reg_data;
 
-    return abs(new_selector - old_selector) * delay->step + delay->final;
+    return _abs(new_selector - old_selector) * delay->step + delay->final;
 };
 
 int regulator_enable_regmap(struct regulator_desc *desc)
@@ -204,26 +212,20 @@ int regulator_is_enabled_regmap(struct regulator_desc *desc)
     }
 }
 
-/*
- * __fls: Similar to fls, but zero based (0-31)
- */
-static inline __attribute__((const)) int __fls(unsigned long x)
+static int __ffs(unsigned int v)
 {
-    if (!x)
-        return 0;
-    else
-        return fls(x) - 1;
+    int n = 1;
+
+    if (!v) return -1;
+    if (!(v & 0x0000FFFF)) { v >>= 16; n += 16; }
+    if (!(v & 0x000000FF)) { v >>=  8; n += 8;  }
+    if (!(v & 0x0000000F)) { v >>=  4; n += 4;  }
+    if (!(v & 0x00000003)) { v >>=  2; n += 2;  }
+    if (!(v & 0x00000001)) { v >>=  1; n += 1;  }
+
+    return n - 1;
 }
 
-/*
- * ffs = Find First Set in word (LSB to MSB)
- * @result: [1-32], 0 if all 0's
- */
-#define ffs(x)                   \
-    ({                           \
-        unsigned long __t = (x); \
-        fls(__t & -__t);         \
-    })
 
 int regulator_set_voltage_sel_regmap(struct regulator_desc *desc, unsigned sel)
 {
@@ -234,7 +236,7 @@ int regulator_set_voltage_sel_regmap(struct regulator_desc *desc, unsigned sel)
 
     ret = axp20x_i2c_read(desc->vsel_reg, &val);
     val &= ~desc->vsel_mask;
-    sel <<= ffs(desc->vsel_mask) - 1;
+    sel <<= __ffs(desc->vsel_mask) - 1;
     val |= sel;
     ret = axp20x_i2c_write(desc->vsel_reg, val);
 
@@ -249,7 +251,7 @@ int regulator_get_voltage_sel_regmap(struct regulator_desc *desc)
     ret = axp20x_i2c_read(desc->vsel_reg, &val);
 
     val &= desc->vsel_mask;
-    val >>= ffs(desc->vsel_mask) - 1;
+    val >>= __ffs(desc->vsel_mask) - 1;
 
     return val;
 }
@@ -658,8 +660,7 @@ int axp2101_regulator_probe(void *dev, void *config)
     }
 
     axp20x->rdev->desc = regulators;
-    g_rdev_delay =
-        (struct regulator_delay *) malloc(sizeof(struct regulator_delay));
+    g_rdev_delay = &_rdev_delay;
     g_rdev_delay->step = 0;
 
     // "regulator-final-delay-us"
@@ -677,5 +678,5 @@ int axp2101_regulator_probe(void *dev, void *config)
 
 void axp2101_regulator_remove(void)
 {
-    if (g_rdev_delay != NULL) free(g_rdev_delay);
+    // if (g_rdev_delay != NULL) free(g_rdev_delay);
 }
