@@ -10,11 +10,14 @@
 #include "mem_and_clock.h"
 #include "pm.h"
 #include "systimer.h"
+#include "pinmux.h"
 
 #define TEST_SLEEP           0
 #define TEST_STANDBY         1
 #define TEST_HIBERNATION     0
 #define STACK_SIZE           1024
+#define Interrupt0_IRQn      0
+#define Interrupt1_IRQn      1
 #define Interrupt79_IRQn     79
 #define GPIO0                0x410A0000UL
 
@@ -201,8 +204,8 @@ int main()
     NVIC_EnableIRQ(Interrupt1_IRQn);
     NVIC_SetPendingIRQ(Interrupt1_IRQn);
 
-    NVIC_SetVector(Interrupt79_IRQn, (uintptr_t) irq_handler_gpio);
-    NVIC_EnableIRQ(Interrupt79_IRQn);
+    NVIC_SetVector(GPIO0_IRQn, (uintptr_t) irq_handler_gpio);
+    NVIC_EnableIRQ(GPIO0_IRQn);
 
     hardware_init_hook();
 
@@ -214,8 +217,8 @@ int main()
 
     // clear_ddr();
 
-    pin_set_iomux(KEY_EINT_PIN_GROUP, KEY_EINT_PIN, 3);
-    pin_set_iomux(KEY_EINT_PIN_GROUP, 11, 3);
+	pinmux(KEY_EINT_PIN, 7); //gpio0_10
+	pinmux(11, 7); //gpio0_11
 
     gpio_init_config_t gpio_init_config = {
         .group             = KEY_EINT_PIN_GROUP,

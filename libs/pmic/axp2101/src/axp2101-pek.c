@@ -31,6 +31,7 @@
 #define axp2101_INTSTS2          (0x49)
 
 struct axp20x_pek *g_axp20x_pek;
+struct axp20x_pek _axp20x_pek;
 
 struct pk_dts {
     u32 pmu_powkey_off_time;
@@ -296,7 +297,7 @@ int axp20x_pek_probe(void *pdev, void *config)
 {
     __nouse__ struct axp20x_dev *axp20x = (struct axp20x_dev *) pdev;
 
-    g_axp20x_pek = (struct axp20x_pek *) malloc(sizeof(struct axp20x_pek));
+    g_axp20x_pek = &_axp20x_pek;
     if (!g_axp20x_pek) return -1;
 
     g_axp20x_pek->axp20x = axp20x;
@@ -320,7 +321,7 @@ int axp20x_pek_probe(void *pdev, void *config)
 
 void axp20x_pek_remove(void)
 {
-    if (g_axp20x_pek != NULL) free(g_axp20x_pek);
+    // if (g_axp20x_pek != NULL) free(g_axp20x_pek);
 }
 
 int axp2101_powerkey_suspend(void)
