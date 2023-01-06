@@ -26,7 +26,7 @@ app/cv32e40p/hello/build.sh
 
 - **PROJECT_PATH**:设置app.cmake文件路径，该文件设置工程的需要编译的源文件&模块。
 
-- **CROSS_COMPILER_PATH**:设置编译器路径，注意需要以'/'结尾。
+- **CROSS_COMPILE**:设置跨平台编译器。
 
 - **EXTRA_SRC**:可以添加一个额外的源文件。
 
