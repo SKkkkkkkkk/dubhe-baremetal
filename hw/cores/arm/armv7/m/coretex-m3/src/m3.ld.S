@@ -2,7 +2,7 @@
 #include "mem_and_clock.h"
 
 #define ROM_AND_RAM 0
-#define ALL_IN_RAM	1
+#define ALL_IN_SYSRAM	1
 #define ALL_IN_DDR	2
 #define MEMMAP_SCHEME_1 3 
 
@@ -11,7 +11,7 @@
     #define WHERE_TO_LOAD ROM_AND_RAM
   #else
       #if (WHERE_TO_LOAD == ROM_AND_RAM)
-      #elif (WHERE_TO_LOAD == ALL_IN_RAM)
+      #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
       #elif (WHERE_TO_LOAD == ALL_IN_DDR)
       #elif (WHERE_TO_LOAD == MEMMAP_SCHEME_1)
       #else
@@ -23,7 +23,7 @@
     #define WHERE_TO_LOAD ROM_AND_RAM
   #else
       #if (WHERE_TO_LOAD == ROM_AND_RAM)
-      #elif (WHERE_TO_LOAD == ALL_IN_RAM)
+      #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
       #elif (WHERE_TO_LOAD == ALL_IN_DDR)
         #error "unspport ALL_IN_DDR in qemu."
       #elif (WHERE_TO_LOAD == MEMMAP_SCHEME_1)
@@ -107,7 +107,7 @@ SECTIONS
     KEEP(*(.eh_frame*))
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >CODE
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -140,7 +140,7 @@ SECTIONS
     *(.ARM.extab* .gnu.linkonce.armextab.*)
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >CODE
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -152,7 +152,7 @@ SECTIONS
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >CODE
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -177,7 +177,7 @@ SECTIONS
     __copy_table_end__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >CODE
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -197,7 +197,7 @@ SECTIONS
     __zero_table_end__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >CODE
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -243,7 +243,7 @@ SECTIONS
     __data_end__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -282,7 +282,7 @@ SECTIONS
     __bss_end__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #else // DDR
 	} >DDR
@@ -319,7 +319,7 @@ SECTIONS
     __HEAP_END__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_DDR)
 	} >DDR
@@ -337,7 +337,7 @@ SECTIONS
     __StackTop = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
   } >SRAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_DDR)
 	} >DDR

@@ -36,7 +36,7 @@ app/cv32e40p/hello/build.sh
 
 - **BUILD_TYPE**:Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo.
 
-- **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_RAM, ALL_IN_DDR。
+- **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_SYSRAM, ALL_IN_DDR。
 
 # Tips
 

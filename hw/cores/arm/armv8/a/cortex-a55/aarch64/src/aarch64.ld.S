@@ -9,7 +9,7 @@ OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
  #define ROM_AND_RAM 0
- #define ALL_IN_RAM	 1
+ #define ALL_IN_SYSRAM	 1
  #define ALL_IN_DDR	 2
 
 #ifndef WHERE_TO_LOAD
@@ -50,7 +50,7 @@ SECTIONS
 {
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     . = ORIGIN(ROM);
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	. = ORIGIN(RAM);
 #else // DDR
     . = ORIGIN(DDR);
@@ -66,7 +66,7 @@ SECTIONS
         __TEXT_END__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >ROM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -77,7 +77,7 @@ SECTIONS
     *(.ARM.extab* .gnu.linkonce.armextab.*)
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >ROM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -88,7 +88,7 @@ SECTIONS
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >ROM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -105,7 +105,7 @@ SECTIONS
         . = ALIGN(16); //.data LMA should be 16-byte aligned.
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >ROM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -116,7 +116,7 @@ SECTIONS
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     . = ORIGIN(RAM);
 	. = ALIGN(PAGE_SIZE);
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	. = ALIGN(PAGE_SIZE);
 #else // DDR
 	. = ALIGN(PAGE_SIZE);
@@ -134,7 +134,7 @@ SECTIONS
         __DATA_END__ = .; 
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >RAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -155,7 +155,7 @@ SECTIONS
         __BSS_END__ = .;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >RAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -168,7 +168,7 @@ SECTIONS
         __XLAT_TABLE_END__ = .; 
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >RAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -183,7 +183,7 @@ SECTIONS
         __HEAPLIMIT = __HEAP_END__;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >RAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -198,7 +198,7 @@ SECTIONS
         __STACK_TOP__ = __STACKS_END__;
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     } >RAM
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
 	} >DDR
@@ -215,7 +215,7 @@ SECTIONS
 #if (WHERE_TO_LOAD == ROM_AND_RAM)
     __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     ASSERT(__ROM_END__ <= (__ROM_BASE + __ROM_SIZE), "ROM content has exceeded its limit.")
-#elif (WHERE_TO_LOAD == ALL_IN_RAM)
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
     ASSERT(__RAM_END__ <= (__RAM_BASE + __RAM_SIZE), "RW section has exceeded its limit.")
 #else
     ASSERT(__RAM_END__ <= (__DDR_BASE + __DDR_SIZE), "RW section has exceeded its limit.")

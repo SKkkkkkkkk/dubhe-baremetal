@@ -23,7 +23,7 @@
  */
 
 #define ROM_AND_RAM 0
-#define ALL_IN_RAM	1
+#define ALL_IN_SYSRAM	1
 #define ALL_IN_DDR	2
 
                 .syntax  unified
