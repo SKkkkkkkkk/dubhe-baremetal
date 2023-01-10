@@ -9,6 +9,7 @@ extern C {
 //############################################
 
 #define M3_BOOTROM0_BASE               UL(0x000000000)
+#define AXI_SRAM					   UL(0x000100000)
 #define A55_BOOTFLASH_BASE             UL(0x001000000)
 #define M3_BOOTLASH_BASE               UL(0x001020000)
 #define SPI_Flash_BASE                 UL(0x001040000)

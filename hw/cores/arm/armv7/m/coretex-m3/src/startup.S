@@ -22,9 +22,11 @@
  * limitations under the License.
  */
 
-#define ROM_AND_RAM 0
-#define ALL_IN_SYSRAM	1
-#define ALL_IN_DDR	2
+#define ROM_AND_RAM     0
+#define ALL_IN_AXI_SRAM 1
+#define ALL_IN_SYSRAM	2
+#define ALL_IN_DDR	    3
+#define MEMMAP_SCHEME_1 4
 
                 .syntax  unified
                 .arch    armv7-m
