@@ -77,6 +77,7 @@ uint32_t a_get_data(int ch)
             data = MAILBOX_B2A -> b2a_dat3;
             break;
         default:
+            data = 0;
             break;
     }
 
