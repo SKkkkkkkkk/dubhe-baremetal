@@ -19,9 +19,11 @@ int                      err_cnt      = 0;
 int                      count        = 0;
 static volatile uint32_t timerx2_t1_i = 0U;
 #define GPIO0            GPIO0_BASE
+#define GPIO1            GPIO1_BASE
 #define GIC_INTREFACE    0
 #define TIMER_WAKEUP     0
 #define GPIO_WAKEUP      1
+#define I2C_4            0
 #define I2C_WO           1
 #define STOP             1
 
@@ -30,6 +32,10 @@ static volatile uint32_t timerx2_t1_i = 0U;
 #define WAKEUP_PIN       16
 #define WAKEUP_PIN_GROUP (WAKEUP_PIN / 32)
 #define WAKEUP_PIN_NUM   (WAKEUP_PIN % 32)
+
+#define WAKEUP_PIN1       50
+#define WAKEUP_PIN_GROUP1 (WAKEUP_PIN / 32)
+#define WAKEUP_PIN_NUM1   (WAKEUP_PIN % 32)
 
 void set_power_off_a55(uint8_t pid)
 {
@@ -169,7 +175,7 @@ void core3_c_entry(void)
         ;
 }
 
-void irq_handler_gpio(void)
+void irq_handler_gpio0(void)
 {
     uint32_t intstatus = *((uint32_t *) (GPIO0 + 0x40));
 
@@ -189,9 +195,9 @@ void set_gpio_wakeup(void)
 {
     pinmux(WAKEUP_PIN, 7); // gpio0_0
 
-    void irq_handler_gpio(void);
+    void irq_handler_gpio0(void);
     GIC_SetTarget(GPIO0_IRQn, 1 << 0);
-    IRQ_SetHandler(GPIO0_IRQn, irq_handler_gpio);
+    IRQ_SetHandler(GPIO0_IRQn, irq_handler_gpio0);
     IRQ_SetPriority(GPIO0_IRQn, 0 << 3);
     IRQ_Enable(GPIO0_IRQn);
 
@@ -199,7 +205,43 @@ void set_gpio_wakeup(void)
         .group             = WAKEUP_PIN_GROUP,
         .pin               = WAKEUP_PIN_NUM,
         .gpio_control_mode = Software_Mode,
-        .gpio_mode         = GPIO_Falling_Int_Mode,
+        .gpio_mode         = GPIO_Low_Int_Mode,
+        // .gpio_mode = GPIO_Input_Mode,
+    };
+    gpio_init(&gpio_init_config);
+}
+
+void irq_handler_gpio1(void)
+{
+    uint32_t intstatus = *((uint32_t *) (GPIO1 + 0x40));
+
+    count++;
+
+    if (intstatus & (1 << WAKEUP_PIN_NUM1)) {
+        gpio_clear_interrput(WAKEUP_PIN_GROUP1, WAKEUP_PIN_NUM1);
+        printf("////////////////gpio in irq 1. %d/////////////////\n", count);
+    } else {
+        printf("irq is not 0\n");
+    }
+
+    return;
+}
+
+void set_gpio1_wakeup(void)
+{
+    pinmux(50, 7); // gpio0_0
+
+    void irq_handler_gpio1(void);
+    GIC_SetTarget(GPIO1_IRQn, 1 << 0);
+    IRQ_SetHandler(GPIO1_IRQn, irq_handler_gpio1);
+    IRQ_SetPriority(GPIO1_IRQn, 0 << 3);
+    IRQ_Enable(GPIO1_IRQn);
+
+    gpio_init_config_t gpio_init_config = {
+        .group             = 1,
+        .pin               = 18,
+        .gpio_control_mode = Software_Mode,
+        .gpio_mode         = GPIO_Low_Int_Mode,
         // .gpio_mode = GPIO_Input_Mode,
     };
     gpio_init(&gpio_init_config);
@@ -376,6 +418,7 @@ int main(void)
 
     uint32_t tmp;
 
+#if I2C_4
     tmp = REG32(SYS_BASE + 0x8dc);
     tmp &= ~(7 << 4);
     tmp |= 0 << 4;
@@ -411,6 +454,7 @@ int main(void)
     systimer_delay(1, IN_S);
     printf("axp2101_powerkey_suspend !!! \n");
     // axp2101_powerkey_suspend();
+#endif
 
 #if I2C_WO
     tmp = REG32(SYS_BASE + 0x8dc);
@@ -426,7 +470,7 @@ int main(void)
     REG32(SYS_BASE + 0x8e0) = tmp;
     i2c_wo_init(0x34);
 
-    i2c_wo_delay(1000); // 1s
+    i2c_wo_delay(2000); // 1s
     // i2c_wo_fifo(0x10);  //poweroff
     // i2c_wo_fifo(0x01 | STOP<<8);
     i2c_wo_fifo(0x26);
@@ -443,15 +487,27 @@ int main(void)
     i2c_wo_fifo(0x0c | STOP << 8);
     i2c_wo_start();
 
-#endif
+	GIC_DistInit();
+	GIC_CPUInterfaceInit(); //per CPU
+	set_gpio_wakeup();
+	set_gpio1_wakeup();
+	set_timerx2_wakeup();
+	timer_enable(Timerx2_T1);
 
     while (1) {
         printf("i2c_wo_status 0x%x\n", i2c_wo_status());
         printf("i2c_wo_status_fifo_level 0x%x\n", i2c_wo_status_fifo_level());
+		printf("0x25100848 = 0x%x\n", REG32(0x25100848));
+		printf("0x25030000 = 0x%x\n", REG32(0x25030000));
+		printf("0x25030004 = 0x%x\n", REG32(0x25030004));
+		printf("0x25030008 = 0x%x\n", REG32(0x25030008));
+		printf("0x25030030 = 0x%x\n", REG32(0x25030030));
+		printf("0x25030050 = 0x%x\n", REG32(0x25030050));
         // axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
         // printf("AXP2101_SLEEP_CFG = 0x%x\n", val);
         systimer_delay(1, IN_S);
     }
+#endif
 
 #if 0
 	uint32_t exp;
@@ -537,7 +593,7 @@ int main(void)
 #endif
 #if GPIO_WAKEUP
 		GIC_SetTarget(GPIO0_IRQn, 1 << 0);
-		IRQ_SetHandler(GPIO0_IRQn, irq_handler_gpio);
+		IRQ_SetHandler(GPIO0_IRQn, irq_handler_gpio0);
 		IRQ_SetPriority(GPIO0_IRQn, 0 << 3);
 		IRQ_Enable(GPIO0_IRQn);
 #endif
