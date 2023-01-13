@@ -223,6 +223,7 @@ set(ENABLE_USE_tinyCLI OFF)
 set(ENABLE_USE_SEMIHOSTING OFF)
 set(ENABLE_USE_CRC OFF)
 set(ENABLE_USE_xyzModem OFF)
+set(ENABLE_USE_IMAGE_STATES OFF)
 
 ## 获取工程配置信息(由app.cmake提供)
 
@@ -436,6 +437,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_xyzModem)
         add_subdirectory(${SDK_DIR}/libs/xyzModem)
         set(link_libs ${link_libs} xyzModem)
+    endif()
+
+    ### USE_IMAGE_STATES
+    cmake_dependent_option(
+        USE_IMAGE_STATES "Use image_states" ON
+        "ENABLE_USE_IMAGE_STATES" OFF
+    )
+    if(USE_IMAGE_STATES)
+        add_subdirectory(${SDK_DIR}/libs/image_states)
+        set(link_libs ${link_libs} image_states)
     endif()
 
     ### USE_PINMUX
