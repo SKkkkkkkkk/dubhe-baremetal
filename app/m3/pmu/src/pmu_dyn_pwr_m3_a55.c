@@ -110,60 +110,21 @@ void pmu_irqhandler (void) {
 
 int main (void)
 {
-    int local_gic_cnt = gic_cnt;
+    printf("test %s ...\n", __FILE__);
+	systimer_init();
 
-    //open each PPU ISR
-	void pmu_irqhandler(void);
-	NVIC_SetPriority(PMU_IRQn, 0);
-	NVIC_SetVector(PMU_IRQn, (unsigned int)(uintptr_t)pmu_irqhandler);
-	NVIC_EnableIRQ(PMU_IRQn);
-
-    printf("NOTE gic_cnt is %d, err_cnt is %d", gic_cnt, err_cnt);
-
-#if 0
-    while (gic_cnt <= 10) {
-      if(gic_cnt == 0) {
-      } else if(gic_cnt == 1) {
-        set_power_off_a55(CORE3);
-      } else if(gic_cnt == 2) {
-        set_power_off_a55(CORE2);
-      } else if(gic_cnt == 3) {
-        set_power_off_a55(CORE1);
-      } else if(gic_cnt == 4) {
-        set_power_off_a55(CORE0);
-      } else if(gic_cnt == 5) {
-        set_power_off_a55(AP);
-      } else if(gic_cnt == 6) {
-        set_power_on_a55(AP);
-      } else if(gic_cnt == 7) {
-        set_power_on_a55(CORE0);
-      } else if(gic_cnt == 8) {
-        set_power_on_a55(CORE1);
-      } else if(gic_cnt == 9) {
-        set_power_on_a55(CORE2);
-      } else if(gic_cnt == 10) {
-        set_power_on_a55(CORE3);
-      }
-      while(1) {
-        asm volatile("wfi");
-        if(local_gic_cnt != gic_cnt) {
-            break;
-        }
-      }
-      local_gic_cnt = gic_cnt;
-    }
-#else
 	set_power_on_a55(AP);
-	// systimer_delay(1, IN_S);
 	set_power_on_a55(CORE0);
-	systimer_delay(1, IN_S);
+	printf("power on core0 !!!\n");
+	systimer_delay(10, IN_MS);
 	set_power_on_a55(CORE1);
-	systimer_delay(1, IN_S);
+	printf("power on core1 !!!\n");
+	systimer_delay(10, IN_MS);
 	set_power_on_a55(CORE2);
-	systimer_delay(1, IN_S);
+	printf("power on core2 !!!\n");
+	systimer_delay(10, IN_MS);
 	set_power_on_a55(CORE3);
-	systimer_delay(1, IN_S);
-#endif
+	printf("power on core3 !!!\n");
 
     if(err_cnt == 0) {
         TEST_PASS;
