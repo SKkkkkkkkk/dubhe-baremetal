@@ -13,6 +13,7 @@
 #include "arch_features.h"
 #include "axp2101.h"
 #include "i2c_wo.h"
+#include "rtc.h"
 
 int                      gic_cnt      = 0;
 int                      err_cnt      = 0;
@@ -23,8 +24,7 @@ static volatile uint32_t timerx2_t1_i = 0U;
 #define GIC_INTREFACE    0
 #define TIMER_WAKEUP     0
 #define GPIO_WAKEUP      1
-#define I2C_4            0
-#define I2C_WO           1
+#define PMIC_WAKEUP      1
 #define STOP             1
 
 #define TIMER_FREQ       (20000000)
@@ -35,7 +35,7 @@ static volatile uint32_t timerx2_t1_i = 0U;
 
 #define WAKEUP_PIN1       50
 #define WAKEUP_PIN_GROUP1 (WAKEUP_PIN / 32)
-#define WAKEUP_PIN_NUM1   (WAKEUP_PIN % 32)
+#define WAKEUP_PIN_NUM1   ((WAKEUP_PIN % 32))
 
 void set_power_off_a55(uint8_t pid)
 {
@@ -185,7 +185,8 @@ void irq_handler_gpio0(void)
         gpio_clear_interrput(WAKEUP_PIN_GROUP, WAKEUP_PIN_NUM);
         printf("////////////////gpio in irq 0. %d/////////////////\n", count);
     } else {
-        printf("irq is not 0\n");
+        printf("irq is not gpio16 intstatus 0x%x\n", intstatus);
+        gpio_clear_interrput(WAKEUP_PIN_GROUP, intstatus);
     }
 
     return;
@@ -205,7 +206,7 @@ void set_gpio_wakeup(void)
         .group             = WAKEUP_PIN_GROUP,
         .pin               = WAKEUP_PIN_NUM,
         .gpio_control_mode = Software_Mode,
-        .gpio_mode         = GPIO_Low_Int_Mode,
+        .gpio_mode         = GPIO_Falling_Int_Mode,
         // .gpio_mode = GPIO_Input_Mode,
     };
     gpio_init(&gpio_init_config);
@@ -217,11 +218,13 @@ void irq_handler_gpio1(void)
 
     count++;
 
-    if (intstatus & (1 << WAKEUP_PIN_NUM1)) {
-        gpio_clear_interrput(WAKEUP_PIN_GROUP1, WAKEUP_PIN_NUM1);
+	printf("intstatus 0x%x\n", intstatus);
+    if (intstatus & ((1 << 19) |(1 << 18))) {
+        gpio_clear_interrput(1, intstatus);
         printf("////////////////gpio in irq 1. %d/////////////////\n", count);
     } else {
-        printf("irq is not 0\n");
+        printf("irq is not gpio50 intstatus 0x%x\n", intstatus);
+        gpio_clear_interrput(1, intstatus);
     }
 
     return;
@@ -229,7 +232,18 @@ void irq_handler_gpio1(void)
 
 void set_gpio1_wakeup(void)
 {
-    pinmux(50, 7); // gpio0_0
+	int tmp;
+    tmp = REG32(SYS_BASE + 0x848);
+    tmp &= ~(7 << 4);
+    tmp |= 7 << 4;
+    tmp |= 1 << 0;
+    REG32(SYS_BASE + 0x848) = tmp;
+
+    tmp = REG32(SYS_BASE + 0x84c);
+    tmp &= ~(7 << 4);
+    tmp |= 7 << 4;
+    tmp |= 1 << 0;
+    REG32(SYS_BASE + 0x84c) = tmp;
 
     void irq_handler_gpio1(void);
     GIC_SetTarget(GPIO1_IRQn, 1 << 0);
@@ -241,10 +255,11 @@ void set_gpio1_wakeup(void)
         .group             = 1,
         .pin               = 18,
         .gpio_control_mode = Software_Mode,
-        .gpio_mode         = GPIO_Low_Int_Mode,
+        .gpio_mode         = GPIO_Input_Mode,
         // .gpio_mode = GPIO_Input_Mode,
     };
     gpio_init(&gpio_init_config);
+
 }
 
 void timerx2_t1_irqhandler(void)
@@ -411,14 +426,82 @@ void pmu_irqhandler(void)
     set_pmu_reg(PMU, PMU_ISR_PMU_WAKEUP_5_ADDR, 0xffffffff);
 }
 
-int main(void)
+int pmic_to_sleep_delay(int ms)
 {
-    printf("test %s ...\n", __FILE__);
-    systimer_init();
-
     uint32_t tmp;
+    tmp = REG32(SYS_BASE + 0x8dc);
+    tmp &= ~(7 << 4);
+    tmp |= 3 << 4;
+    tmp |= 1 << 0;
+    REG32(SYS_BASE + 0x8dc) = tmp;
 
-#if I2C_4
+    tmp = REG32(SYS_BASE + 0x8e0);
+    tmp &= ~(7 << 4);
+    tmp |= 3 << 4;
+    tmp |= 1 << 0;
+    REG32(SYS_BASE + 0x8e0) = tmp;
+    i2c_wo_init(0x34);
+
+    i2c_wo_delay(ms); // 1s
+    // i2c_wo_fifo(0x10);  //poweroff
+    // i2c_wo_fifo(0x01 | STOP<<8);
+    i2c_wo_fifo(AXP2101_INTEN1);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(AXP2101_INTEN2);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(AXP2101_INTEN3);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(0x26);
+    i2c_wo_fifo(0x09 | STOP << 8);
+    i2c_wo_fifo(0x80);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(0x90);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(0x91);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(0x26);
+    i2c_wo_fifo(0x19 | STOP << 8);
+    i2c_wo_fifo(0x41);
+    i2c_wo_fifo(0x0c | STOP << 8);
+
+    printf("axp2101_powerkey_suspend !!! \n");
+	return 0;
+}
+
+int pmic_clear_irq_wo(int ms)
+{
+    uint32_t tmp;
+    tmp = REG32(SYS_BASE + 0x8dc);
+    tmp &= ~(7 << 4);
+    tmp |= 3 << 4;
+    tmp |= 1 << 0;
+    REG32(SYS_BASE + 0x8dc) = tmp;
+
+    tmp = REG32(SYS_BASE + 0x8e0);
+    tmp &= ~(7 << 4);
+    tmp |= 3 << 4;
+    tmp |= 1 << 0;
+    REG32(SYS_BASE + 0x8e0) = tmp;
+    i2c_wo_init(0x34);
+
+    i2c_wo_delay(ms); // 1s
+    // i2c_wo_fifo(0x10);  //poweroff
+    // i2c_wo_fifo(0x01 | STOP<<8);
+    i2c_wo_fifo(AXP2101_INTEN1);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(AXP2101_INTEN2);
+    i2c_wo_fifo(0x00 | STOP << 8);
+    i2c_wo_fifo(AXP2101_INTEN3);
+    i2c_wo_fifo(0x00 | STOP << 8);
+	i2c_wo_start();
+
+	return 0;
+}
+
+
+int pmic_clear_irq(void)
+{
+	uint32_t tmp;
     tmp = REG32(SYS_BASE + 0x8dc);
     tmp &= ~(7 << 4);
     tmp |= 0 << 4;
@@ -446,71 +529,73 @@ int main(void)
         axp20x_i2c_write(AXP2101_INTEN1, 0);
         axp20x_i2c_write(AXP2101_INTEN2, 0);
         axp20x_i2c_write(AXP2101_INTEN3, 0);
-        // axp2101_pmic_ops.pmic_to_sleep  = axp2101_powerkey_suspend;
-        // axp2101_pmic_ops.pmic_to_resume = axp2101_powerkey_resume;
     }
-    // __asm__ volatile("b .");
 
-    systimer_delay(1, IN_S);
-    printf("axp2101_powerkey_suspend !!! \n");
-    // axp2101_powerkey_suspend();
+	return 0;
+}
+
+void delay(int count)
+{
+	int i;
+	for(i=1;i<=count;i++)
+		;
+}
+
+void rtc_init(void)
+{
+	printf("rtc init start.\n\r");
+	PMIC->PMIC_WPR  = 0x5a5a5a5aUL;
+	//INT->INT_CLR = 0x0;
+	// PMIC->IRQ_IN_MODE   = 0xff3UL;   //16s  low
+	PMIC->IRQ_IN_MODE   = 0x103UL;    //1s low
+	//PMIC->IRQ_OUT_MODE    = 0x3UL;
+	//PMIC->IRQ_OUT_POLAR = 0x5UL;
+	//PMIC->IRQ_OUT_TIME    = 0x3fffffffUL;
+	PMIC->IO_CFG        = 0x2UL;
+	PMIC->PMIC_WPR      = 0x87878787UL;
+	delay(10000);
+	PMIC->IRQ_OUT_POLAR = 0x2UL;
+	// printf("rtc_irq_out_mode:%x\n\r", PMIC->IRQ_OUT_MODE);
+	// printf("rtc_irq_out_polar:%x\n\r", PMIC->IRQ_OUT_POLAR);
+	// printf("rtc_irq_out_time:%x\n\r", PMIC->IRQ_OUT_TIME);
+	// printf("rtc_irq_in_mode:%x\n\r", PMIC->IRQ_IN_MODE);
+	// printf("rtc_irq_io_cfg:%x\n\r", PMIC->IO_CFG);
+	RTC->RTC_WPR    = 0x5a5a5a5aUL;
+	PMIC->SOFT_REG0         = 0x5a5a5a5aUL;
+	// printf("rtc_write_protect:%x\n\r", RTC->RTC_WPR);
+	//RTC->INIT_TIME        = 0x80188UL;
+	RTC->ALARM_TIME         = 0x00000099UL;
+	RTC->ALARM_EN   = 0x2UL;
+	RTC->RTCSD          = 0xff0UL;
+	RTC->RTC_WPR    = 0x5a5a5a5aUL;
+	GIC_Enable();
+	INT->INT_MASK   = 0x1UL;
+
+}
+
+void int_clr(void)
+{
+	INT->INT_CLR = 0x0;
+	printf("irq in intr done: %d\n\r", RTC->CUR_TIME);
+}
+
+void rtc_irqhandler(void)
+{
+	int_clr();
+	printf("rtc_irqhandler done !!!\n\r");
+}
+
+int main(void)
+{
+    printf("test %s ...\n", __FILE__);
+    systimer_init();
+
+#if PMIC_WAKEUP
+	// pmic_clear_irq();
+	// pmic_clear_irq_wo(1);
 #endif
 
-#if I2C_WO
-    tmp = REG32(SYS_BASE + 0x8dc);
-    tmp &= ~(7 << 4);
-    tmp |= 3 << 4;
-    tmp |= 1 << 0;
-    REG32(SYS_BASE + 0x8dc) = tmp;
-
-    tmp = REG32(SYS_BASE + 0x8e0);
-    tmp &= ~(7 << 4);
-    tmp |= 3 << 4;
-    tmp |= 1 << 0;
-    REG32(SYS_BASE + 0x8e0) = tmp;
-    i2c_wo_init(0x34);
-
-    i2c_wo_delay(2000); // 1s
-    // i2c_wo_fifo(0x10);  //poweroff
-    // i2c_wo_fifo(0x01 | STOP<<8);
-    i2c_wo_fifo(0x26);
-    i2c_wo_fifo(0x09 | STOP << 8);
-    i2c_wo_fifo(0x80);
-    i2c_wo_fifo(0x00 | STOP << 8);
-    i2c_wo_fifo(0x90);
-    i2c_wo_fifo(0x00 | STOP << 8);
-    i2c_wo_fifo(0x91);
-    i2c_wo_fifo(0x00 | STOP << 8);
-    i2c_wo_fifo(0x26);
-    i2c_wo_fifo(0x19 | STOP << 8);
-    i2c_wo_fifo(0x41);
-    i2c_wo_fifo(0x0c | STOP << 8);
-    i2c_wo_start();
-
-	GIC_DistInit();
-	GIC_CPUInterfaceInit(); //per CPU
-	set_gpio_wakeup();
-	set_gpio1_wakeup();
-	set_timerx2_wakeup();
-	timer_enable(Timerx2_T1);
-
-    while (1) {
-        printf("i2c_wo_status 0x%x\n", i2c_wo_status());
-        printf("i2c_wo_status_fifo_level 0x%x\n", i2c_wo_status_fifo_level());
-		printf("0x25100848 = 0x%x\n", REG32(0x25100848));
-		printf("0x25030000 = 0x%x\n", REG32(0x25030000));
-		printf("0x25030004 = 0x%x\n", REG32(0x25030004));
-		printf("0x25030008 = 0x%x\n", REG32(0x25030008));
-		printf("0x25030030 = 0x%x\n", REG32(0x25030030));
-		printf("0x25030050 = 0x%x\n", REG32(0x25030050));
-        // axp20x_i2c_read(AXP2101_SLEEP_CFG, &val);
-        // printf("AXP2101_SLEEP_CFG = 0x%x\n", val);
-        systimer_delay(1, IN_S);
-    }
-#endif
-
-#if 0
-	uint32_t exp;
+	uint32_t exp, tmp;
 
 	set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
@@ -537,24 +622,12 @@ int main(void)
 		GIC_DistInit();
 		GIC_CPUInterfaceInit(); //per CPU
 
-		// void pmu_irqhandler(void);
-		// GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
-		// IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
-		// IRQ_SetPriority(PMU_IRQn, 0 << 3);
-		// IRQ_Enable(PMU_IRQn);
-		
-		printf("axp2101_powerkey_suspend !!! \n");
-		axp2101_powerkey_suspend();
-
 		gic_cnt = 2;
 	}else{
 		printf("core0 is wakeup 0x%x\n", get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR));
 #if GIC_INTREFACE
 		GIC_EnableInterface();
 #endif
-
-		printf("axp2101_powerkey_resume !!! \n");
-		axp2101_powerkey_resume();
 		// clear_all_ppu_isr();
 
 		GIC_DistInit();
@@ -579,13 +652,7 @@ int main(void)
 		}
 
 		void pmu_irqhandler(void);
-		// GIC_SetTarget(PMU_IRQn, 1 << 0); //core0
-		// IRQ_SetHandler(PMU_IRQn, pmu_irqhandler);
-		// IRQ_SetPriority(PMU_IRQn, 0 << 3);
-		// IRQ_Enable(PMU_IRQn);
 #if TIMER_WAKEUP
-		// printf("wakeup TimersRawIntStatus 0x%x\n", TIMERX2->TimersRawIntStatus);
-		// printf("wakeup TimersIntStatus 0x%x\n", TIMERX2->TimersIntStatus);
 		GIC_SetTarget(Timerx2_T1_IRQn, 1 << 0); //core0
 		IRQ_SetHandler(Timerx2_T1_IRQn, timerx2_t1_irqhandler);
 		IRQ_SetPriority(Timerx2_T1_IRQn, 0 << 3);
@@ -597,6 +664,14 @@ int main(void)
 		IRQ_SetPriority(GPIO0_IRQn, 0 << 3);
 		IRQ_Enable(GPIO0_IRQn);
 #endif
+#if PMIC_WAKEUP
+		void rtc_irqhandler(void);
+		GIC_SetTarget(RTC_IRQn, 1 << 0);
+		IRQ_SetHandler(RTC_IRQn, rtc_irqhandler);
+		IRQ_SetPriority(RTC_IRQn, 0 << 3);
+		IRQ_Enable(RTC_IRQn);
+#endif
+
 		gic_cnt = 3;
 	}
 
@@ -612,6 +687,8 @@ int main(void)
 #endif
 		set_pmu_wakeup(0, 0x44); //set wakeup timer target:a55 core0
 		set_pmu_wakeup(1, 0x44); //set wakeup gpio0_16 target:a55 core0
+		set_pmu_wakeup(2, 0x44); //set wakeup gpio1_18 target:a55 core0
+		set_pmu_wakeup(3, 0x44); //set wakeup rtc target:a55 core0
 #if TIMER_WAKEUP
 		timer_enable(Timerx2_T1);
 		systimer_delay(6, IN_S);
@@ -624,9 +701,13 @@ int main(void)
 		systimer_delay(100, IN_MS);
 		set_power_off_a55(DDR0);
 		// set_power_off_seq();
-        // seehi_cmd(0xff000000);
 #if GIC_INTREFACE
 		GIC_DisableInterface();
+#endif
+#if PMIC_WAKEUP
+		pmic_to_sleep_delay(500);
+		i2c_wo_start();
+		rtc_init();
 #endif
 		set_power_off_a55(AP);
 		set_power_off_a55(CORE0);
@@ -638,6 +719,9 @@ int main(void)
 #endif
 #if TIMER_WAKEUP
 		IRQ_Disable(Timerx2_T1_IRQn);
+#endif
+#if PMIC_WAKEUP
+		pmic_clear_irq_wo(1);
 #endif
 		set_power_on_a55(DDR0);
         set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, 0); //clear PD_EN
@@ -652,7 +736,6 @@ int main(void)
         TEST_FAIL;
     }
     return 0;
-#endif
 }
 
 // vim:set ts=4 sw=4 et fenc=utf-8 fdm=marker:
