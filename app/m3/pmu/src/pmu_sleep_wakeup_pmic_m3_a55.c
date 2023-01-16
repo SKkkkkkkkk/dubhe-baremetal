@@ -20,6 +20,7 @@ int count = 0;
 #define WAKEUP_PIN_GROUP	(WAKEUP_PIN / 32)
 #define WAKEUP_PIN_NUM		(WAKEUP_PIN % 32)
 #define DEBUG_REGS			(0x4e000ee0)
+#define DEBUG_REGS_RST		(0x4e000ff0)
 #define DUMP_LOG(x)			(REG32(DEBUG_REGS) = (0x1UL << (x)) | REG32(DEBUG_REGS))
 
 void set_power_off_m3(uint8_t pid)
@@ -95,39 +96,39 @@ void set_gpio_wakeup(void)
 void set_power_off_seq(void)
 {
     set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_IMR_PMU_WAKEUP_1_MASK_LSB | 1 << PMU_IMR_PPU_LP_IRQ_MASK_LSB));
-    set_pmu_reg(PMU,PMU_PDSEQ_0_LOGICID_ADDR,(PERI0 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_1_LOGICID_ADDR,(DDR1 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_2_LOGICID_ADDR,(DDR0 << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PDSEQ_3_LOGICID_ADDR,(LP << 8 | OFF));
+    // set_pmu_reg(PMU,PMU_PDSEQ_0_LOGICID_ADDR,(PERI0 << 8 | OFF));
+    set_pmu_reg(PMU,PMU_PDSEQ_0_LOGICID_ADDR,(DDR1 << 8 | OFF));
+    set_pmu_reg(PMU,PMU_PDSEQ_1_LOGICID_ADDR,(DDR0 << 8 | OFF));
+    set_pmu_reg(PMU,PMU_PDSEQ_2_LOGICID_ADDR,(LP << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_0_LOGICID_ADDR,(PERI1 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_4_LOGICID_ADDR,(CORE3 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_5_LOGICID_ADDR,(CORE2 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_6_LOGICID_ADDR,(CORE1 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_7_LOGICID_ADDR,(CORE0 << 8 | OFF));
     // set_pmu_reg(PMU,PMU_PDSEQ_8_LOGICID_ADDR,(AP << 8 | OFF));
-    set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, (4 << 4 | 1));
+    set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, (3 << 4 | 1));
 }
 
 void set_default_power_on_seq(void)
 {
     set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_IMR_PPU_GPU_IRQ_MASK_LSB));
-    set_pmu_reg(PMU,PMU_PUSEQ_0_LOGICID_ADDR,(PERI0 << 8 | ON));
+    // set_pmu_reg(PMU,PMU_PUSEQ_0_LOGICID_ADDR,(PERI0 << 8 | ON));
     //set_pmu_reg(PMU,PMU_PUSEQ_1_LOGICID_ADDR,(PERI1 << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_1_LOGICID_ADDR,(DDR0 << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_2_LOGICID_ADDR,(DDR1 << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_3_LOGICID_ADDR,(VPU << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_4_LOGICID_ADDR,(NPU0 << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_5_LOGICID_ADDR,(NPU1 << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_6_LOGICID_ADDR,(IMG << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_7_LOGICID_ADDR,(ISP << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_8_LOGICID_ADDR,(DEWARP << 8 | ON));
-    set_pmu_reg(PMU,PMU_PUSEQ_9_LOGICID_ADDR,(GPU << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_0_LOGICID_ADDR,(DDR0 << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_1_LOGICID_ADDR,(DDR1 << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_2_LOGICID_ADDR,(VPU << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_3_LOGICID_ADDR,(NPU0 << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_4_LOGICID_ADDR,(NPU1 << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_5_LOGICID_ADDR,(IMG << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_6_LOGICID_ADDR,(ISP << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_7_LOGICID_ADDR,(DEWARP << 8 | ON));
+    set_pmu_reg(PMU,PMU_PUSEQ_8_LOGICID_ADDR,(GPU << 8 | ON));
     // set_pmu_reg(PMU,PMU_PUSEQ_4_LOGICID_ADDR,(AP << 8 | OP4 << 4 | ON));
     // set_pmu_reg(PMU,PMU_PUSEQ_5_LOGICID_ADDR,(CORE0 << 8 | ON));
     // set_pmu_reg(PMU,PMU_PUSEQ_6_LOGICID_ADDR,(CORE1 << 8 | ON));
     // set_pmu_reg(PMU,PMU_PUSEQ_7_LOGICID_ADDR,(CORE2 << 8 | ON));
     // set_pmu_reg(PMU,PMU_PUSEQ_8_LOGICID_ADDR,(CORE3 << 8 | ON));
-    set_pmu_reg(PMU,PMU_PU_CR_NUM_PD_ADDR, (10 << 4 | 1));
+    set_pmu_reg(PMU,PMU_PU_CR_NUM_PD_ADDR, (9 << 4 | 1));
 }
 
 void pmu_irqhandler (void) {
@@ -324,7 +325,7 @@ void delay(int count)
 
 void rtc_init(void)
 {
-	printf("rtc init start.\n\r");
+	printf("rtc init start.\n");
 	PMIC->PMIC_WPR  = 0x5a5a5a5aUL;
 	//INT->INT_CLR = 0x0;
 	// PMIC->IRQ_IN_MODE   = 0xff3UL;   //16s  low
@@ -332,23 +333,23 @@ void rtc_init(void)
 	//PMIC->IRQ_OUT_MODE    = 0x3UL;
 	//PMIC->IRQ_OUT_POLAR = 0x5UL;
 	//PMIC->IRQ_OUT_TIME    = 0x3fffffffUL;
-	PMIC->IO_CFG        = 0x2UL;
+	// PMIC->IO_CFG        = 0x2UL;
 	PMIC->PMIC_WPR      = 0x87878787UL;
 	delay(10000);
-	PMIC->IRQ_OUT_POLAR = 0x2UL;
+	// PMIC->IRQ_OUT_POLAR = 0x2UL;
 	// printf("rtc_irq_out_mode:%x\n\r", PMIC->IRQ_OUT_MODE);
 	// printf("rtc_irq_out_polar:%x\n\r", PMIC->IRQ_OUT_POLAR);
 	// printf("rtc_irq_out_time:%x\n\r", PMIC->IRQ_OUT_TIME);
 	// printf("rtc_irq_in_mode:%x\n\r", PMIC->IRQ_IN_MODE);
 	// printf("rtc_irq_io_cfg:%x\n\r", PMIC->IO_CFG);
-	RTC->RTC_WPR    = 0x5a5a5a5aUL;
-	PMIC->SOFT_REG0         = 0x5a5a5a5aUL;
+	// RTC->RTC_WPR    = 0x5a5a5a5aUL;
+	// PMIC->SOFT_REG0         = 0x5a5a5a5aUL;
 	// printf("rtc_write_protect:%x\n\r", RTC->RTC_WPR);
 	//RTC->INIT_TIME        = 0x80188UL;
-	RTC->ALARM_TIME         = 0x00000099UL;
-	RTC->ALARM_EN   = 0x2UL;
-	RTC->RTCSD          = 0xff0UL;
-	RTC->RTC_WPR    = 0x5a5a5a5aUL;
+	// RTC->ALARM_TIME         = 0x00000099UL;
+	// RTC->ALARM_EN   = 0x2UL;
+	// RTC->RTCSD          = 0xff0UL;
+	// RTC->RTC_WPR    = 0x5a5a5a5aUL;
 	// GIC_Enable();
 	INT->INT_MASK   = 0x1UL;
 
@@ -374,20 +375,19 @@ int main (void)
     //open each PPU ISR
     set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
-	printf("m3 core 0x%x = 0x%x\n", (DEBUG_REGS + 0x1c), (unsigned int)REG32(DEBUG_REGS + 0x1c));
+	printf("m3 core 0x%x = 0x%x\n", (DEBUG_REGS_RST), (unsigned int)REG32(DEBUG_REGS_RST));
 
 	void irq_handler_gpio(void);
 	void pmu_irqhandler(void);
 	void rtc_irqhandler(void);
 
-	if( REG32(DEBUG_REGS + 0x1c) == 0){
+	if( REG32(DEBUG_REGS_RST) == 0){
 
 		printf("m3 is cold boot\n");
-		REG32(DEBUG_REGS + 0x1c) = 0x5b5b5b00;
-		REG32(DEBUG_REGS) = 0;
+		REG32(DEBUG_REGS_RST) = 0x5b5b5b00;
 
-		// systimer_delay(5, IN_S);
-		// printf("m3 delay 5\n");
+		systimer_delay(5, IN_S);
+		printf("m3 delay 5\n");
 
 #if GPIO_WAKEUP
 		NVIC_SetPriority(GPIO0_IRQn, 0);
@@ -429,16 +429,17 @@ int main (void)
         set_pmu_wakeup(1, 0x2); //set wakeup gpio16 target:lp
         set_pmu_wakeup(3, 0x2); //set wakeup rtc target:lp
 		DUMP_LOG(0);
-		systimer_delay(1, IN_S);
-		set_power_off_seq();
+		// systimer_delay(1, IN_S);
 #if PMIC_WAKEUP
 		pmic_to_sleep_delay(500);
 		i2c_wo_start();
 		rtc_init();
 #endif
+		set_power_off_seq();
+
 		DUMP_LOG(1);
 		printf("m3 is wfi !!\n");
-        asm volatile("wfi");
+		asm volatile("wfi");
       } else if(gic_cnt == 2) {
 #if PMIC_WAKEUP
 		pmic_clear_irq_wo(1);
@@ -446,17 +447,19 @@ int main (void)
 		NVIC_DisableIRQ(GPIO0_IRQn);
         set_pmu_reg(PMU,PMU_PD_CR_NUM_PD_ADDR, 0); //clear PD_EN
 		set_default_power_on_seq();
-		systimer_delay(1, IN_S);
+		// systimer_delay(1, IN_S);
 		printf("m3 power on a55 core0 !!\n");
 		set_power_on_a55(AP);
 		set_power_on_a55(CORE0);
+		// set_power_on_a55(CORE1);
+		// set_power_on_a55(CORE2);
+		// set_power_on_a55(CORE3);
       }
 
 
     if(err_cnt == 0) {
         TEST_PASS;
     } else {
-		systimer_delay(1, IN_S);
         TEST_FAIL;
     }
     return 0;

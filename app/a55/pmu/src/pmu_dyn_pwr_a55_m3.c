@@ -140,15 +140,14 @@ int main(void)
   if( REG32(0x2e000ff0) == 0){
 	  REG32(0x2e000ff0) = 0x5a5a5a00;
 	  wakeup_core(3, core3_c_entry); //core3 enter to WFI
-	  systimer_delay(1, IN_S);
+	  systimer_delay(500, IN_MS);
 	  wakeup_core(2, core2_c_entry); //core2 enter to WFI
-	  systimer_delay(1, IN_S);
+	  systimer_delay(500, IN_MS);
 	  wakeup_core(1, core1_c_entry); //core1 enter to WFI
-	  systimer_delay(1, IN_S);
+	  systimer_delay(500, IN_MS);
 
 	  printf("auto power off\n");
-
-	  systimer_delay(1, IN_S);
+	  systimer_delay(500, IN_MS);
 
 	  set_power_off_a55(AP);
 	  set_power_off_a55(CORE0);
@@ -169,7 +168,7 @@ int main(void)
   }else{
 	  printf("core0 is wakeup!!!\n");
 
-	  systimer_delay(1, IN_S);
+	  systimer_delay(500, IN_MS);
 	  wakeup_core(3, core3_c_entry); //core3 enter to WFI
 	  systimer_delay(500, IN_MS);
 	  wakeup_core(2, core2_c_entry); //core2 enter to WFI
