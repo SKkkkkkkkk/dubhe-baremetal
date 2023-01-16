@@ -14,6 +14,7 @@
 
 static bool putchar_init_flag = false;
 #define CONSOLE_BAUDRATE 115200U
+#define UART_CLK		 20000000U
 
 
 __attribute__((weak)) int putchar(int c)
@@ -38,7 +39,7 @@ __attribute__((weak)) int putchar(int c)
 #else
 	if(!putchar_init_flag)
 	{
-		if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART1)!=0)
+		if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART1)!=0)
 			while(1);
 		putchar_init_flag = true;
 	}
@@ -71,7 +72,7 @@ __attribute__((weak)) int getchar()
 #else
 	if(!putchar_init_flag)
 	{
-		if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART1)!=0)
+		if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART1)!=0)
 			while(1);
 		putchar_init_flag = true;
 	}

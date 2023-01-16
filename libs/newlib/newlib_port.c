@@ -10,6 +10,7 @@ extern int errno;
 #endif
 
 #define CONSOLE_BAUDRATE 115200U
+#define UART_CLK		 20000000U
 
 #if defined QEMU
 	#include "pl011.h"
@@ -69,7 +70,7 @@ extern int errno;
 	{
 		if(!uart_init)
 		{
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART0)!=0)
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART0)!=0)
 			{
 				uart_init = false;
 				return 0;
@@ -91,7 +92,7 @@ extern int errno;
 	{
 		if(!uart_init)
 		{
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, 20000000, SEEHI_UART0)!=0)
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART0)!=0)
 			{
 				uart_init = false;
 				return 0;
