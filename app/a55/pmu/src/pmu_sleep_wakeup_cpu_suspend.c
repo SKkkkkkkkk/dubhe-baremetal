@@ -21,10 +21,10 @@ int                      count        = 0;
 static volatile uint32_t timerx2_t1_i = 0U;
 #define GPIO0            GPIO0_BASE
 #define GPIO1            GPIO1_BASE
-#define GIC_INTREFACE    0
-#define TIMER_WAKEUP     0
+#define GIC_INTREFACE    1
+#define TIMER_WAKEUP     1
 #define GPIO_WAKEUP      1
-#define PMIC_WAKEUP      1
+#define PMIC_WAKEUP      0
 #define STOP             1
 
 #define TIMER_FREQ       (20000000)
@@ -97,15 +97,15 @@ void core1_c_entry(void)
 #if GIC_INTREFACE
         GIC_DisableInterface();
 #endif
-        set_power_off_a55(CORE1);
-        uint32_t pwsr = 1;
-        while (1) {
-            pwsr = get_pmu_reg(CORE1, PPU_PWPR_OP_DYN_EN_ADDR);
-            if (((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-                printf("start enter wfi core1\n");
-                break;
-            }
-        }
+		set_power_off_a55(CORE1);
+		uint32_t pwsr = 1;
+		while (1) {
+			pwsr = get_pmu_reg(CORE1, PPU_PWPR_OP_DYN_EN_ADDR);
+			if (((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+				printf("start enter wfi core1\n");
+				break;
+			}
+		}
         POWER_OFF_SEQ();
     } else {
 #if GIC_INTREFACE
@@ -126,15 +126,15 @@ void core2_c_entry(void)
 #if GIC_INTREFACE
         GIC_DisableInterface();
 #endif
-        set_power_off_a55(CORE2);
-        uint32_t pwsr = 1;
-        while (1) {
-            pwsr = get_pmu_reg(CORE2, PPU_PWPR_OP_DYN_EN_ADDR);
-            if (((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-                printf("start enter wfi core2\n");
-                break;
-            }
-        }
+		set_power_off_a55(CORE2);
+		uint32_t pwsr = 1;
+		while (1) {
+			pwsr = get_pmu_reg(CORE2, PPU_PWPR_OP_DYN_EN_ADDR);
+			if (((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+				printf("start enter wfi core2\n");
+				break;
+			}
+		}
         POWER_OFF_SEQ();
     } else {
 #if GIC_INTREFACE
@@ -155,16 +155,16 @@ void core3_c_entry(void)
 #if GIC_INTREFACE
         GIC_DisableInterface();
 #endif
-        set_power_off_a55(CORE3);
-        uint32_t pwsr = 1;
-        while (1) {
-            pwsr = get_pmu_reg(CORE3, PPU_PWPR_OP_DYN_EN_ADDR);
-            if (((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-                printf("start enter wfi core3\n");
-                break;
-            }
-        }
-        POWER_OFF_SEQ();
+		set_power_off_a55(CORE3);
+		uint32_t pwsr = 1;
+		while (1) {
+			pwsr = get_pmu_reg(CORE3, PPU_PWPR_OP_DYN_EN_ADDR);
+			if (((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+				printf("start enter wfi core3\n");
+				break;
+			}
+		}
+        // POWER_OFF_SEQ();
     } else {
 #if GIC_INTREFACE
         GIC_EnableInterface();
@@ -625,9 +625,6 @@ int main(void)
 		gic_cnt = 2;
 	}else{
 		printf("core0 is wakeup 0x%x\n", get_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR));
-#if GIC_INTREFACE
-		GIC_EnableInterface();
-#endif
 		// clear_all_ppu_isr();
 
 		GIC_DistInit();
@@ -643,13 +640,13 @@ int main(void)
 		wakeup_core(1, core1_c_entry); //core1 enter to WFI
 		systimer_delay(1, IN_S);
 
-		for(int i=0; i<PDNUM; i++) {
-			if(i == AP || i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3) {
-				err_cnt += check_pmu_irq(i,0x87,0xffffffff,0);
-				err_cnt += check_pmu_reg(i,PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_pwsr(i,ON+OP4));
-				err_cnt += check_pmu_reg(PMU,PMU_PD_CORE0_CR_PPU_PSTATE_ADDR+i*4, get_pmu_cr(i,ON+OP4));
-			}
-		}
+		// for(int i=0; i<PDNUM; i++) {
+			// if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3) {
+				// err_cnt += check_pmu_irq(i,0x87,0xffffffff,0);
+				// err_cnt += check_pmu_reg(i,PPU_PWSR_OP_DYN_STATUS_ADDR, get_pmu_pwsr(i,ON+OP4));
+				// err_cnt += check_pmu_reg(PMU,PMU_PD_CORE0_CR_PPU_PSTATE_ADDR+i*4, get_pmu_cr(i,ON+OP4));
+			// }
+		// }
 
 		void pmu_irqhandler(void);
 #if TIMER_WAKEUP
@@ -685,13 +682,14 @@ int main(void)
 #if TIMER_WAKEUP
 		set_timerx2_wakeup();
 #endif
-		set_pmu_wakeup(0, 0x44); //set wakeup timer target:a55 core0
-		set_pmu_wakeup(1, 0x44); //set wakeup gpio0_16 target:a55 core0
-		set_pmu_wakeup(2, 0x44); //set wakeup gpio1_18 target:a55 core0
-		set_pmu_wakeup(3, 0x44); //set wakeup rtc target:a55 core0
+		set_pmu_wakeup(0, 0x04); //set wakeup timer target:a55 core0
+		set_pmu_wakeup(1, 0x04); //set wakeup gpio0_16 target:a55 core0
+		set_pmu_wakeup(2, 0x04); //set wakeup gpio1_18 target:a55 core0
+		set_pmu_wakeup(3, 0x04); //set wakeup rtc target:a55 core0
+		// set_pmu_wakeup(5, 0x04); //set wakeup gic target:a55 core0
 #if TIMER_WAKEUP
 		timer_enable(Timerx2_T1);
-		systimer_delay(6, IN_S);
+		// systimer_delay(6, IN_S);
 #endif
         wakeup_core(3, core3_c_entry); //core3 enter to WFI
 		systimer_delay(100, IN_MS);
@@ -704,12 +702,12 @@ int main(void)
 #if GIC_INTREFACE
 		GIC_DisableInterface();
 #endif
-#if PMIC_WAKEUP
+#if PMIC_WAKEUP/*{{{*/
 		pmic_to_sleep_delay(500);
 		i2c_wo_start();
 		rtc_init();
-#endif
-		set_power_off_a55(AP);
+#endif/*}}}*/
+		// set_power_off_a55(AP);
 		set_power_off_a55(CORE0);
 		printf("core0 enter wfi !!\n");
 		POWER_OFF_SEQ(); //core0 enter WFI

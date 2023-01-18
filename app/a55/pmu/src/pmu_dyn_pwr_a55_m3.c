@@ -68,7 +68,7 @@ void POWER_OFF_SEQ(void)
 void core1_c_entry(void)
 {
     printf("hello_world core1\n");
-	printf("core1 0x2e000ff4 = 0x%x\n", REG32(0x2e000ff4));
+	// printf("core1 0x2e000ff4 = 0x%x\n", REG32(0x2e000ff4));
 	if( REG32(0x2e000ff4) == 0){
 		REG32(0x2e000ff4) = 0x5a5a5a01;
 		set_power_off_a55(CORE1);
@@ -90,7 +90,7 @@ void core1_c_entry(void)
 void core2_c_entry(void)
 {
     printf("hello_world core2\n");
-	printf("core2 0x2e000ff8 = 0x%x\n", REG32(0x2e000ff8));
+	// printf("core2 0x2e000ff8 = 0x%x\n", REG32(0x2e000ff8));
 	if( REG32(0x2e000ff8) == 0){
 		REG32(0x2e000ff8) = 0x5a5a5a02;
 		set_power_off_a55(CORE2);
@@ -112,7 +112,7 @@ void core2_c_entry(void)
 void core3_c_entry(void)
 {
     printf("hello_world core3\n");
-	printf("core3 0x2e000ffc = 0x%x\n", REG32(0x2e000ffc));
+	// printf("core3 0x2e000ffc = 0x%x\n", REG32(0x2e000ffc));
 	if( REG32(0x2e000ffc) == 0){
 		REG32(0x2e000ffc) = 0x5a5a5a03;
 		set_power_off_a55(CORE3);
@@ -137,31 +137,44 @@ int main(void)
   printf("test %s ...\n", __FILE__); 
   systimer_init();
 
-  wakeup_core(3, core3_c_entry); //core3 enter to WFI
-  systimer_delay(1, IN_S);
-  wakeup_core(2, core2_c_entry); //core2 enter to WFI
-  systimer_delay(1, IN_S);
-  wakeup_core(1, core1_c_entry); //core1 enter to WFI
-  systimer_delay(1, IN_S);
+  if( REG32(0x2e000ff0) == 0){
+	  REG32(0x2e000ff0) = 0x5a5a5a00;
+	  wakeup_core(3, core3_c_entry); //core3 enter to WFI
+	  systimer_delay(500, IN_MS);
+	  wakeup_core(2, core2_c_entry); //core2 enter to WFI
+	  systimer_delay(500, IN_MS);
+	  wakeup_core(1, core1_c_entry); //core1 enter to WFI
+	  systimer_delay(500, IN_MS);
 
-  printf("auto power off\n");
+	  printf("auto power off\n");
+	  systimer_delay(500, IN_MS);
 
-  systimer_delay(1, IN_S);
+	  set_power_off_a55(AP);
+	  set_power_off_a55(CORE0);
 
-  set_power_off_a55(AP);
-  set_power_off_a55(CORE0);
-
-  while(1) {
-	  pwsr = get_pmu_reg(CORE0,PPU_PWPR_OP_DYN_EN_ADDR);
-	  if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
-		printf("start enter wfi core0\n");
-		break;
+	  while(1) {
+		  pwsr = get_pmu_reg(CORE0,PPU_PWPR_OP_DYN_EN_ADDR);
+		  if(((pwsr >> PPU_PWPR_PWR_POLICY_LSB) & 0xf) == OFF) {
+			  printf("start enter wfi core0\n");
+			  break;
+		  }
 	  }
+	  printf("poweroff core0\n");
+	  POWER_OFF_SEQ(); //core0 enter WFI
+	  for(int i=0; i<4; i++) {
+		  asm volatile("nop");
+	  }
+	  asm volatile("wfi");
+  }else{
+	  printf("core0 is wakeup!!!\n");
+
+	  systimer_delay(500, IN_MS);
+	  wakeup_core(3, core3_c_entry); //core3 enter to WFI
+	  systimer_delay(500, IN_MS);
+	  wakeup_core(2, core2_c_entry); //core2 enter to WFI
+	  systimer_delay(500, IN_MS);
+	  wakeup_core(1, core1_c_entry); //core1 enter to WFI
+	  systimer_delay(500, IN_MS);
+	  printf("PASS!!!\n");
   }
-  printf("poweroff core0\n");
-  POWER_OFF_SEQ(); //core0 enter WFI
-  for(int i=0; i<4; i++) {
-    asm volatile("nop");
-  }
-  asm volatile("wfi");
 }
