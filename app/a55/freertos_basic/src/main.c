@@ -1,10 +1,11 @@
-#include "m3.h"
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "irq_ctrl.h"
 
 int main()
-{
+{	
+	IRQ_Initialize();
 	void task1(void* arg);
 	void task2(void* arg);
 	if (xTaskCreate(task1, "task1", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)

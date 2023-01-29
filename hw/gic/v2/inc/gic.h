@@ -465,8 +465,9 @@ __STATIC_INLINE void GIC_CPUInterfaceInit(void)
   }
   //Enable interface
   GIC_EnableInterface();
-  //Set binary point to 0
-  GIC_SetBinaryPoint(7U); //禁止中断嵌套
+  //Set binary point
+  // GIC_SetBinaryPoint(7U); //禁止中断嵌套
+  GIC_SetBinaryPoint(2U); //允许嵌套
   //Set priority mask
   GIC_SetInterfacePriorityMask(0xFFU);
 }

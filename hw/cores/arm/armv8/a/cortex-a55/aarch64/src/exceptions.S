@@ -13,11 +13,11 @@ vector_base vector_table
 	 * -----------------------------------------------------
 	*/
 vector_entry sync_exception_spt
-	b .
+	b _sync_exception_spt
 end_vector_entry sync_exception_spt
 
 vector_entry irq_spt
-	b .
+	b _irq_spt
 end_vector_entry irq_spt
 
 vector_entry fiq_spt
@@ -91,7 +91,6 @@ vector_entry serror_aarch32
 	b .
 end_vector_entry serror_aarch32
 
-
 	func _sync_exception_sph
 _sync_exception_sph:
 	asm_read_sysreg_elx esr
@@ -102,7 +101,6 @@ _sync_exception_sph:
 	mov x3, x0
 	b .
 endfunc _sync_exception_sph
-
 
 	func _irq_sph
 _irq_sph:
@@ -187,3 +185,18 @@ _irq_sph:
 
 	ERET
 endfunc _irq_sph
+
+
+	.global _sync_exception_spt
+	.weak _sync_exception_spt
+	func _sync_exception_spt
+_sync_exception_spt:
+	b .
+endfunc _sync_exception_spt
+
+	.global _irq_spt
+	.weak _irq_spt
+	func _irq_spt
+_irq_spt:
+	b .
+endfunc _irq_spt

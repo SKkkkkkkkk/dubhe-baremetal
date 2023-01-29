@@ -371,10 +371,10 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     ### USE_FREERTOS
     cmake_dependent_option(
         USE_FREERTOS "Use FreeRTOS" ON
-        "ENABLE_USE_FREERTOS;$CACHE{CORE} STREQUAL M3" OFF
+        "ENABLE_USE_FREERTOS" OFF
     )
     if(USE_FREERTOS)
-        add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel_10_4_6)
+        add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel/v10_5_1)
         set(link_libs ${link_libs} freertos_kernel)
     endif()
 

@@ -1,6 +1,6 @@
 set(LIB_NAME a55)
 
-add_library(${LIB_NAME} STATIC)
+add_library(${LIB_NAME} OBJECT)
 
 target_sources(${LIB_NAME} 
 	PRIVATE

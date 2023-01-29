@@ -3,12 +3,11 @@
 
 /* Here is a good place to include header files that are required across
 your application. */
-#include "m3.h"
 
 #define configUSE_PREEMPTION                      1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION   0
 #define configUSE_TICKLESS_IDLE                   0
-#define configCPU_CLOCK_HZ                        SYSTEM_CLOCK
+#define configCPU_CLOCK_HZ                      60000000
 #define configSYSTICK_CLOCK_HZ                    60000
 #define configTICK_RATE_HZ                        1000
 #define configMAX_PRIORITIES                      5

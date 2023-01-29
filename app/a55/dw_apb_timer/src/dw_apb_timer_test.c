@@ -86,43 +86,43 @@ else
 	void timerx2_t2_irqhandler(void);
 	GIC_SetTarget(Timerx2_T2_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx2_T2_IRQn, timerx2_t2_irqhandler);
-	IRQ_SetPriority(Timerx2_T2_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx2_T2_IRQn, 1 << 3);
 	IRQ_Enable(Timerx2_T2_IRQn);
 
 	void timerx6_t1_irqhandler(void);
 	GIC_SetTarget(Timerx6_T1_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T1_IRQn, timerx6_t1_irqhandler);
-	IRQ_SetPriority(Timerx6_T1_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx6_T1_IRQn, 2 << 3);
 	IRQ_Enable(Timerx6_T1_IRQn);
 
 	void timerx6_t2_irqhandler(void);
 	GIC_SetTarget(Timerx6_T2_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T2_IRQn, timerx6_t2_irqhandler);
-	IRQ_SetPriority(Timerx6_T2_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx6_T2_IRQn, 3 << 3);
 	IRQ_Enable(Timerx6_T2_IRQn);
 
 	void timerx6_t3_irqhandler(void);
 	GIC_SetTarget(Timerx6_T3_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T3_IRQn, timerx6_t3_irqhandler);
-	IRQ_SetPriority(Timerx6_T3_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx6_T3_IRQn, 4 << 3);
 	IRQ_Enable(Timerx6_T3_IRQn);
 
 	void timerx6_t4_irqhandler(void);
 	GIC_SetTarget(Timerx6_T4_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T4_IRQn, timerx6_t4_irqhandler);
-	IRQ_SetPriority(Timerx6_T4_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx6_T4_IRQn, 5 << 3);
 	IRQ_Enable(Timerx6_T4_IRQn);
 
 	void timerx6_t5_irqhandler(void);
 	GIC_SetTarget(Timerx6_T5_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T5_IRQn, timerx6_t5_irqhandler);
-	IRQ_SetPriority(Timerx6_T5_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx6_T5_IRQn, 6 << 3);
 	IRQ_Enable(Timerx6_T5_IRQn);
 
 	void timerx6_t6_irqhandler(void);
 	GIC_SetTarget(Timerx6_T6_IRQn, 1 << 0);
 	IRQ_SetHandler(Timerx6_T6_IRQn, timerx6_t6_irqhandler);
-	IRQ_SetPriority(Timerx6_T6_IRQn, 0 << 3);
+	IRQ_SetPriority(Timerx6_T6_IRQn, 7 << 3);
 	IRQ_Enable(Timerx6_T6_IRQn);
 
 	timer_enable(Timerx6_T6);
