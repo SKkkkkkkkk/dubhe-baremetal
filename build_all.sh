@@ -17,6 +17,16 @@ cd app/a55/dw_apb_timer;
 ./build.sh
 
 cd - ;
+rm -rf build ;
+cd app/a55/dw_mbox_a2b;
+./build.sh
+
+cd - ;
+rm -rf build ;
+cd app/a55/freertos_basic;
+./build.sh
+
+cd - ;
 rm -rf build  ;
 cd app/a55/fwu_dram;
 ./build.sh
