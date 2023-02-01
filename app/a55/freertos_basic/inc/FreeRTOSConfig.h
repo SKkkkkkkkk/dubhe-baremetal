@@ -109,7 +109,11 @@ your application. */
     #define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET 0x1000UL
     #define configUNIQUE_INTERRUPT_PRIORITIES 32
 
-    #define configMAX_API_CALL_INTERRUPT_PRIORITY   20
+    // !!! NOTE !!!:
+    // [configMAX_API_CALL_INTERRUPT_PRIORITY, configUNIQUE_INTERRUPT_PRIORITIES) ISRs can call
+    // the FreeRTOS API functions ending in "FromISR". 
+    // [0, configUNIQUE_INTERRUPT_PRIORITIES) ISRs can never call any FreeRTOS API.
+    #define configMAX_API_CALL_INTERRUPT_PRIORITY   ( configUNIQUE_INTERRUPT_PRIORITIES / 2  + 1 )
 #else
     #define configINTERRUPT_CONTROLLER_BASE_ADDRESS 		VIRT_GIC_DIST
     #define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET (VIRT_GIC_CPU - VIRT_GIC_DIST)

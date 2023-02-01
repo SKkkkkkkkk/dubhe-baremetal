@@ -2,9 +2,15 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "irq_ctrl.h"
+#ifndef QEMU
+	#include "system_counter.h"
+#endif
 
 int main()
-{	
+{
+#ifndef QEMU
+	initSystemCounter(0, 0);
+#endif
 	IRQ_Initialize();
 	void task1(void* arg);
 	void task2(void* arg);
