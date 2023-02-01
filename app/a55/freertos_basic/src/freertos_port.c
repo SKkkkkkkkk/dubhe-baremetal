@@ -1,11 +1,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
-// #include "ape1210.h"
 #include "irq_ctrl.h"
 #include "gic.h"
-// #include "ape1210_timer.h"
-// #include "seehi_print.h"
-#include "dw_apb_timers.h"
+#include <arch_helpers.h>
 #include <stdio.h>
 
 void vApplicationIRQHandler(uint32_t ulICCIAR)
@@ -17,7 +14,7 @@ void vApplicationIRQHandler(uint32_t ulICCIAR)
 	//ClearInterruptSource();
 
 	/* Re-enable interrupts. */
-	// __asm volatile("CPSIE I");
+	portENABLE_INTERRUPTS();
 
 	/* The ID of the interrupt can be obtained by bitwise ANDing the ICCIAR value
     with 0x3FF. */
@@ -29,35 +26,31 @@ void vApplicationIRQHandler(uint32_t ulICCIAR)
 	IRQHandler_t handler = IRQ_GetHandler(ulInterruptID);
 	if (handler != NULL)
 		handler();
-	// IRQ_GetHandler(ulInterruptID)();
 }
 
 void SystemSetupSystick(void)
 {
-	timer_init_config_t timer_init_config = {
-		.int_mask = 0, .loadcount = 20000000/configTICK_RATE_HZ, .timer_id = Timerx2_T1, .timer_mode = Mode_User_Defined
-	};
-	timer_init(&timer_init_config);
+#ifndef QEMU
+	write_cntfrq_el0(configSYS_COUNTER_FREQ_IN_TICKS);
+#endif
+	write_cntps_ctl_el1(0);
+	IRQ_SetHandler(Secure_physical_timer_IRQn, FreeRTOS_Tick_Handler); //设置中断处理函数
+	IRQ_SetPriority(Secure_physical_timer_IRQn, portLOWEST_USABLE_INTERRUPT_PRIORITY << portPRIORITY_SHIFT); //设置优先级
+	IRQ_Enable(Secure_physical_timer_IRQn); //使能该中断
 
-	void FreeRTOS_Tick_Handler(void);
-	IRQ_SetHandler(Timerx2_T1_IRQn, FreeRTOS_Tick_Handler);
-	IRQ_SetPriority(Timerx2_T1_IRQn, portLOWEST_USABLE_INTERRUPT_PRIORITY << portPRIORITY_SHIFT);
-	IRQ_Enable(Timerx2_T1_IRQn);
-
-	timer_enable(Timerx2_T1);
+	write_cntps_tval_el1(read_cntfrq_el0()/configTICK_RATE_HZ);
+	write_cntps_ctl_el1(1);
 }
 
 void SystemClearSystickFlag(void)
 {
-	(void)TIMERX2->Timer1EOI;
+	write_cntps_tval_el1(read_cntfrq_el0()/configTICK_RATE_HZ);
 }
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
-	// DI();
-	// seehi_printf("StackOverflow!!! TCB: %lx, TaskName: %s\n\r", (uint32_t)xTask, pcTaskName);
 	while (1)
-		;
+		__asm__ volatile("nop");
 }
 
 #if ( configSUPPORT_STATIC_ALLOCATION == 1 )

@@ -7,6 +7,8 @@ extern C {
 #include <utils_def.h>
 //############################################
 
+#ifndef QEMU
+
 #define A55_BOOTROM1_BASE              UL(0x000000000)
 #define AXI_SRAM					   UL(0x000100000)
 #define A55_BOOTFLASH_BASE             UL(0x001000000)
@@ -110,6 +112,17 @@ extern C {
 #define SOC_BASE                       UL(0x000000000)
 #define SYS_BASE                       SYSCTRL_BASE
 
+#else
+
+#define VIRT_FLASH          UL(0x00000000)
+#define VIRT_GIC_DIST       UL(0x08000000)
+#define VIRT_GIC_CPU        UL(0x08010000)
+#define VIRT_UART           UL(0x09000000)
+#define VIRT_SECURE_UART    UL(0x09040000)
+#define VIRT_SECURE_MEM     UL(0x0e000000)
+#define VIRT_MEM            UL(0x40000000)
+
+#endif
 
 //############################################
 

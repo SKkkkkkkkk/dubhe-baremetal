@@ -21,6 +21,7 @@
   #else
       #if (WHERE_TO_LOAD == ROM_AND_RAM)
       #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
+        #error "unspport ALL_IN_AXI_SRAM in qemu."
       #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
       #elif (WHERE_TO_LOAD == ALL_IN_DDR)
         #error "unspport ALL_IN_DDR in qemu."
@@ -35,9 +36,9 @@
 MEMORY
 {
   ROM (rx)     : ORIGIN = __CODE_BASE,         LENGTH = __CODE_SIZE
-  AXI_SRAM(rx)  : ORIGIN = __AXI_SRAM_BASE,    LENGTH = __AXI_SRAM_SIZE
   SYSRAM (rwx) : ORIGIN = __SRAM_BASE,         LENGTH = __SRAM_SIZE
 #ifndef QEMU
+  AXI_SRAM(rx)  : ORIGIN = __AXI_SRAM_BASE,    LENGTH = __AXI_SRAM_SIZE
   DDR  (rwx) : ORIGIN = __EXTERNAL_RAM_BASE, LENGTH = __EXTERNAL_RAM_SIZE
 #endif
 }

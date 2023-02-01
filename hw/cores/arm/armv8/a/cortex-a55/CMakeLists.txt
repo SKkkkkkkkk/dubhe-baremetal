@@ -25,16 +25,18 @@ target_compile_options(${LIB_NAME}
 		${compile_options_align}
 )
 
+
+set(a55_sub_libs aarch64_libc gic_v2 wakeup_core)
 add_subdirectory(${SDK_DIR}/libs/aarch64_libc aarch64_libc)
 add_subdirectory(${SDK_DIR}/hw/gic/v2 gic_v2)
-add_subdirectory(${SDK_DIR}/hw/system_counter system_counter)
+if(NOT $CACHE{BOARD} STREQUAL QEMU)
+	add_subdirectory(${SDK_DIR}/hw/system_counter system_counter)
+	set(a55_sub_libs ${a55_sub_libs} system_counter)
+endif()
 add_subdirectory(${SDK_DIR}/libs/wakeup_core wakeup_core)
 target_link_libraries(${LIB_NAME}
 	INTERFACE
-		aarch64_libc
-		gic_v2
-		system_counter
-		wakeup_core
+		${a55_sub_libs}
 )
 
 ### link script

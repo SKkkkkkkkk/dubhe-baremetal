@@ -452,7 +452,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     ### USE_PINMUX
     cmake_dependent_option(
         USE_PINMUX "Use pinmux" ON
-        "ENABLE_USE_PINMUX;" OFF
+        "NOT $CACHE{BOARD} STREQUAL QEMU;ENABLE_USE_PINMUX;" OFF
     )
     if(USE_PINMUX)
         add_subdirectory(${SDK_DIR}/hw/pinmux)
@@ -462,7 +462,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     ### USE_WDT
     cmake_dependent_option(
         USE_WDT "Use dw_apb_wdt" ON
-        "ENABLE_USE_WDT" OFF
+        "NOT $CACHE{BOARD} STREQUAL QEMU;ENABLE_USE_WDT" OFF
     )
     if(USE_WDT)
         add_subdirectory(${SDK_DIR}/hw/wdt/dw_apb_wdt)
@@ -472,7 +472,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     ### USE_PMU
     cmake_dependent_option(
         USE_PMU "Use seehi pmu" ON
-        "ENABLE_USE_PMU" OFF
+        "NOT $CACHE{BOARD} STREQUAL QEMU;ENABLE_USE_PMU" OFF
     )
     if(USE_PMU)
         add_subdirectory(${SDK_DIR}/hw/pmu)
@@ -482,7 +482,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
 	### USE_I2C_WO
     cmake_dependent_option(
         USE_I2C_WO "Use seehi i2c wo" ON
-		"ENABLE_USE_I2C_WO" OFF
+		"NOT $CACHE{BOARD} STREQUAL QEMU;ENABLE_USE_I2C_WO" OFF
     )
     if(USE_I2C_WO)
         add_subdirectory(${SDK_DIR}/hw/i2c_wo)

@@ -7,20 +7,14 @@
 	#ifdef QEMU
 		#define GIC_DISTRIBUTOR_BASE (0x08000000UL)
 		#define GIC_INTERFACE_BASE   (0x08010000UL)
-		#define __GIC_PRIO_BITS 	 5U
-		#define IRQ_GIC_LINE_COUNT   128U
 	#else
 		#define GIC400_BASE			 (GIC_BASE)
 		#define GIC_DISTRIBUTOR_BASE (GIC400_BASE + 0x1000UL)
 		#define GIC_INTERFACE_BASE   (GIC400_BASE + 0x2000UL)
-		#define __GIC_PRIO_BITS 	 5U
-		#define IRQ_GIC_LINE_COUNT   128U
 	#endif
 #else // RI5CY
 	#define GIC_DISTRIBUTOR_BASE (0x030C1000UL)
 	#define GIC_INTERFACE_BASE   (0x030C2000UL)
-	#define __GIC_PRIO_BITS 	 5U
-	#define IRQ_GIC_LINE_COUNT   128U
 #endif
 
 

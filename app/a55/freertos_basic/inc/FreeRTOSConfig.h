@@ -9,8 +9,7 @@ your application. */
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 #define configUSE_TICKLESS_IDLE                 0
-#define configCPU_CLOCK_HZ                      60000000
-#define configSYSTICK_CLOCK_HZ                  1000000
+#define configSYS_COUNTER_FREQ_IN_TICKS         20000000
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    5
 #define configMINIMAL_STACK_SIZE                128
@@ -64,11 +63,6 @@ your application. */
 #define configTIMER_QUEUE_LENGTH                10
 #define configTIMER_TASK_STACK_DEPTH            configMINIMAL_STACK_SIZE
 
-/* Interrupt nesting behaviour configuration. */
-// #define configKERNEL_INTERRUPT_PRIORITY         [dependent of processor]
-#define configMAX_API_CALL_INTERRUPT_PRIORITY   20
-// #define configMAX_SYSCALL_INTERRUPT_PRIORITY    [dependent on processor and application]
-
 
 /* Define to trap errors during development. */
 #define configASSERT(x) if(( x) == 0) {taskDISABLE_INTERRUPTS(); for (;;);}
@@ -110,9 +104,19 @@ your application. */
 #define configUSE_TASK_FPU_SUPPORT 2
 
 /* GIC information defintions. */
-#define configINTERRUPT_CONTROLLER_BASE_ADDRESS 		(GIC_BASE + 0x1000UL)
-#define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET 0x1000UL
-#define configUNIQUE_INTERRUPT_PRIORITIES 32
+#ifndef QEMU
+    #define configINTERRUPT_CONTROLLER_BASE_ADDRESS 		(GIC_BASE + 0x1000UL)
+    #define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET 0x1000UL
+    #define configUNIQUE_INTERRUPT_PRIORITIES 32
+
+    #define configMAX_API_CALL_INTERRUPT_PRIORITY   20
+#else
+    #define configINTERRUPT_CONTROLLER_BASE_ADDRESS 		VIRT_GIC_DIST
+    #define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET (VIRT_GIC_CPU - VIRT_GIC_DIST)
+    #define configUNIQUE_INTERRUPT_PRIORITIES 256
+
+    #define configMAX_API_CALL_INTERRUPT_PRIORITY   ( configUNIQUE_INTERRUPT_PRIORITIES / 2  + 1 )
+#endif
 
 /* Systick definitions */
 #define configSETUP_TICK_INTERRUPT()             \

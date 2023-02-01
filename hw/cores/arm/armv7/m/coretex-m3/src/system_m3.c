@@ -59,7 +59,9 @@ void SystemInit_Without_CEnv()
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
   SCB->VTOR = (uint32_t) &(__VECTOR_TABLE[0]);
 #endif
+#ifndef QEMU
   cm3_icache_switch(false);
+#endif
   return;
 }
 

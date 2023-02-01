@@ -1,0 +1,1 @@
+arm-none-eabi-gdb build/freertos_basic.elf
