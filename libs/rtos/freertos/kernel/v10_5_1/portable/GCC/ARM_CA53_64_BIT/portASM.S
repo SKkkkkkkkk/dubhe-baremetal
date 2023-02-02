@@ -319,7 +319,8 @@ FreeRTOS_IRQ_Handler:
 	STP		X0, X1, [SP, #-0x10]!
 
 	/* Call the C handler. */
-	BL vApplicationIRQHandler
+	LDR X1, vApplicationIRQHandlerConst
+	BLR X1
 
 	/* Disable interrupts. */
 	MSR 	DAIFSET, #2
@@ -409,12 +410,51 @@ Exit_IRQ_No_Context_Switch:
 	ERET
 
 
-// .align 8
-// .weak vApplicationIRQHandler
-// .type vApplicationIRQHandler, %function
-// vApplicationIRQHandler:
+.align 4
+.weak vApplicationIRQHandler
+.type vApplicationIRQHandler, %function
+vApplicationIRQHandler:
+	STP		LR, X1, [SP,#-0x10]!
 
+	STP		Q0, Q1, [SP,#-0x20]!
+	STP		Q2, Q3, [SP,#-0x20]!
+	STP		Q4, Q5, [SP,#-0x20]!
+	STP		Q6, Q7, [SP,#-0x20]!
+	STP		Q8, Q9, [SP,#-0x20]!
+	STP		Q10, Q11, [SP,#-0x20]!
+	STP		Q12, Q13, [SP,#-0x20]!
+	STP		Q14, Q15, [SP,#-0x20]!
+	STP		Q16, Q17, [SP,#-0x20]!
+	STP		Q18, Q19, [SP,#-0x20]!
+	STP		Q20, Q21, [SP,#-0x20]!
+	STP		Q22, Q23, [SP,#-0x20]!
+	STP		Q24, Q25, [SP,#-0x20]!
+	STP		Q26, Q27, [SP,#-0x20]!
+	STP		Q28, Q29, [SP,#-0x20]!
+	STP		Q30, Q31, [SP,#-0x20]!
 
+	LDR     X1, vApplicationFPUSafeIRQHandlerConst
+	BLR     X1
+
+	LDP		Q30, Q31, [SP], #0x20
+	LDP		Q28, Q29, [SP], #0x20
+	LDP		Q26, Q27, [SP], #0x20
+	LDP		Q24, Q25, [SP], #0x20
+	LDP		Q22, Q23, [SP], #0x20
+	LDP		Q20, Q21, [SP], #0x20
+	LDP		Q18, Q19, [SP], #0x20
+	LDP		Q16, Q17, [SP], #0x20
+	LDP		Q14, Q15, [SP], #0x20
+	LDP		Q12, Q13, [SP], #0x20
+	LDP		Q10, Q11, [SP], #0x20
+	LDP		Q8, Q9, [SP], #0x20
+	LDP		Q6, Q7, [SP], #0x20
+	LDP		Q4, Q5, [SP], #0x20
+	LDP		Q2, Q3, [SP], #0x20
+	LDP		Q0, Q1, [SP], #0x20
+
+	LDP		LR, X1, [SP], #0x10
+	ret
 
 .align 8
 pxCurrentTCBConst: .dword pxCurrentTCB
@@ -427,7 +467,8 @@ ullPortInterruptNestingConst: .dword ullPortInterruptNesting
 ullPortYieldRequiredConst: .dword ullPortYieldRequired
 ullICCIARConst:	.dword ullICCIAR
 ullICCEOIRConst: .dword ullICCEOIR
-vApplicationIRQHandlerConst: .word vApplicationIRQHandler
+vApplicationIRQHandlerConst: .dword vApplicationIRQHandler
+vApplicationFPUSafeIRQHandlerConst: .dword vApplicationFPUSafeIRQHandler
 
 
 

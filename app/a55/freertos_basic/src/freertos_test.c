@@ -6,22 +6,22 @@
 
 void task1(void* arg)
 {
-	static int i = 0;
+	static double i = 0;
 	while(1)
 	{
-		printf("task1: %d\n\r", i++);
-		vTaskDelay(1000);
+		printf("task1: %d\n\r", (int)(i++));
+		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
 
 void task2(void* arg)
 {
-	static int i = 0;
+	static double i = 0;
 	while(1)
 	{
-		printf("task2: %d\n\r", i++);
-		vTaskDelay(2000);
+		printf("task2: %d\n\r", (int)(i++));
+		vTaskDelay(pdMS_TO_TICKS(2000));
 	}
 }
 

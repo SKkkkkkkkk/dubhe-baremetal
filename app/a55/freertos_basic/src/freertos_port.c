@@ -5,7 +5,7 @@
 #include <arch_helpers.h>
 #include <stdio.h>
 
-void vApplicationIRQHandler(uint32_t ulICCIAR)
+void vApplicationFPUSafeIRQHandler(uint32_t ulICCIAR)
 {
 	uint32_t ulInterruptID;
 
@@ -47,11 +47,7 @@ void SystemClearSystickFlag(void)
 	write_cntps_tval_el1(read_cntfrq_el0()/configTICK_RATE_HZ);
 }
 
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
-{
-	while (1)
-		__asm__ volatile("nop");
-}
+
 
 #if ( configSUPPORT_STATIC_ALLOCATION == 1 )
 
@@ -109,3 +105,15 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 	}
 #endif
 
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+	while (1)
+		__asm__ volatile("nop");
+}
+
+void vApplicationMallocFailedHook( void )
+{
+	while (1)
+		__asm__ volatile("nop");
+}
