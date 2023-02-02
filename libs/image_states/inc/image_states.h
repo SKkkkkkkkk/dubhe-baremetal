@@ -16,7 +16,6 @@ typedef enum {
 	BL1 = 0,
 	BL2,
 	BL31,
-	BL33,
 	NS_BL1U,
 	A55_IMAGE_MAX
 } a55_image_name;
