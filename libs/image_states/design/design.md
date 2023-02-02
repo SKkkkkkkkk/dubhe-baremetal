@@ -33,14 +33,14 @@ typedef enum {
 
 一些预定义和已使用的值：
 
-1. 0x00_000000 - 冷启动BL1阶段/(寄存器复位值)
-2. 0x00_000001 - 冷启动secondary cores低功耗模式(等待CPU_ON唤醒)
-3. 0x01_000000 - BL2阶段
-4. 0x02_000000 - BL31阶段, Running态(4个低功耗状态(2,5,6,7)恢复正常之后都应该设置为此状态)
-5. 0x02_000001 - BL31阶段, CPU_SUSPEND中的standby态
-6. 0x02_000002 - BL31阶段, CPU_SUSPEND中的powerdown态(Warm Reset标志之一)
-7. 0x02_000003 - BL31阶段, CPU_OFF态
-8. 0x02_000004 - BL31阶段, 处于被CPU_ON状态(Warm Reset标志之一)
+1. 0x0_0000000 - 冷启动BL1阶段/(寄存器复位值)
+2. 0x0_0000001 - 冷启动secondary cores低功耗模式(等待CPU_ON唤醒)
+3. 0x1_0000000 - BL2阶段
+4. 0x2_0000000 - BL31阶段, Running态(4个低功耗状态(2,5,6,7)恢复正常之后都应该设置为此状态)
+5. 0x2_0000001 - BL31阶段, CPU_SUSPEND中的standby态
+6. 0x2_0000002 - BL31阶段, CPU_SUSPEND中的powerdown态(Warm Reset标志之一)
+7. 0x2_0000003 - BL31阶段, CPU_OFF态
+8. 0x2_0000004 - BL31阶段, 处于被CPU_ON状态(Warm Reset标志之一)
 
 ## M3预定义值
 
@@ -49,16 +49,16 @@ image[31:38]一共可以定义[0,15] 16个images，目前已经预定义使用�
 ```c
 // 见libs/image_states/inc/image_states.h
 typedef enum {
-	M3_BL1 = 0,
-	M3_BL2,
-	M3_IMAGE_MAX
+    M3_BL1 = 0,
+    M3_BL2,
+    M3_IMAGE_MAX
 } m3_image_name;
 ```
 
 一些预定义和已使用的值：
 
-1. 0x00_000000 - 冷启动M3_BL1初始阶段/(寄存器复位值)
+1. 0x0_0000000 - 冷启动M3_BL1初始阶段/(寄存器复位值)
 
-2. 0x00_000001 - M3_BL1等待运行M3_BL2状态(wfi低功耗状态)
+2. 0x0_0000001 - M3_BL1等待运行M3_BL2状态(wfi低功耗状态)
 
-3. 0x01_000000 - M3_BL2阶段
+3. 0x1_0000000 - M3_BL2阶段
