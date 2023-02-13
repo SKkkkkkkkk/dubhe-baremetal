@@ -3,6 +3,9 @@
 
 	.globl entrypoint
 func entrypoint
+	mov x0, 0
+	mov x19, x0 // x19 save the primary core id.
+
 	mov	x1, #(SCTLR_I_BIT | SCTLR_A_BIT | SCTLR_SA_BIT)
 	asm_read_sctlr_elx
 	orr	x0, x0, x1
@@ -21,7 +24,7 @@ func entrypoint
 	msr scr_el3, x0
 1:
 
-// #ifdef RTL
+#ifdef RTL
 	// Initialise the register bank
 	mov x0, xzr
 	mov x1, xzr
@@ -42,7 +45,7 @@ func entrypoint
 	mov x16, xzr
 	mov x17, xzr
 	mov x18, xzr
-	mov x19, xzr
+	// mov x19, xzr
 	mov x20, xzr
 	mov x21, xzr
 	mov x22, xzr
@@ -95,14 +98,14 @@ func entrypoint
 	fmov    d30,  xzr
 	fmov    d31,  xzr
 rtl_init_end:
-// #endif
+#endif
 
 	msr spsel, 1
+	bl get_core_id
 	bl setup_stack
 
-	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xffff //x1 => core_id
-	cmp x1, #0
+	bl get_core_id
+	cmp x0, x19
 	bne data_init_end
 
 	ldr	x0, =__BSS_START__
@@ -128,14 +131,11 @@ data_init_start:
 	cbnz x2, data_init_start
 data_init_end:
 
-	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xffff //x1 => core_id
-#ifndef QEMU
-	ubfx w1, w1, #8, #8
-#endif
-	cmp w1, #0
 	msr daifclr, #0xf	//enable syserror,irq,fiq
-	bne secondary_core
+
+	bl get_core_id
+	cmp x0, x19
+	bne secondary_core_boot
 	// bl config_mmu
 	bl main
 dead:
@@ -144,118 +144,62 @@ endfunc entrypoint
 
 
 #define CORE_STACK_SIZE (16*1024/4)
+// x0 - core_id
 func setup_stack
 	.extern __STACK_TOP__
-	ldr x0, =__STACK_TOP__
-	bfi x0, xzr, #0, #4 // clear bit0-3
+	ldr x1, =__STACK_TOP__
+	bfi x1, xzr, #0, #4 // clear bit0-3
 
-	// mrs x1, mpidr_el1 //0x80000000
-	// and x1, x1, 0xf00 //x1 => core_id
-	// lsr x1, x1, #8 //ubfx x1, x1, #8, #8
-	mrs x1, mpidr_el1 //0x80000000
-	and x1, x1, 0xffff //x1 => core_id
-#ifndef QEMU
-	ubfx w1, w1, #8, #8
-#endif
 	/* 
-	** x0 => stack_top
-	** x1 => core_id
+	** x0 => core_id
+	** x1 => stack_top
 	** x2 => offset_size 
 	*/
 	ldr x2, =CORE_STACK_SIZE
-	mul x2, x2, x1                  //stack offset for each cpuid
-	sub x0, x0, x2                  //stack top for each cpuid
+	mul x2, x2, x0                  //stack offset for each cpuid
+	sub x1, x1, x2                  //stack top for each cpuid
+	mov sp, x1
 
-	mov sp, x0
 	ret
 endfunc setup_stack
 
 
 /*
-	x1 - core-id
+	x0 - core-id
  */
-func secondary_core
-	cmp x1, 1
-	b.eq core1_sleep
-	cmp x1, 2
-	b.eq core2_sleep
-	cmp x1, 3
-	b.eq core3_sleep
-	b .
-endfunc secondary_core
-
 #define CORE_WAKEUP_KEY 0x123456788654321
+func secondary_core_boot
+	ldr x1, =secondary_cores_entry
+	mov x2, x0
+	lsl x2, x2, 4 // x0 = x0 * 16
 
-/*
-	x0 - secondary_cores_entry addr
-	x1 - core-id(read only)
-	x2 - real-key
-	x3 - key
-	x4 - jump addr
-*/
-core1_sleep:
-	ldr x0, =secondary_cores_entry
-	ldr x4, [x0, #0]
-	cmp x4, 0
-	beq _core1_sleep
-	ldr x2, [x0, #8]
-	ldr x3, =CORE_WAKEUP_KEY
-	cmp x2, x3
-	bne _core1_sleep
+	ldr x3, [x1, x2]
+	cbz x3, 1f
+	
+	add x2, x2, 4
+	ldr x4, [x1, x2]
+	mov_imm x5, CORE_WAKEUP_KEY
+	cmp x4, x5
+	bne 1f
 
-	blr x4
-	b .
+	blr x3
+	b	.
 
-_core1_sleep:
+1:
 	wfe
-	b core1_sleep
+	b secondary_core_boot
+endfunc secondary_core_boot
 
-/*
-	x0 - secondary_cores_entry addr
-	x1 - core-id(read only)
-	x2 - real-key
-	x3 - key
-	x4 - jump addr
-*/
-core2_sleep:
-	ldr x0, =secondary_cores_entry
-	add x0, x0, 16
-	ldr x4, [x0, #0]
-	cmp x4, 0
-	beq _core2_sleep
-	ldr x2, [x0, #8]
-	ldr x3, =CORE_WAKEUP_KEY
-	cmp x2, x3
-	bne _core2_sleep
 
-	blr x4
-	b .
-
-_core2_sleep:
-	wfe
-	b core2_sleep
-
-/*
-	x0 - secondary_cores_entry addr
-	x1 - core-id(read only)
-	x2 - real-key
-	x3 - key
-	x4 - jump addr
-*/
-core3_sleep:
-	ldr x0, =secondary_cores_entry
-	add x0, x0, 32
-	ldr x4, [x0, #0]
-	cmp x4, 0
-	beq _core3_sleep
-	ldr x2, [x0, #8]
-	ldr x3, =CORE_WAKEUP_KEY
-	cmp x2, x3
-	bne _core3_sleep
-
-	blr x4
-	b .
-
-_core3_sleep:
-	wfe
-	b core3_sleep
+	.globl get_core_id
+func get_core_id
+	mrs x0, mpidr_el1
+	mov x1, x0
+	and x0, x0, 0xffff
+	and x1, x1, #(1<<24)
+	cbnz x1, MT
+	ret
+MT:
+	lsr x0, x0, 8
+	ret
+endfunc get_core_id
