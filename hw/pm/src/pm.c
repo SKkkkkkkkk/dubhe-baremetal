@@ -278,7 +278,7 @@ __ramfunc static void cpu_suspend(void)
          *	 pending too, WFE wil make the CPU go to the SLEEP state.
          */
         // WFE
-        //"WFI\n"
+		// "WFI\n"
 
         /* read the NVIC SET_PENDING_REGISTER to check whether there are
          *  any new pending interrupts after ar400_deepsleep_lock operation
@@ -294,13 +294,14 @@ __ramfunc static void cpu_suspend(void)
         "LDR R2, [R0]\n"
         "ORR R1, R2\n"
         "CMP R1, #0\n"
-        // "BNE __resume\n"
+		"BNE __resume\n"
         "ISB\n"
         "NOP\n"
         "NOP\n"
         "NOP\n"
 
         // WFE
+        "WFI\n"
         "WFI\n"
         "WFI\n"
         "WFI\n"

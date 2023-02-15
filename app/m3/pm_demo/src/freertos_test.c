@@ -8,8 +8,8 @@
 
 #include "pm.h"
 
-#define TEST_SLEEP       0
-#define TEST_STANDBY     1
+#define TEST_SLEEP       1
+#define TEST_STANDBY     0
 #define TEST_HIBERNATION 0
 
 static SemaphoreHandle_t pmSemaphore;
@@ -18,7 +18,7 @@ int32_t                  arg_flag = 1;
 void task1(void *arg)
 {
     pmSemaphore = xSemaphoreCreateBinary();
-    pm_set_test_level(TEST_CORE); // test mode
+    pm_set_test_level(TEST_NONE); // test mode
 
     while (1) {
         printf("task1\n");
