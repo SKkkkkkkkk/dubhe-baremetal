@@ -211,6 +211,8 @@ set(ENABLE_USE_WDT OFF)
 set(ENABLE_USE_PMU OFF)
 set(ENABLE_USE_I2C_WO OFF)
 set(ENABLE_USE_MAILBOX OFF)
+set(ENABLE_USE_DDR ON)
+set(ENABLE_USE_SYSCTRL ON)
 
 
 ### LIBS
@@ -499,6 +501,26 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         set(link_libs ${link_libs} mailbox)
     endif()
 
+
+    ### USE_DDR (BOARD!=QEMU)
+    cmake_dependent_option(
+        USE_DDR "Use ddr_driver to init ddr." ON
+        "$CACHE{BOARD} STREQUAL EVB;${ENABLE_USE_DDR}" OFF
+    )
+    if(USE_DDR)
+        add_subdirectory(${SDK_DIR}/hw/ddr)
+        set(link_libs ${link_libs} ddr)
+    endif()
+
+    ### USE_SYSCTRL
+    cmake_dependent_option(
+        USE_SYSCTRL "Use sysctrl." ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_SYSCTRL}" OFF
+    )
+    if(USE_SYSCTRL)
+        add_subdirectory(${SDK_DIR}/hw/sysctrl)
+        set(link_libs ${link_libs} sysctrl)
+    endif()
 
 endif()
 
