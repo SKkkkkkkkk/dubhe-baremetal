@@ -22,7 +22,7 @@ int main()
 	uint64_t delta = systimer_get_elapsed_time(timer_id, IN_MS);
 	// ddr_test(DDR_BASE+(1024*1024), DDR_BASE+(2*1024*1024), 2);
 	// ddr_test(DDR_BASE+(1024*1024), DDR_BASE+(2*1024*1024), 4);
-	printf("DDR_TEST PASS: %lu.\n\r", (uint32_t)delta);
+	printf("DDR_TEST PASS: %lums.\n\r", (uint32_t)delta);
 
 
 	while(1)
