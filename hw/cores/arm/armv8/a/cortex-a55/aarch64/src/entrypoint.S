@@ -176,7 +176,7 @@ func secondary_core_boot
 	ldr x3, [x1, x2]
 	cbz x3, 1f
 	
-	add x2, x2, 4
+	add x2, x2, 8
 	ldr x4, [x1, x2]
 	mov_imm x5, CORE_WAKEUP_KEY
 	cmp x4, x5
