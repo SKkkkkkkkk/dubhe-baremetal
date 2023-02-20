@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 // #define CONFIG_PM_DEBUG
-#define CONFIG_PM_DEBUG_LEVEL 5
+#define CONFIG_PM_DEBUG_LEVEL 6
 #define ROM_SYSLOG            printf
 
 #define ROM_DUMP_MASK         (1 << 0)

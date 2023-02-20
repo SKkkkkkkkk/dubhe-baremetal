@@ -18,6 +18,8 @@ typedef struct {
     __IOM uint32_t SCL_LCNT;          /* 0x18 */
     __IOM uint32_t STATUS;            /* 0x1c */
     __IOM uint32_t STATUS_FIFO_LEVEL; /* 0x20 */
+    __IOM uint32_t DELAY_UNIT;		  /* 0x24 */
+    __IOM uint32_t APPOWER_STATUS_DISABLE;		  /* 0x28 */
 
 } I2C_WO_TypeDef;
 

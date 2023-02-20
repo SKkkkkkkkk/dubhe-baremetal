@@ -19,9 +19,9 @@
 #define Interrupt0_IRQn      0
 #define Interrupt1_IRQn      1
 #define Interrupt79_IRQn     79
-#define GPIO0                0x410A0000UL
+#define GPIO0                GPIO0_BASE
 
-#define KEY_EINT_PIN         10
+#define KEY_EINT_PIN         16
 #define KEY_EINT_PIN_GROUP   (KEY_EINT_PIN / 32)
 #define KEY_EINT_PIN_NUM     (KEY_EINT_PIN % 32)
 
@@ -74,15 +74,15 @@ void irq_handler1(void)
 
 void irq_handler_gpio(void)
 {
-    uint32_t intstatus = *((uint32_t *) (GPIO0 + 0x40));
+    uint32_t intstatus = REG32(GPIO0 + 0x40);
 
     count++;
 
     if (intstatus & (1 << KEY_EINT_PIN_NUM)) {
         gpio_clear_interrput(KEY_EINT_PIN_GROUP, KEY_EINT_PIN_NUM);
-        printf("gpio in irq 79. %d\n", count);
+        printf("gpio in irq 79. %d intstatus 0x%lx\n", count, intstatus);
     } else {
-        printf("irq is not 79\n");
+        printf("irq is not 79 intstatus 0x%lx\n", intstatus);
     }
 
     return;
@@ -218,7 +218,7 @@ int main()
     // clear_ddr();
 
 	pinmux(KEY_EINT_PIN, 7); //gpio0_10
-	pinmux(11, 7); //gpio0_11
+	// pinmux(11, 7); //gpio0_11
 
     gpio_init_config_t gpio_init_config = {
         .group             = KEY_EINT_PIN_GROUP,
@@ -229,9 +229,10 @@ int main()
     };
     gpio_init(&gpio_init_config);
 
-    gpio_init_config.pin = 11;
-    gpio_init(&gpio_init_config);
+    // gpio_init_config.pin = 11;
+    // gpio_init(&gpio_init_config);
 
+#if 0
     __nouse__ u32 val   = 0;
     __nouse__ u32 count = 0;
     int           err   = 0;
@@ -253,7 +254,7 @@ int main()
         axp2101_pmic_ops.pmic_to_sleep  = axp2101_powerkey_suspend;
         axp2101_pmic_ops.pmic_to_resume = axp2101_powerkey_resume;
     }
-
+#endif
 #if 0 /*{{{*/
 	while(1){
 #if 0
@@ -327,10 +328,10 @@ int main()
 	}
 #endif /*}}}*/
 
-    if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
-                          &xTaskBuffer) == NULL)
-        while (1)
-            ;
+	if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
+						  &xTaskBuffer) == NULL)
+		while (1)
+			;
 
     if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
         while (1)
