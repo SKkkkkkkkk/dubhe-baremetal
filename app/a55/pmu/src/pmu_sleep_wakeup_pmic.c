@@ -665,11 +665,11 @@ int main(void)
 		IRQ_Enable(GPIO0_IRQn);
 #endif
 #if PMIC_WAKEUP
-		void rtc_irqhandler(void);
-		GIC_SetTarget(RTC_IRQn, 1 << 0);
-		IRQ_SetHandler(RTC_IRQn, rtc_irqhandler);
-		IRQ_SetPriority(RTC_IRQn, 0 << 3);
-		IRQ_Enable(RTC_IRQn);
+		// void rtc_irqhandler(void);
+		// GIC_SetTarget(RTC_IRQn, 1 << 0);
+		// IRQ_SetHandler(RTC_IRQn, rtc_irqhandler);
+		// IRQ_SetPriority(RTC_IRQn, 0 << 3);
+		// IRQ_Enable(RTC_IRQn);
 #endif
 
 		gic_cnt = 3;
