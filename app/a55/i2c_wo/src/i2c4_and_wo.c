@@ -8,6 +8,7 @@
 #include "pinmux.h"
 
 #define STOP             1
+#define COUNT             20
 
 struct cfg {
     char name[ 128 ];
@@ -51,8 +52,9 @@ static int i2c_write_reg(struct cfg *cfg, uint16_t reg, uint32_t len, uint32_t v
 void i2c4_test(void)
 {
     struct cfg cfg;
-	uint16_t reg = 0x40;
+	uint16_t reg = 0x26;
 	uint32_t val = 0x55;
+	uint32_t cnt = 0;
 
     uint32_t tmp;
     tmp = REG32(SYS_BASE + 0x8dc);
@@ -76,14 +78,17 @@ void i2c4_test(void)
 
 	while(1){
 		i2c_write_reg(&cfg, reg, 1, val);
-		systimer_delay(1, IN_S);
-		printf("i2c4 write 0x40 0x55\n");
+		if(cnt++ == COUNT)
+			break;
 	}
+    printf("i2c4_test test cnt %d////////////////\n", COUNT);
+	return;
 }
 
-int pmic_to_sleep_delay(int ms)
+int i2c_wo_test(void)
 {
     uint32_t tmp;
+	uint32_t cnt = 0;
     tmp = REG32(SYS_BASE + 0x8dc);
     tmp &= ~(7 << 4);
     tmp |= 3 << 4;
@@ -96,61 +101,34 @@ int pmic_to_sleep_delay(int ms)
     tmp |= 1 << 0;
     REG32(SYS_BASE + 0x8e0) = tmp;
     i2c_wo_init(0x34);
+	i2c_wo_appower_enable(0);
 
-    i2c_wo_delay(ms); // 1s
-    // i2c_wo_fifo(0x10);  //poweroff
-    // i2c_wo_fifo(0x01 | STOP<<8);
-    // i2c_wo_fifo(0x40);
-    // i2c_wo_fifo(0x00 | STOP << 8);
-    // i2c_wo_fifo(0x41);
-    // i2c_wo_fifo(0x00 | STOP << 8);
-    // i2c_wo_fifo(0x42);
-    // i2c_wo_fifo(0x00 | STOP << 8);
-    // i2c_wo_fifo(0x26);
-    // i2c_wo_fifo(0x09 | STOP << 8);
-    // i2c_wo_fifo(0x80);
-    // i2c_wo_fifo(0x00 | STOP << 8);
-    // i2c_wo_fifo(0x90);
-    // i2c_wo_fifo(0x00 | STOP << 8);
-    // i2c_wo_fifo(0x91);
-    // i2c_wo_fifo(0x00 | STOP << 8);
-    // i2c_wo_fifo(0x26);
-    // i2c_wo_fifo(0x19 | STOP << 8);
-    // i2c_wo_fifo(0x41);
-    // i2c_wo_fifo(0x0c | STOP << 8);
+    i2c_wo_delay(1); // 1s
 
-    printf("axp2101_powerkey_suspend !!! \n");
+	while(1){
+		i2c_wo_start();
+		i2c_wo_fifo(0x26);
+		i2c_wo_fifo(0x09 | STOP << 8);
+		if(cnt++ == COUNT)
+			break;
+        systimer_delay(1, IN_MS);
+	}
+    printf("i2c_wo_test test cnt %d///////////////////////////\n", COUNT);
+
 	return 0;
 }
 
 int main()
 {
-    // int ret;
     printf("test %s ...\n", __FILE__);
     systimer_init();
 
-	// pmic_to_sleep_delay(5);
-	// i2c_wo_appower_enable(0);
-    // i2c_wo_start();
-
     while (1) {
-#if 0
-		i2c_wo_fifo(0x40);
-		i2c_wo_fifo(0x55 | STOP << 8);
-		i2c_wo_start();
-        ret = i2c_wo_status();
-        if ((ret & 0x3) == 0) {
-            // break;
-        }
-        systimer_delay(1, IN_S);
-		i2c_wo_debug();
-#else
 		i2c4_test();
-#endif
+		i2c_wo_test();
+		i2c_wo_debug();
+        systimer_delay(100, IN_MS);
     }
-
-    printf("i2c_wo status 0x%x\n", i2c_wo_status());
-    printf("i2c_wo status fifo level 0x%x\n", i2c_wo_status_fifo_level());
 
     return 0;
 }
