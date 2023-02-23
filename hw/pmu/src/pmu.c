@@ -275,6 +275,36 @@ int check_pmu_irq(uint8_t pid, uint32_t isr, uint32_t aisr, uint8_t clr)
   return fail;
 }
 
+void global_set_power_off_a55(uint8_t pid)
+{
+    if (pid == AP) {
+        set_pmu_reg(pid, PPU_PWPR_OP_DYN_EN_ADDR,
+                    (1 << PPU_PWPR_OP_DYN_EN_LSB |
+                     OP0 << PPU_PWPR_OP_POLICY_LSB |
+                     1 << PPU_PWPR_PWR_DYN_EN_LSB | OFF));
+    } else if (pid < AP && pid >= CORE0) {
+        set_pmu_reg(pid, PPU_PWPR_OP_DYN_EN_ADDR,
+                    (1 << PPU_PWPR_PWR_DYN_EN_LSB | OFF));
+    } else {
+        set_pmu_reg(pid, PPU_PWPR_OP_DYN_EN_ADDR, OFF);
+    }
+}
+
+void global_set_power_on_a55(uint8_t pid, int op)
+{
+    if (pid == AP) {
+        set_pmu_reg(pid, PPU_PWPR_OP_DYN_EN_ADDR,
+                    (1 << PPU_PWPR_OP_DYN_EN_LSB |
+                     op << PPU_PWPR_OP_POLICY_LSB |
+                     1 << PPU_PWPR_PWR_DYN_EN_LSB | ON));
+    } else if (pid < AP && pid >= CORE0) {
+        set_pmu_reg(pid, PPU_PWPR_OP_DYN_EN_ADDR,
+                    (1 << PPU_PWPR_PWR_DYN_EN_LSB | ON));
+    } else {
+        set_pmu_reg(pid, PPU_PWPR_OP_DYN_EN_ADDR, ON);
+    }
+}
+
 void set_pmu_off_pd2on()
 {
   set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_NPU1_IRQ_LSB));
@@ -303,6 +333,17 @@ void set_pmu_wakeup(uint8_t src, uint8_t target)
   if((src == 3) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0x9)); }//rtc
   if((src == 4) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0x6e)); }//gpio0_0
   if((src == 5) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0xcf)); }//cpu suspend
+}
+
+void set_pmu_wakeup_clear(uint8_t src, uint8_t target)
+{
+
+  if((src == 0) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_0_M3_WAKEUP_ADDR,(target<<8 |0xff));}
+  if((src == 1) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_1_M3_WAKEUP_ADDR,(target<<8 |0xff));}
+  if((src == 2) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_2_M3_WAKEUP_ADDR,(target<<8 |0xff));}
+  if((src == 3) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_3_M3_WAKEUP_ADDR,(target<<8 |0xff));}
+  if((src == 4) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_4_M3_WAKEUP_ADDR,(target<<8 |0xff));}
+  if((src == 5) || (src > 5)) {set_pmu_reg(PMU,PMU_WK_SRC_5_M3_WAKEUP_ADDR,(target<<8 |0xff));}
 }
 
 void set_pmu_power_on(uint8_t pid)
@@ -385,3 +426,19 @@ void clear_all_ppu_isr(void)
     set_pmu_reg(i,PPU_ISR_OTHER_IRQ_ADDR,0xffffffff);
   }
 }
+
+__unused static void set_accept_delay(void)
+{
+    for (int pid = 0; pid < 17; pid++) {
+        set_pmu_reg(pid, PPU_IDMDR0_IDM_ACCEPT_DELAY_ADDR, 2);
+    }
+}
+
+__unused static void dubhe_set_core_off_delay(void)
+{
+	for(int pid=0; pid<=4; pid++) { //delay core 20us ap 40us
+		set_pmu_reg(pid, PPU_APCSMDR0_DELAY_DDRPHY_UNIT_ADDR, 0);
+		set_pmu_reg(pid, PPU_APCSMDR1_DELAY_SRAM4_UNIT_ADDR, 0);
+	}
+}
+

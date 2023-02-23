@@ -9,17 +9,17 @@
 #endif
 
 typedef struct {
-    __IOM uint32_t START;             /* 0x00 */
-    __IOM uint32_t DELAY;             /* 0x04 */
-    __IOM uint32_t FIFO_SOFT_RST;     /* 0x08 */
-    __IOM uint32_t DEVICE_ADDR;       /* 0x0c */
-    __IOM uint32_t TX_DATA;           /* 0x10 */
-    __IOM uint32_t SCL_HCNT;          /* 0x14 */
-    __IOM uint32_t SCL_LCNT;          /* 0x18 */
-    __IOM uint32_t STATUS;            /* 0x1c */
-    __IOM uint32_t STATUS_FIFO_LEVEL; /* 0x20 */
-    __IOM uint32_t DELAY_UNIT;		  /* 0x24 */
-    __IOM uint32_t APPOWER_STATUS_DISABLE;		  /* 0x28 */
+    __IOM unsigned int START;             /* 0x00 */
+    __IOM unsigned int DELAY;             /* 0x04 */
+    __IOM unsigned int FIFO_SOFT_RST;     /* 0x08 */
+    __IOM unsigned int DEVICE_ADDR;       /* 0x0c */
+    __IOM unsigned int TX_DATA;           /* 0x10 */
+    __IOM unsigned int SCL_HCNT;          /* 0x14 */
+    __IOM unsigned int SCL_LCNT;          /* 0x18 */
+    __IOM unsigned int STATUS;            /* 0x1c */
+    __IOM unsigned int STATUS_FIFO_LEVEL; /* 0x20 */
+    __IOM unsigned int DELAY_UNIT;		  /* 0x24 */
+    __IOM unsigned int APPOWER_STATUS_DISABLE;		  /* 0x28 */
 
 } I2C_WO_TypeDef;
 
