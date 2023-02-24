@@ -1,11 +1,11 @@
 # 添加app sources
 set(app_src
 	# ${CMAKE_CURRENT_LIST_DIR}/src/default_pon_a55.c
-	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_on_off_rst_a55.c
+	${CMAKE_CURRENT_LIST_DIR}/src/pmu_on_off_rst_a55.c
 	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_dyn_pwr_a55.c
 	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_sleep_wakeup_a55.c
 	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_sleep_wakeup_a55_core_ap.c
-	${CMAKE_CURRENT_LIST_DIR}/src/pmu_sleep_wakeup_pmic.c
+	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_sleep_wakeup_pmic.c
 	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_dyn_pwr_a55_m3.c
 	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_sleep_wakeup_cpu_suspend.c
 	# ${CMAKE_CURRENT_LIST_DIR}/src/pmu_sleep_wakeup_cpu_suspend_mul.c

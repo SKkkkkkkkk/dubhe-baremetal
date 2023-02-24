@@ -16,12 +16,13 @@ extern "C" {
 #define __ramfunc   __attribute__((section(".ram_func"), aligned(4)))
 #define __ramdata   __attribute__((section(".ram_data"), aligned(4)))
 
-struct pmic_callback_ops {
-	int (*pmic_to_sleep)(void);
-	int (*pmic_to_resume)(void);
+struct pm_callback_ops {
+	int (*pm_to_sleep)(void);
+	int (*pm_to_resume)(void);
+	int (*pm_to_poweroff)(void);
 };
 
-extern struct pmic_callback_ops axp2101_pmic_ops;
+extern struct pm_callback_ops pm_ops;
 /**
  * @brief Defined all supported low power state.
  * @note:

@@ -21,7 +21,7 @@
 
 extern void cpu_tz_suspend(void);
 
-struct pmic_callback_ops axp2101_pmic_ops;
+struct pm_callback_ops pm_ops;
 
 #ifdef CONFIG_PM_DEBUG
 static struct arm_CMX_core_regs vault_arm_registers;
@@ -107,7 +107,10 @@ static void pm_hibernation(void)
     extern void cpu_tz_hibernation(void);
     cpu_tz_hibernation();
 
-    wfe();
+	if (pm_ops.pm_to_poweroff != NULL)
+		pm_ops.pm_to_poweroff();
+
+    wfi();
     /* some irq generated when second wfe */
     PM_REBOOT();
 
@@ -269,8 +272,8 @@ __ramfunc static void cpu_suspend(void)
          * 4. if there are no SEV/NMI/DEBUG events before and no interrupts
          *	 pending too, WFE wil make the CPU go to the SLEEP state.
          */
-        // WFE
-		// "WFI\n"
+		"WFE\n"
+		"WFE\n"
 
         /* read the NVIC SET_PENDING_REGISTER to check whether there are
          *  any new pending interrupts after ar400_deepsleep_lock operation
@@ -402,8 +405,8 @@ static void __suspend_enter(enum suspend_state_t state)
     } else {
         PM_LOGN("PM_MODE_STANDBY enter\n"); /* debug info. */
 
-        if (axp2101_pmic_ops.pmic_to_sleep != NULL)
-            axp2101_pmic_ops.pmic_to_sleep();
+        if (pm_ops.pm_to_sleep != NULL)
+            pm_ops.pm_to_sleep();
 
         /* 配置PMU相关寄存器 */
         /* 配置唤醒原 */
@@ -415,8 +418,8 @@ static void __suspend_enter(enum suspend_state_t state)
         /* __cpu_suspend(state); */
         cpu_suspend();
 
-        if (axp2101_pmic_ops.pmic_to_resume != NULL)
-            axp2101_pmic_ops.pmic_to_resume();
+        if (pm_ops.pm_to_resume != NULL)
+            pm_ops.pm_to_resume();
         /* 配置标识表明唤醒之前的状态 */
         PM_LOGN("PM_MODE_STANDBY  exit\n"); /* debug info. */
     }

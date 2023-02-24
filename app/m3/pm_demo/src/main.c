@@ -190,6 +190,26 @@ __ramfunc void clear_ddr(void)
     }
 }
 
+#if 0
+    struct pmic_cfg cfg;
+
+    strcpy(cfg.name, "axp2101");
+    cfg.reg_addr   = 0x34;
+    cfg.i2c_bus    = 2;
+    cfg.check_addr = 0x00;
+    cfg.check_len  = 1;
+
+    // err = axp2101_i2c_init(&cfg);
+
+    if (!err) {
+        axp20x_i2c_write(AXP2101_INTEN1, 0);
+        axp20x_i2c_write(AXP2101_INTEN2, 0);
+        axp20x_i2c_write(AXP2101_INTEN3, 0);
+        axp2101_pmic_ops.pmic_to_sleep  = axp2101_powerkey_suspend;
+        axp2101_pmic_ops.pmic_to_resume = axp2101_powerkey_resume;
+    }
+#endif
+
 int pmic_to_sleep_delay(int ms)
 {
     uint32_t tmp;
@@ -227,8 +247,8 @@ int pmic_to_sleep_delay(int ms)
     i2c_wo_fifo(0x19 | STOP << 8);
     i2c_wo_fifo(0x41);
     i2c_wo_fifo(0x0c | STOP << 8);
+    i2c_wo_start();
 
-    printf("axp2101_powerkey_suspend !!! \n");
     return 0;
 }
 
@@ -265,7 +285,6 @@ int pmic_clear_irq_wo(int ms)
 void set_gpio_wakeup(void)
 {
     pinmux(KEY_EINT_PIN, 7); // gpio0_10
-    // pinmux(11, 7); //gpio0_11
 
     gpio_init_config_t gpio_init_config = {
         .group             = KEY_EINT_PIN_GROUP,
@@ -275,16 +294,13 @@ void set_gpio_wakeup(void)
         // .gpio_mode = GPIO_Input_Mode,
     };
     gpio_init(&gpio_init_config);
-
-    // gpio_init_config.pin = 11;
-    // gpio_init(&gpio_init_config);
 }
 
 void set_power_off_seq(void)
 {
-    set_pmu_reg(PMU, PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,
-                ~(1 << PMU_IMR_PMU_WAKEUP_1_MASK_LSB |
-                  1 << PMU_IMR_PPU_LP_IRQ_MASK_LSB));
+    // set_pmu_reg(PMU, PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,
+    // ~(1 << PMU_IMR_PMU_WAKEUP_1_MASK_LSB |
+    // 1 << PMU_IMR_PPU_LP_IRQ_MASK_LSB));
     // set_pmu_reg(PMU,PMU_PDSEQ_0_LOGICID_ADDR,(PERI0 << 8 | OFF));
     set_pmu_reg(PMU, PMU_PDSEQ_0_LOGICID_ADDR, (DDR1 << 8 | OFF));
     set_pmu_reg(PMU, PMU_PDSEQ_1_LOGICID_ADDR, (DDR0 << 8 | OFF));
@@ -300,26 +316,42 @@ void set_power_off_seq(void)
 
 int pmu_enter_suspend(void)
 {
+    printf("pmu_enter_suspend enter\n");
     set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
     set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
 
     set_power_off_seq();
-	pmic_to_sleep_delay(500);
+    pmic_to_sleep_delay(500);
 
-	return 0;
+    return 0;
 }
 
 int pmu_enter_resume(void)
 {
+    printf("pmu_enter_resume enter\n");
     set_pmu_wakeup_clear(1, 0x2);
     set_pmu_wakeup_clear(3, 0x2);
 
-	pmic_clear_irq_wo(1);
-	return 0;
+    pmic_clear_irq_wo(1);
+    return 0;
+}
+
+int pmu_enter_poweroff(void)
+{
+    printf("pmu_enter_poweroff enter\n");
+    set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
+    set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
+
+    set_power_off_seq();
+    pmic_to_sleep_delay(500);
+
+    return 0;
 }
 
 int main()
 {
+    printf("test %s ...\n", __FILE__);
+
     memcpy(__VECTOR_TABLE_IN_SRAM, __VECTOR_TABLE,
            sizeof(__VECTOR_TABLE_IN_SRAM));
     __DSB();
@@ -349,29 +381,9 @@ int main()
     set_gpio_wakeup();
     // clear_ddr();
 
-#if 0
-    __nouse__ u32 val   = 0;
-    __nouse__ u32 count = 0;
-    int           err   = 0;
-
-    struct pmic_cfg cfg;
-
-    strcpy(cfg.name, "axp2101");
-    cfg.reg_addr   = 0x34;
-    cfg.i2c_bus    = 2;
-    cfg.check_addr = 0x00;
-    cfg.check_len  = 1;
-
-    // err = axp2101_i2c_init(&cfg);
-
-    if (!err) {
-        axp20x_i2c_write(AXP2101_INTEN1, 0);
-        axp20x_i2c_write(AXP2101_INTEN2, 0);
-        axp20x_i2c_write(AXP2101_INTEN3, 0);
-        axp2101_pmic_ops.pmic_to_sleep  = axp2101_powerkey_suspend;
-        axp2101_pmic_ops.pmic_to_resume = axp2101_powerkey_resume;
-    }
-#endif
+	pm_ops.pm_to_poweroff = pmu_enter_poweroff;
+    // pm_ops.pm_to_sleep  = pmu_enter_suspend;
+    // pm_ops.pm_to_resume = pmu_enter_resume;
 
     if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
                           &xTaskBuffer) == NULL)

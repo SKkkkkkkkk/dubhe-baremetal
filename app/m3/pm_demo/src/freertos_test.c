@@ -8,8 +8,8 @@
 
 #include "pm.h"
 
-#define TEST_SLEEP       1
-#define TEST_STANDBY     0
+#define TEST_SLEEP       0
+#define TEST_STANDBY     1
 #define TEST_HIBERNATION 0
 
 static SemaphoreHandle_t pmSemaphore;
