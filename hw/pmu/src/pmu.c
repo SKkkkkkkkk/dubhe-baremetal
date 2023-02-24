@@ -387,6 +387,7 @@ void set_pmu_power_off(uint8_t pid)
 
 void set_pmu_warm_rst(uint8_t pid)
 {
+  set_pmu_reg(pid,PPU_ISR_OTHER_IRQ_ADDR, 0xffffffff);
   printf("NOTE : start warm rst %s:pid:0x%x ...\n",get_pmu_name(pid), pid);
   set_pmu_reg(pid,PPU_PWPR_OP_DYN_EN_ADDR, RST);
   while(1) {
