@@ -2,8 +2,6 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 #include <assert.h>
-#undef errno
-extern int errno;
 
 #ifdef A55
 	#error "A55 has the aarch64_libc, don't use newlib."
@@ -15,7 +13,7 @@ extern int errno;
 #if defined QEMU
 	#include "pl011.h"
 	static bool uart_init = false;
-	int _write (int fd, char *ptr, int len)
+	int _write (int fd __unused, char *ptr, int len)
 	{
 		if(!uart_init)
 		{
@@ -37,11 +35,10 @@ extern int errno;
 			if(ptr[i] == '\n')
 				uart_putchar('\r');
 		}
-		(void)fd;
 		return i;
 	}
 
-	int _read(int fd, char* ptr, int len)
+	int _read(int fd __unused, char* ptr, int len)
 	{
 		if(!uart_init)
 		{
@@ -60,13 +57,12 @@ extern int errno;
 		int i;
 		for(i=0;i<len;i++)
 			while(uart_getchar(ptr+i)!=UART_OK);
-		(void)fd;
 		return i;
 	}
 #else
 	#include "dw_apb_uart.h"
 	static bool uart_init = false;
-	int _write (int fd, char *ptr, int len)
+	int _write (int fd __unused, char *ptr, int len)
 	{
 		if(!uart_init)
 		{
@@ -84,11 +80,10 @@ extern int errno;
 			if(ptr[i] == '\n')
 				uart_sendchar(SEEHI_UART0,'\r');
 		}
-		(void)fd;
 		return i;
 	}
 
-	int _read(int fd, char* ptr, int len)
+	int _read(int fd __unused, char* ptr, int len)
 	{
 		if(!uart_init)
 		{
@@ -104,7 +99,6 @@ extern int errno;
 		{
 			ptr[i] = uart_getchar(SEEHI_UART0);
 		}
-		(void)fd;
 		return i;
 	}
 #endif
@@ -152,13 +146,26 @@ void *_sbrk(int incr) {
 	prev_heap = heap;
 	if((uintptr_t)(heap + incr) > (uintptr_t)&__HEAP_END__)
 	{
-		assert(0);
+		_write(1, "Heap Overflow!\n\r", 16);
 		while(1);
 	}
 	heap += incr;
 	return prev_heap;
 }
 
+#if defined(FREERTOS)
+void __malloc_lock(struct _reent *r __unused)   
+{
+	extern void vTaskSuspendAll( void );
+	vTaskSuspendAll();
+}
+
+void __malloc_unlock(struct _reent *r __unused) 
+{
+	long xTaskResumeAll( void );
+	(void)xTaskResumeAll();
+}
+#endif
 
 /* environment */
 char *__env[1] = { 0 };

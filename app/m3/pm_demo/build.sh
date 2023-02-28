@@ -1,2 +1,2 @@
-CROSS_COMPILE=arm-none-eabi- cmake -S ../../../ -B build -DPROJECT_NAME=pm_demo -DPROJECT_PATH=. -DCORE=M3 -DBOARD=FPGA -DBUILD_TYPE=Debug -DWHERE_TO_LOAD=MEMMAP_SCHEME_1
+CROSS_COMPILE=arm-none-eabi- cmake -S ../../../ -B build -DPROJECT_NAME=pm_demo -DPROJECT_PATH=. -DCORE=M3 -DOS=FreeRTOS -DBOARD=FPGA -DBUILD_TYPE=Debug -DWHERE_TO_LOAD=MEMMAP_SCHEME_1
 cmake --build build -j100

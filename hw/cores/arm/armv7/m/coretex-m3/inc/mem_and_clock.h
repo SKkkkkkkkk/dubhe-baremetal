@@ -10,7 +10,7 @@
 	#define __SRAM_SIZE 0x00010000
 
 	#define __STACK_SIZE 0x00000400
-	#define __HEAP_SIZE  0x00000C00
+	#define __HEAP_SIZE  0x00001000
 #elif  defined(RTL) ||  defined(FPGA) ||  defined(EVB) // RTL, FPGA, EVB
 	#define __CODE_BASE 		0x00000000
 	#define __AXI_SRAM_BASE		0x00100000

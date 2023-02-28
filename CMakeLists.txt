@@ -27,6 +27,10 @@ set(CORE "A55" CACHE STRING "Core: A55, M3, CV32E40P.")
 
 set(BOARD "QEMU" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
 
+# 选择OS
+
+set(OS "NO_SYS" CACHE STRING "OS: NO_SYS, FreeRTOS")
+
 # 选择build type
 
 set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo")
@@ -34,9 +38,9 @@ set(BUILD_TYPE "Debug" CACHE STRING "Build Type: Debug, FastRel, FastRelWithDebI
 # Where to load & run
 
 if($CACHE{CORE} STREQUAL "A55")
-    set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_SYSRAM, ALL_IN_DDR")
+    set(WHERE_TO_LOAD "ROM" CACHE STRING "Where to load & run: ROM, ALL_IN_SYSRAM, ALL_IN_DDR")
 elseif($CACHE{CORE} STREQUAL "M3")
-    set(WHERE_TO_LOAD "ROM_AND_RAM" CACHE STRING "Where to load & run: ROM_AND_RAM, ALL_IN_AXI_SRAM, ALL_IN_SYSRAM, ALL_IN_DDR, MEMMAP_SCHEME_1")
+    set(WHERE_TO_LOAD "ROM" CACHE STRING "Where to load & run: ROM, ALL_IN_AXI_SRAM, ALL_IN_SYSRAM, ALL_IN_DDR, MEMMAP_SCHEME_1")
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
     set(WHERE_TO_LOAD "UNSUPPORT" CACHE STRING "Unsupport in CV32E40P")
 else()
@@ -60,6 +64,7 @@ message(STATUS ${BUILD_TIMESTAMP} )
 
 message(STATUS "Project     : $CACHE{PROJECT_NAME}")
 message(STATUS "Core        : $CACHE{CORE}")
+message(STATUS "OS          : $CACHE{OS}")
 message(STATUS "Board       : $CACHE{BOARD}")
 message(STATUS "Build Type  : $CACHE{BUILD_TYPE}")
 if(NOT $CACHE{PROJECT_PATH} STREQUAL "")
@@ -101,7 +106,7 @@ if($CACHE{CORE} STREQUAL "A55")
 elseif($CACHE{CORE} STREQUAL "M3")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch32gcc.cmake)
     set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
-    set(link_options ${link_options} --specs=nano.specs --specs=nosys.specs)
+    # set(link_options ${link_options} --specs=nano.specs --specs=nosys.specs)
 
 ### CV32E40P
 
@@ -122,6 +127,15 @@ if(NOT $CACHE{CORE} STREQUAL "M3")
     set(compile_options_align -mstrict-align)
 else()
     set(compile_options_align -mno-unaligned-access)
+endif()
+
+## 添加编译选项depends on OS.
+if($CACHE{OS} STREQUAL "NO_SYS")
+    set(compile_options_common ${compile_options_common} -DNO_SYS)
+elseif($CACHE{OS} STREQUAL "FreeRTOS")
+    set(compile_options_common ${compile_options_common} -DFREERTOS)
+else()
+    message(FATAL_ERROR "Unsupport OS platform!")
 endif()
 
 ## 添加编译选项depends on BOARD.
@@ -219,7 +233,6 @@ set(ENABLE_USE_SYSCTRL ON)
 
 set(ENABLE_USE_SYSTIMER ON)
 set(ENABLE_USE_NOR_FLASH OFF)
-set(ENABLE_USE_FREERTOS OFF)
 set(ENABLE_USE_PMIC OFF)
 set(ENABLE_USE_tinyCLI OFF)
 set(ENABLE_USE_SEMIHOSTING OFF)
@@ -370,14 +383,13 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         set(link_libs ${link_libs} nor_flash)
     endif()
 
-    ### USE_FREERTOS
-    cmake_dependent_option(
-        USE_FREERTOS "Use FreeRTOS" ON
-        "ENABLE_USE_FREERTOS" OFF
-    )
-    if(USE_FREERTOS)
+    ### OS
+    if($CACHE{OS} STREQUAL "NO_SYS")
+    elseif($CACHE{OS} STREQUAL "FreeRTOS")
         add_subdirectory(${SDK_DIR}/libs/rtos/freertos/kernel/v10_5_1)
         set(link_libs ${link_libs} freertos_kernel)
+    else()
+        message(FATAL_ERROR "Unsupport OS platform!")
     endif()
 
     ### USE_PM
@@ -550,7 +562,7 @@ target_compile_options($CACHE{PROJECT_NAME}.elf
         ${compile_options_board}
         ${compile_options_common}
         ${compile_options_opt}
-        ${compile_options_align}
+        # ${compile_options_align}
 )
 
 ### link options

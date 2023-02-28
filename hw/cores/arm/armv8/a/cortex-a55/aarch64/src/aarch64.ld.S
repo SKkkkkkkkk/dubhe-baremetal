@@ -8,12 +8,12 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
 ENTRY(entrypoint)
 
- #define ROM_AND_RAM 0
+ #define ROM 0
  #define ALL_IN_SYSRAM	 1
  #define ALL_IN_DDR	 2
 
 #ifndef WHERE_TO_LOAD
-	#define WHERE_TO_LOAD ROM_AND_RAM
+	#define WHERE_TO_LOAD ROM
 #endif
 
 #ifndef QEMU
@@ -41,15 +41,15 @@ ENTRY(entrypoint)
 #define PAGE_SIZE	4096
 
 MEMORY {
-    ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE
+    _ROM (rx): ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE
     RAM (rwx): ORIGIN = __RAM_BASE, LENGTH = __RAM_SIZE
     DDR (rwx): ORIGIN = __DDR_BASE, LENGTH = __DDR_SIZE
 }
 
 SECTIONS
 {
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-    . = ORIGIN(ROM);
+#if (WHERE_TO_LOAD == ROM)
+    . = ORIGIN(_ROM);
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	. = ORIGIN(RAM);
 #else // DDR
@@ -64,8 +64,8 @@ SECTIONS
         *(.vectors)
         . = ALIGN(((1) << (12)));
         __TEXT_END__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-    } >ROM
+#if (WHERE_TO_LOAD == ROM)
+    } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
@@ -75,8 +75,8 @@ SECTIONS
     .ARM.extab . : 
     {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-    } >ROM
+#if (WHERE_TO_LOAD == ROM)
+    } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
@@ -86,8 +86,8 @@ SECTIONS
     .ARM.exidx . : 
     {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-    } >ROM
+#if (WHERE_TO_LOAD == ROM)
+    } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
@@ -103,8 +103,8 @@ SECTIONS
         __tinyCLI_CMD_END__ = .;
         __RODATA_END__ = .;
         . = ALIGN(16); //.data LMA should be 16-byte aligned.
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-    } >ROM
+#if (WHERE_TO_LOAD == ROM)
+    } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
@@ -113,7 +113,7 @@ SECTIONS
 
 
 
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     . = ORIGIN(RAM);
 	. = ALIGN(PAGE_SIZE);
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -123,7 +123,7 @@ SECTIONS
 #endif
     ASSERT(. == ALIGN(PAGE_SIZE), "RW_BASE address is not aligned on a page boundary.")
     .data . :
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     AT(ADDR(.rodata) + SIZEOF(.rodata))
 #endif
     ALIGN(16)
@@ -132,7 +132,7 @@ SECTIONS
         *(SORT_BY_ALIGNMENT(.data*))
         . = ALIGN(16);
         __DATA_END__ = .; 
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     } >RAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
@@ -153,7 +153,7 @@ SECTIONS
         *(base_xlat_table)
         . = ALIGN(16);
         __BSS_END__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     } >RAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
@@ -166,7 +166,7 @@ SECTIONS
     {   __XLAT_TABLE_START__ = .; 
         *(xlat_table)   
         __XLAT_TABLE_END__ = .; 
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     } >RAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
@@ -181,7 +181,7 @@ SECTIONS
         . = . + __HEAP_SIZE;
         __HEAP_END__ = .;
         __HEAPLIMIT = __HEAP_END__;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     } >RAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
@@ -196,7 +196,7 @@ SECTIONS
         . = ALIGN(16);
         __STACKS_END__ = .;
         __STACK_TOP__ = __STACKS_END__;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     } >RAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
@@ -212,7 +212,7 @@ SECTIONS
     __BSS_SIZE__ = SIZEOF(.bss);
 
 
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
     __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
     ASSERT(__ROM_END__ <= (__ROM_BASE + __ROM_SIZE), "ROM content has exceeded its limit.")
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)

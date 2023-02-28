@@ -1,7 +1,7 @@
 
 #include "mem_and_clock.h"
 
-#define ROM_AND_RAM     0
+#define ROM             0
 #define ALL_IN_AXI_SRAM 1
 #define ALL_IN_SYSRAM	  2
 #define ALL_IN_DDR	    3
@@ -9,7 +9,7 @@
 
 #ifndef QEMU
   #ifndef WHERE_TO_LOAD
-    #define WHERE_TO_LOAD ROM_AND_RAM
+    #define WHERE_TO_LOAD ROM
   #else
       #if (WHERE_TO_LOAD > MEMMAP_SCHEME_1)
         #error "unspport WHERE_TO_LOAD."
@@ -17,9 +17,9 @@
   #endif
 #else
   #ifndef WHERE_TO_LOAD
-    #define WHERE_TO_LOAD ROM_AND_RAM
+    #define WHERE_TO_LOAD ROM
   #else
-      #if (WHERE_TO_LOAD == ROM_AND_RAM)
+      #if (WHERE_TO_LOAD == ROM)
       #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
         #error "unspport ALL_IN_AXI_SRAM in qemu."
       #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -35,7 +35,7 @@
 
 MEMORY
 {
-  ROM (rx)     : ORIGIN = __CODE_BASE,         LENGTH = __CODE_SIZE
+  _ROM (rx)     : ORIGIN = __CODE_BASE,         LENGTH = __CODE_SIZE
   SYSRAM (rwx) : ORIGIN = __SRAM_BASE,         LENGTH = __SRAM_SIZE
 #ifndef QEMU
   AXI_SRAM(rx)  : ORIGIN = __AXI_SRAM_BASE,    LENGTH = __AXI_SRAM_SIZE
@@ -105,8 +105,8 @@ SECTIONS
     __tinyCLI_CMD_END__ = .;
 
     KEEP(*(.eh_frame*))
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-  } >ROM
+#if (WHERE_TO_LOAD == ROM)
+  } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -140,8 +140,8 @@ SECTIONS
   .ARM.extab :
   {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-  } >ROM
+#if (WHERE_TO_LOAD == ROM)
+  } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -154,8 +154,8 @@ SECTIONS
   .ARM.exidx :
   {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-  } >ROM
+#if (WHERE_TO_LOAD == ROM)
+  } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -181,8 +181,8 @@ SECTIONS
     LONG ((__data2_end__ - __data2_start__) / 4)
 */
     __copy_table_end__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-  } >ROM
+#if (WHERE_TO_LOAD == ROM)
+  } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -203,8 +203,8 @@ SECTIONS
     LONG ((__bss2_end__ - __bss2_start__) / 4)
 */
     __zero_table_end__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
-  } >ROM
+#if (WHERE_TO_LOAD == ROM)
+  } >_ROM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
@@ -251,7 +251,7 @@ SECTIONS
     . = ALIGN(4);
     /* All data end */
     __data_end__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
   } >SYSRAM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
@@ -292,7 +292,7 @@ SECTIONS
     *(COMMON)
     . = ALIGN(4);
     __bss_end__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
   } >SYSRAM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
@@ -331,7 +331,7 @@ SECTIONS
     . = ALIGN(8);
     __HeapLimit = .;
     __HEAP_END__ = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
   } >SYSRAM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
@@ -351,7 +351,7 @@ SECTIONS
     . = . + __STACK_SIZE;
     . = ALIGN(8);
     __StackTop = .;
-#if (WHERE_TO_LOAD == ROM_AND_RAM)
+#if (WHERE_TO_LOAD == ROM)
   } >SYSRAM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM

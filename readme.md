@@ -32,11 +32,13 @@ app/cv32e40p/hello/build.sh
 
 - **CORE**:A55, M3, CV32E40P.
 
+- **OS**:NO_SYS, FreeRTOS.
+
 - **BOARD**:RTL, QEMU, FPGA, EVB.
 
 - **BUILD_TYPE**:Debug, FastRel, FastRelWithDebInfo, MinSizeRel, MinSizeRelWithDebInfo.
 
-- **WHERE_TO_LOAD**:ROM_AND_RAM, ALL_IN_SYSRAM, ALL_IN_DDR。
+- **WHERE_TO_LOAD**:ROM, ALL_IN_SYSRAM, ALL_IN_DDR.
 
 # Tips
 

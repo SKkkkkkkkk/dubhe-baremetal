@@ -22,7 +22,7 @@
  * limitations under the License.
  */
 
-#define ROM_AND_RAM     0
+#define ROM     0
 #define ALL_IN_AXI_SRAM 1
 #define ALL_IN_SYSRAM	2
 #define ALL_IN_DDR	    3
@@ -81,7 +81,7 @@ __Vectors_End:
                 .globl   Reset_Handler
                 @ .fnstart
 Reset_Handler:
-            #if (WHERE_TO_LOAD != ROM_AND_RAM)
+            #if (WHERE_TO_LOAD != ROM)
                 ldr      sp, =__StackTop
             #endif
                 bl       SystemInit_Without_CEnv
