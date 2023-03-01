@@ -352,6 +352,11 @@ int main()
 {
     printf("test %s ...\n", __FILE__);
 
+	extern char __ram_start, __RAM_DATA_LMA_START__;
+	extern char __RAM_DATA_SIZE__;
+    int        size = (uint32_t) &__RAM_DATA_SIZE__;
+	memcpy(&__ram_start, &__RAM_DATA_LMA_START__, size);
+
     memcpy(__VECTOR_TABLE_IN_SRAM, __VECTOR_TABLE,
            sizeof(__VECTOR_TABLE_IN_SRAM));
     __DSB();

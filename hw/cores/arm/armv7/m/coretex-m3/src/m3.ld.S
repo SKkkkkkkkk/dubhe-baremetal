@@ -115,7 +115,7 @@ SECTIONS
 	} >DDR
 #endif
 
-  .ram :
+  .ram :ALIGN(8)
   {
     . = ALIGN(4);
     __ram_start = .;
@@ -123,7 +123,10 @@ SECTIONS
     *(.ram_func*)
     *(.ram_data*)
     __ram_end = .;
-  } > SYSRAM
+  } > SYSRAM AT>DDR
+
+  __RAM_DATA_LMA_START__ = LOADADDR(.ram);
+  __RAM_DATA_SIZE__ = SIZEOF(.ram);
 
   /*
    * SG veneers:
