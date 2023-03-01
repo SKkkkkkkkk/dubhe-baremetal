@@ -35,11 +35,11 @@
 
 MEMORY
 {
-  _ROM (rx)     : ORIGIN = __CODE_BASE,         LENGTH = __CODE_SIZE
-  SYSRAM (rwx) : ORIGIN = __SRAM_BASE,         LENGTH = __SRAM_SIZE
+  _ROM(rx)     : ORIGIN = __CODE_BASE,         LENGTH = __CODE_SIZE
+  SYSRAM(rwx) : ORIGIN = __SRAM_BASE,         LENGTH = __SRAM_SIZE
 #ifndef QEMU
-  AXI_SRAM(rx)  : ORIGIN = __AXI_SRAM_BASE,    LENGTH = __AXI_SRAM_SIZE
-  DDR  (rwx) : ORIGIN = __EXTERNAL_RAM_BASE, LENGTH = __EXTERNAL_RAM_SIZE
+  AXI_SRAM(rwx)  : ORIGIN = __AXI_SRAM_BASE,    LENGTH = __AXI_SRAM_SIZE
+  DDR(rwx)  : ORIGIN = __EXTERNAL_RAM_BASE, LENGTH = __EXTERNAL_RAM_SIZE
 #endif
 }
 
@@ -115,7 +115,8 @@ SECTIONS
 	} >DDR
 #endif
 
-  .ram :
+#ifndef QEMU
+  .ram : ALIGN(8)
   {
     . = ALIGN(4);
     __ram_start = .;
@@ -123,7 +124,11 @@ SECTIONS
     *(.ram_func*)
     *(.ram_data*)
     __ram_end = .;
-  } > SYSRAM
+  } > SYSRAM AT>DDR
+
+  __RAM_DATA_LMA_START__ = LOADADDR(.ram);
+  __RAM_DATA_SIZE__ = SIZEOF(.ram);
+#endif
 
   /*
    * SG veneers:

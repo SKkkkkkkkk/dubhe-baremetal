@@ -89,7 +89,8 @@ set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
 set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}" -DBUILD_TIMESTAMP="${BUILD_TIMESTAMP}")
-set(link_options -static -nostartfiles -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
+set(link_options -static -nostartfiles -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
+# set(link_options ${link_options} -Wl,--no-warn-rwx-segments)
 set(link_libs)
 
 ## 添加编译选项depends on CORE.
@@ -97,9 +98,14 @@ set(link_libs)
 ### A55
 
 if($CACHE{CORE} STREQUAL "A55")
+    set(STDLIB_SRC "newlib" CACHE STRING "STDLIB_SRC: newlib, aarch64_libc.")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
-    set(compile_options_arch -mlittle-endian -march=armv8.1-a -DA55 -nostdlib)
-    set(link_options ${link_options})
+    set(compile_options_arch -mlittle-endian -march=armv8.1-a -DA55)
+
+    if($CACHE{STDLIB_SRC} STREQUAL "aarch64_libc")
+        set(compile_options_common ${compile_options_common} -nostdinc -isystem${SDK_DIR}/libs/aarch64_libc/inc -isystem${SDK_DIR}/libs/aarch64_libc/inc/aarch64)
+        set(link_options ${link_options} -nostdlib)
+    endif()
 
 ### M3
 
@@ -113,7 +119,6 @@ elseif($CACHE{CORE} STREQUAL "M3")
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/riscv_gcc.cmake)
     set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
-    set(link_options ${link_options})
 
 ### unsupport
 
@@ -261,6 +266,14 @@ if($CACHE{CORE} STREQUAL "A55")
     add_subdirectory(${SDK_DIR}/hw/cores/arm/armv8/a/cortex-a55)
     set(link_libs ${link_libs} a55)
 
+    if($CACHE{STDLIB_SRC} STREQUAL "aarch64_libc")
+        add_subdirectory(${SDK_DIR}/libs/aarch64_libc aarch64_libc)
+        set(link_libs ${link_libs} aarch64_libc)
+    elseif($CACHE{STDLIB_SRC} STREQUAL "newlib")
+        add_subdirectory(${SDK_DIR}/libs/newlib newlib_port)
+        set(link_libs ${link_libs} newlib_port)
+    endif()
+
 ### M3必须的模块
 
 elseif($CACHE{CORE} STREQUAL "M3")
@@ -366,7 +379,7 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     ### USE_SYSTIMER (USE_ARCH_TIMER || USE_DW_APB_TIMERS)
     cmake_dependent_option(
         USE_SYSTIMER "Use systimer" ON
-        "USE_DW_APB_TIMERS;${ENABLE_USE_SYSTIMER}" OFF
+        "NOT $CACHE{BOARD} STREQUAL QEMU;USE_DW_APB_TIMERS;${ENABLE_USE_SYSTIMER}" OFF
     )
     if(USE_SYSTIMER)
         add_subdirectory(${SDK_DIR}/libs/systimer)
@@ -562,7 +575,7 @@ target_compile_options($CACHE{PROJECT_NAME}.elf
         ${compile_options_board}
         ${compile_options_common}
         ${compile_options_opt}
-        # ${compile_options_align}
+        ${compile_options_align}
 )
 
 ### link options

@@ -3,12 +3,12 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#ifdef A55
-	#error "A55 has the aarch64_libc, don't use newlib."
-#endif
-
 #define CONSOLE_BAUDRATE 115200U
 #define UART_CLK		 20000000U
+
+#ifndef __unused
+	#define __unused __attribute__((__unused__))
+#endif
 
 #if defined QEMU
 	#include "pl011.h"
@@ -66,7 +66,13 @@
 	{
 		if(!uart_init)
 		{
+			#if  defined(M3)
 			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART0)!=0)
+			#elif defined(A55)
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART1)!=0)
+			#else
+			#error "Unsupport Core!"
+			#endif
 			{
 				uart_init = false;
 				return 0;
@@ -87,7 +93,13 @@
 	{
 		if(!uart_init)
 		{
+			#if  defined(M3)
 			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART0)!=0)
+			#elif defined(A55)
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART1)!=0)
+			#else
+			#error "Unsupport Core!"
+			#endif
 			{
 				uart_init = false;
 				return 0;
@@ -150,6 +162,8 @@ void *_sbrk(int incr) {
 		while(1);
 	}
 	heap += incr;
+	if((uintptr_t)heap&0xf)
+		_write(1, "Heap is not Aligned!\n\r", 22);
 	return prev_heap;
 }
 

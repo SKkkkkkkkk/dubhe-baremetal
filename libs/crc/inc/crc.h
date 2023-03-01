@@ -10,6 +10,11 @@
 
 // #include <compiler.h> /* 'uint*' definitions */
 #include <stdint.h>
+
+typedef unsigned long int ulong;
+typedef unsigned short int ushort;
+typedef unsigned int uint;
+
 /**
  * crc8() - Calculate and return CRC-8 of the data
  *

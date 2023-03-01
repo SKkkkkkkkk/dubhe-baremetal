@@ -31,6 +31,6 @@ target_link_libraries(${LIB_OBJS_NAME}
 if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
-			aarch64_libc
+			a55
 	)
 endif()

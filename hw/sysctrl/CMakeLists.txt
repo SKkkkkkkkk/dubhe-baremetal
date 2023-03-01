@@ -27,13 +27,8 @@ target_compile_options(${LIB_OBJS_NAME}
 		${compile_options_align} # 编译器只能生成对齐操作
 )
 
-# 如果是A55则需要依赖此模块
-if($CACHE{CORE} STREQUAL "A55") 
-	target_link_libraries(${LIB_OBJS_NAME}
-		PUBLIC
-			aarch64_libc  
-	)
-endif()
+
+
 
 # 依赖模块
 target_link_libraries(${LIB_OBJS_NAME} 

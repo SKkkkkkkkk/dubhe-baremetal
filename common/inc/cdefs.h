@@ -27,9 +27,11 @@
 #define __printflike(fmtarg, firstvararg) \
 		__attribute__((__format__ (__printf__, fmtarg, firstvararg)))
 
+#ifndef __weak_reference
 #define __weak_reference(sym, alias)	\
 	__asm__(".weak alias");		\
 	__asm__(".equ alias, sym")
+#endif
 
 #define __STRING(x)	#x
 #define __XSTRING(x)	__STRING(x)

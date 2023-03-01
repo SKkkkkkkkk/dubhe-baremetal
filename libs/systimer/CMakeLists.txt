@@ -37,8 +37,7 @@ endif()
 if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
-			aarch64_libc
-			gic_v2
+			a55
 	)
 elseif($CACHE{CORE} STREQUAL "M3")
 	target_link_libraries(${LIB_OBJS_NAME}

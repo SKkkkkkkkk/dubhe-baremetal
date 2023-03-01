@@ -119,8 +119,4 @@ typedef unsigned long long uintmax_t;
 typedef long register_t;
 typedef unsigned long u_register_t;
 
-typedef unsigned long int ulong;
-typedef unsigned short int ushort;
-typedef unsigned int uint;
-
 #endif /* STDINT_H */

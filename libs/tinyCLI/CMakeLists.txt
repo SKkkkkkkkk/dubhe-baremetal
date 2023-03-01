@@ -26,7 +26,7 @@ target_compile_options( ${LIB_OBJS_NAME}
 if($CACHE{CORE} STREQUAL "A55")
 	target_link_libraries(${LIB_OBJS_NAME}
 		PUBLIC
-			aarch64_libc
+			# aarch64_libc
 	)
 elseif($CACHE{CORE} STREQUAL "M3")
 	target_link_libraries(${LIB_OBJS_NAME}

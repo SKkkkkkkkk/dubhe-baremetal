@@ -20,6 +20,7 @@ target_compile_options(${LIB_NAME}
 		${compile_options_board}
 		${compile_options_common}
 		${compile_options_opt}
+		${compile_options_align}
 )
 
 add_subdirectory(${SDK_DIR}/libs/CMSIS/Core CMSIS/Core)

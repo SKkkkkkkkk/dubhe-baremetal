@@ -1,5 +1,5 @@
 #ifdef QEMU
-#include <math.h>
+// #include <math.h>
 #include "pl011.h"
 
 #ifndef M3
@@ -34,7 +34,9 @@ uart_error uart_configure(uart_config* config) {
     /* Set baudrate */
     double intpart, fractpart;
     double baudrate_divisor = (double)refclock / (16u * config->baudrate);
-    fractpart = modf(baudrate_divisor, &intpart);
+    // fractpart = modf(baudrate_divisor, &intpart);
+    intpart = (int)baudrate_divisor;
+    fractpart = 0;
 
     uart0->IBRD = (uint16_t)intpart;
     uart0->FBRD = (uint8_t)((fractpart * 64u) + 0.5);

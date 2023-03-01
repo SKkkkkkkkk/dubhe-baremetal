@@ -30,9 +30,3 @@ target_link_libraries(${LIB_OBJS_NAME}
 		dw_apb_gpio
 		pinmux
 )
-if($CACHE{CORE} STREQUAL "A55")
-	target_link_libraries(${LIB_OBJS_NAME}
-		PUBLIC
-			aarch64_libc
-	)
-endif()

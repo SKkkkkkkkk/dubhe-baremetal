@@ -6,10 +6,10 @@
 
 void task1(void* arg)
 {
-	static double i = 0;
+	double i = 3.14;
 	while(1)
 	{
-		printf("task1: %d\n\r", (int)(i++));
+		printf("task1: %f\n\r", (i++));
 		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
@@ -17,10 +17,10 @@ void task1(void* arg)
 
 void task2(void* arg)
 {
-	static double i = 0;
+	double i = 0;
 	while(1)
 	{
-		printf("task2: %d\n\r", (int)(i++));
+		printf("task2: %f\n\r", (i++));
 		vTaskDelay(pdMS_TO_TICKS(2000));
 	}
 }
