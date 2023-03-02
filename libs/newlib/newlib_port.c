@@ -168,15 +168,22 @@ void *_sbrk(int incr) {
 }
 
 #if defined(FREERTOS)
+
+#include "FreeRTOS.h"
+#include "task.h"
 void __malloc_lock(struct _reent *r __unused)   
 {
-	extern void vTaskSuspendAll( void );
+	configASSERT(!xPortIsInsideInterrupt()); // 禁止在中断中使用malloc
+	if(xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+		return;
 	vTaskSuspendAll();
 }
 
 void __malloc_unlock(struct _reent *r __unused) 
 {
-	long xTaskResumeAll( void );
+	configASSERT(!xPortIsInsideInterrupt()); // 禁止在中断中使用malloc
+	if(xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+		return;
 	(void)xTaskResumeAll();
 }
 #endif

@@ -7,7 +7,7 @@
 void task1(void* arg)
 {
 	(void)arg;
-	double i = 3.14;
+	double i = 3.1415926;
 	while(1)
 	{
 		printf("task1: %f\n\r", (i++));
@@ -19,7 +19,7 @@ void task1(void* arg)
 void task2(void* arg)
 {
 	(void)arg;
-	double i = 0;
+	double i = 3.1415926;
 	while(1)
 	{
 		printf("task2: %f\n\r", (i++));

@@ -588,3 +588,7 @@ void vApplicationFPUSafeIRQHandler( uint32_t ulICCIAR )
 	configASSERT( ( volatile void * ) NULL );
 }
 
+BaseType_t xPortIsInsideInterrupt( void )
+{
+	return (ullPortInterruptNesting == 0) ? pdFALSE : pdTRUE;
+}

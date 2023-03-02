@@ -208,5 +208,7 @@ number of bits implemented by the interrupt controller. */
 
 #define portMEMORY_BARRIER() __asm volatile( "" ::: "memory" )
 
+BaseType_t xPortIsInsideInterrupt( void );
+
 #endif /* PORTMACRO_H */
 

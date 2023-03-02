@@ -21,8 +21,7 @@ target_include_directories(${LIB_OBJS_NAME}
 	PUBLIC
 		include
 		${portable_inc}
-	PRIVATE
-		${app_inc}
+		${app_inc} # FreeRTOSConfig.h
 		${SDK_DIR}/common/inc
 )
 

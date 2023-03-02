@@ -28,3 +28,10 @@ else()
 			dw_apb_uart
 	)
 endif()
+
+if($CACHE{OS} STREQUAL "FreeRTOS")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PRIVATE
+			freertos_kernel
+	)
+endif()
