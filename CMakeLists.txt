@@ -589,27 +589,6 @@ add_custom_target($CACHE{PROJECT_NAME}.dump ALL
 
 ## bin
 
-if($CACHE{WHERE_TO_LOAD} STREQUAL "MEMMAP_SCHEME_1")
-add_custom_target( $CACHE{PROJECT_NAME}.bin ALL
-	COMMAND ${CMAKE_OBJCOPY} -j .ram -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}_ram.bin
-	COMMAND ${CMAKE_OBJCOPY} -R .ram -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
-    COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
-	COMMAND ${CMAKE_OBJCOPY} -R .ram -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
-    COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
-    DEPENDS $CACHE{PROJECT_NAME}.elf
-    WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
-)
-
-set_property(TARGET $CACHE{PROJECT_NAME}.elf
-    APPEND
-    PROPERTY
-        ADDITIONAL_CLEAN_FILES
-				$CACHE{PROJECT_NAME}_ram.bin
-                $CACHE{PROJECT_NAME}.bin
-                $CACHE{PROJECT_NAME}.dump
-                $CACHE{PROJECT_NAME}.verilog.hex
-)
-else()
 add_custom_target( $CACHE{PROJECT_NAME}.bin ALL
     COMMAND ${CMAKE_OBJCOPY} -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
     COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
@@ -627,4 +606,3 @@ set_property(TARGET $CACHE{PROJECT_NAME}.elf
                 $CACHE{PROJECT_NAME}.dump
                 $CACHE{PROJECT_NAME}.verilog.hex
 )
-endif()
