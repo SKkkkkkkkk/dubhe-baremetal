@@ -213,6 +213,7 @@ set(ENABLE_USE_I2C_WO OFF)
 set(ENABLE_USE_MAILBOX OFF)
 set(ENABLE_USE_DDR ON)
 set(ENABLE_USE_SYSCTRL ON)
+set(ENABLE_USE_PMON0 OFF)
 
 
 ### LIBS
@@ -520,6 +521,15 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_SYSCTRL)
         add_subdirectory(${SDK_DIR}/hw/sysctrl)
         set(link_libs ${link_libs} sysctrl)
+    endif()
+    ### USE_PMON0 
+    cmake_dependent_option(
+        USE_PMON0 "Use PMON0" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_PMON0}" OFF
+        )
+    if(USE_PMON0)
+        add_subdirectory(${SDK_DIR}/hw/pmon0)
+        set(link_libs ${link_libs} pmon0)
     endif()
 
 endif()
