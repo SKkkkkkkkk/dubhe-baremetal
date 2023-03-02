@@ -5,7 +5,7 @@
 
 void pinmux(uint8_t pin_num, uint8_t iomux)
 {
-	if((pin_num>=0) && (pin_num<=30))
+	if(/*(pin_num>=0) always true &&*/ (pin_num<=30))
 	{
 		uint32_t pin_ctrl_base = SYSCTRL_BASE + 0x800UL + ((pin_num-0)*4);
 		uint32_t tmp = REG32(pin_ctrl_base);

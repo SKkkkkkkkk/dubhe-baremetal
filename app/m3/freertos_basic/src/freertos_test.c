@@ -6,6 +6,7 @@
 
 void task1(void* arg)
 {
+	(void)arg;
 	volatile double i = 3.14;
 	while(1)
 	{
@@ -16,6 +17,7 @@ void task1(void* arg)
 
 void task2(void* arg)
 {
+	(void)arg;
 	volatile double i = 3.1415926;
 	while(1)
 	{
