@@ -21,7 +21,7 @@
 
 extern void cpu_tz_suspend(void);
 
-struct pmic_callback_ops axp2101_pmic_ops;
+struct pm_callback_ops pm_ops;
 
 #ifdef CONFIG_PM_DEBUG
 static struct arm_CMX_core_regs vault_arm_registers;
@@ -107,7 +107,10 @@ static void pm_hibernation(void)
     extern void cpu_tz_hibernation(void);
     cpu_tz_hibernation();
 
-    wfe();
+	if (pm_ops.pm_to_poweroff != NULL)
+		pm_ops.pm_to_poweroff();
+
+    wfi();
     /* some irq generated when second wfe */
     PM_REBOOT();
 
@@ -123,11 +126,9 @@ __ramfunc static void cpu_sleep(void)
     g_value = REG32(NVIC_SYSTICK_CTRL);
     // printf("NVIC_SYSTICK_CTRL = 0x%x\n", g_value);
     g_systick = g_value;
-    asm volatile("isb 0xF" ::: "memory");
     REG32(NVIC_SYSTICK_CTRL) = g_value & ~0x03;
 
     /* clear systick */
-    asm volatile("isb 0xF" ::: "memory");
     g_value = REG32(NVIC_ICSR);
     // printf("NVIC_ICSR = 0x%x\n", g_value);
     asm volatile("isb 0xF" ::: "memory");
@@ -159,7 +160,6 @@ __ramfunc static void cpu_sleep(void)
     asm volatile("isb 0xF" ::: "memory");
     /* enable systick */
     REG32(NVIC_SYSTICK_CTRL) = g_systick;
-    asm volatile("isb 0xF" ::: "memory");
 }
 #endif
 
@@ -169,32 +169,21 @@ __ramfunc static void cpu_suspend(void)
     cpu_tz_suspend();
 
     asm volatile("mrs %0, MSP" : "=r"(g_value));
-    // printf("g_msp = 0x%x\n", g_value);
     g_msp = g_value;
-    asm volatile("isb 0xF" ::: "memory");
 
     asm volatile("mrs %0, PSP" : "=r"(g_value));
-    // printf("g_psp = 0x%x\n", g_value);
     g_psp = g_value;
-    asm volatile("isb 0xF" ::: "memory");
 
     asm volatile("mrs %0, PRIMASK" : "=r"(g_value));
-    // printf("PRIMASK = 0x%x\n", g_value);
     g_primask = g_value;
-    asm volatile("isb 0xF" ::: "memory");
 
     asm volatile("mrs %0, FAULTMASK" : "=r"(g_value));
-    // printf("FAULTMASK = 0x%x\n", g_value);
     g_faultmask = g_value;
-    asm volatile("isb 0xF" ::: "memory");
 
     asm volatile("mrs %0, BASEPRI" : "=r"(g_value));
-    // printf("BASEPRI = 0x%x\n", g_value);
     g_basepri = g_value;
-    asm volatile("isb 0xF" ::: "memory");
 
     asm volatile("mrs %0, CONTROL" : "=r"(g_value));
-    // printf("CONTROL = 0x%x\n", g_value);
     g_control = g_value;
     asm volatile("isb 0xF" ::: "memory");
 
@@ -204,17 +193,23 @@ __ramfunc static void cpu_suspend(void)
 
     /* disable systick */
     g_value = REG32(NVIC_SYSTICK_CTRL);
-    // printf("NVIC_SYSTICK_CTRL = 0x%x\n", g_value);
     g_systick = g_value;
     asm volatile("isb 0xF" ::: "memory");
     REG32(NVIC_SYSTICK_CTRL) = g_value & ~0x03;
 
     /* clear systick */
-    asm volatile("isb 0xF" ::: "memory");
     g_value = REG32(NVIC_ICSR);
     // printf("NVIC_ICSR = 0x%x\n", g_value);
     asm volatile("isb 0xF" ::: "memory");
     REG32(NVIC_ICSR) = (g_value & 0x4000000) >> 1;
+
+    // printf("g_msp = 0x%x\n", g_msp);
+    // printf("g_psp = 0x%x\n", g_psp);
+    // printf("PRIMASK = 0x%x\n", g_primask);
+    // printf("FAULTMASK = 0x%x\n", g_faultmask);
+    // printf("BASEPRI = 0x%x\n", g_basepri);
+    // printf("CONTROL = 0x%x\n", g_control);
+    // printf("NVIC_SYSTICK_CTRL = 0x%x\n", g_systick);
 
     /* set bootflag */
     // LDR R0, =0x429b0001                //TODO
@@ -277,8 +272,8 @@ __ramfunc static void cpu_suspend(void)
          * 4. if there are no SEV/NMI/DEBUG events before and no interrupts
          *	 pending too, WFE wil make the CPU go to the SLEEP state.
          */
-        // WFE
-		// "WFI\n"
+		"WFE\n"
+		"WFE\n"
 
         /* read the NVIC SET_PENDING_REGISTER to check whether there are
          *  any new pending interrupts after ar400_deepsleep_lock operation
@@ -336,7 +331,6 @@ __ramfunc static void cpu_suspend(void)
     // ISB
     // STR R0, [R1]
 
-    asm volatile("isb 0xF" ::: "memory");
     /* enable systick */
     REG32(NVIC_SYSTICK_CTRL) = g_systick;
     asm volatile("isb 0xF" ::: "memory");
@@ -348,32 +342,26 @@ __ramfunc static void cpu_suspend(void)
     g_value = g_msp;
     asm volatile("msr MSP, %0" : : "r"(g_value) : "memory");
     asm volatile("isb 0xF" ::: "memory");
-    // printf("g_msp = 0x%x\n", g_value);
 
     g_value = g_psp;
     asm volatile("msr PSP, %0" : : "r"(g_value) : "memory");
     asm volatile("isb 0xF" ::: "memory");
-    // printf("g_psp = 0x%x\n", g_value);
 
     g_value = g_primask;
     asm volatile("msr PRIMASK, %0" : : "r"(g_value) : "memory");
     asm volatile("isb 0xF" ::: "memory");
-    // printf("PRIMASK = 0x%x\n", g_value);
 
     g_value = g_faultmask;
     asm volatile("msr FAULTMASK, %0" : : "r"(g_value) : "memory");
     asm volatile("isb 0xF" ::: "memory");
-    // printf("FAULTMASK = 0x%x\n", g_value);
 
     g_value = g_basepri;
     asm volatile("msr BASEPRI, %0" : : "r"(g_value) : "memory");
     asm volatile("isb 0xF" ::: "memory");
-    // printf("BASEPRI = 0x%x\n", g_value);
 
     g_value = g_control;
     asm volatile("msr CONTROL, %0" : : "r"(g_value) : "memory");
     asm volatile("isb 0xF" ::: "memory");
-    // printf("CONTROL = 0x%x\n", g_value);
 }
 #endif
 
@@ -417,8 +405,8 @@ static void __suspend_enter(enum suspend_state_t state)
     } else {
         PM_LOGN("PM_MODE_STANDBY enter\n"); /* debug info. */
 
-        if (axp2101_pmic_ops.pmic_to_sleep != NULL)
-            axp2101_pmic_ops.pmic_to_sleep();
+        if (pm_ops.pm_to_sleep != NULL)
+            pm_ops.pm_to_sleep();
 
         /* 配置PMU相关寄存器 */
         /* 配置唤醒原 */
@@ -430,8 +418,8 @@ static void __suspend_enter(enum suspend_state_t state)
         /* __cpu_suspend(state); */
         cpu_suspend();
 
-        if (axp2101_pmic_ops.pmic_to_resume != NULL)
-            axp2101_pmic_ops.pmic_to_resume();
+        if (pm_ops.pm_to_resume != NULL)
+            pm_ops.pm_to_resume();
         /* 配置标识表明唤醒之前的状态 */
         PM_LOGN("PM_MODE_STANDBY  exit\n"); /* debug info. */
     }

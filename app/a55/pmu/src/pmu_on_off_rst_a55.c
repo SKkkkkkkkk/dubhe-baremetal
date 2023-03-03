@@ -199,17 +199,36 @@ void pmu_irqhandler (void) {
     set_pmu_reg(PMU,PMU_ISR_PMU_WAKEUP_5_ADDR,0xffffffff);
 }
 
+void test_ddr_rst()
+{
+	int cnt = 0;
+
+	REG32(0x60000000) = 0x12345678;
+	printf("1 REG32(0x60000000) = 0x%x\n", REG32(0x60000000));
+
+	set_pmu_warm_rst(DDR0);
+	set_pmu_warm_rst(DDR1);
+
+	printf("2 REG32(0x60000000) = 0x%x\n", REG32(0x60000000));
+	  while(1) {
+		systimer_delay(1, IN_S);
+		cnt++;
+		if(cnt % 10 == 0)
+		printf("cnt 0x%x\n", cnt);
+	  }
+}
+
 int main (void)
 {   
     printf("test %s ...\n", __FILE__);
 	systimer_init();
 
-    int local_gic_cnt = gic_cnt;
-    //open each PPU ISR
-    set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
+	int local_gic_cnt = gic_cnt;
+	// open each PPU ISR
+	set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
 	GIC_DistInit();
-  	GIC_CPUInterfaceInit(); //per CPU
+	GIC_CPUInterfaceInit(); //per CPU
 
 	void pmu_irqhandler(void);
 	GIC_SetTarget(PMU_IRQn, 1 << 0);
@@ -217,22 +236,22 @@ int main (void)
 	IRQ_SetPriority(PMU_IRQn, 0 << 3);
 	IRQ_Enable(PMU_IRQn);
 
-    printf("gic_cnt is %d, err_cnt is %d\n", gic_cnt, err_cnt);
-    while (gic_cnt <= 4) {
-      if(gic_cnt == 0) {
-      } else if(gic_cnt == 1) {
+	printf("gic_cnt is %d, err_cnt is %d\n", gic_cnt, err_cnt);
+	while (gic_cnt <= 4) {
+	  if(gic_cnt == 0) {
+	  } else if(gic_cnt == 1) {
 		printf("///////////////open other pd\n");
-        set_pmu_off_pd2on();
-      } else if(gic_cnt == 2) {
+		set_pmu_off_pd2on();
+	  } else if(gic_cnt == 2) {
 		printf("///////////////reset core1 - core3 pd\n");
-        for(int i=0; i<PDNUM; i++) {
+		for(int i=0; i<PDNUM; i++) {
 			if(i == CORE1 || i== CORE2 || i == CORE3){
 				set_warm_rst_a55(i);
 			}
 		}
 		printf("////////////reset other pd\n");
-        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
-        for(int i=0; i<PDNUM; i++) {
+		set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
+		for(int i=0; i<PDNUM; i++) {
 			if(i == CORE0 || i == CORE1 || i== CORE2 || i == CORE3 || i == AP || i == PERI0)
 				continue;
 
@@ -245,39 +264,40 @@ int main (void)
 			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,RST);
 #endif
 		}
-      } else if(gic_cnt == 3) {
+	  } else if(gic_cnt == 3) {
 		printf("///////////////close other pd\n");
-        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
-        for(int i=0; i<PDNUM; i++) {
+		set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
+		for(int i=0; i<PDNUM; i++) {
 			if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3 || i == AP || i == PERI0)
 				continue;
 			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,OFF);
 		}
-      } else if(gic_cnt == 4) {
+	  } else if(gic_cnt == 4) {
 		printf("///////////////open other pd\n");
-        set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
-        for(int i=0; i<PDNUM; i++) {
+		set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR, ~(1<<PMU_ISR_PPU_PERI1_IRQ_LSB));
+		for(int i=0; i<PDNUM; i++) {
 			if(i == CORE0 || i == CORE1 || i == CORE2 || i == CORE3 || i == AP || i == PERI0)
 				continue;
 			set_pmu_reg(i,PPU_PWPR_OP_DYN_EN_ADDR,ON);
 		}
-      }
-      while(1) {
-        asm volatile("nop");
-        if(local_gic_cnt != gic_cnt) {
-            break;
-        }
-      }
+	  }
+	  while(1) {
+		asm volatile("nop");
+		if(local_gic_cnt != gic_cnt) {
+			break;
+		}
+	  }
 	  systimer_delay(1, IN_S);
-      local_gic_cnt = gic_cnt;
-    }
+	  local_gic_cnt = gic_cnt;
+	}
 
-    if(err_cnt == 0) {
-        TEST_PASS;
-    } else {
+	if(err_cnt == 0) {
+		TEST_PASS;
+	} else {
 		systimer_delay(10, IN_US);
-        TEST_FAIL;
-    }
+		TEST_FAIL;
+	}
+
 }
 
 

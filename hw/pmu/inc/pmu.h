@@ -81,6 +81,9 @@ extern void set_pmu_power_off(uint8_t pid);
 extern void set_pmu_warm_rst(uint8_t pid);
 extern void clear_all_ppu_isr(void);
 extern void set_pmu_fw_warm_rst(uint8_t pid);
+extern void global_set_power_off_a55(uint8_t pid);
+extern void global_set_power_on_a55(uint8_t pid, int op);
+extern void set_pmu_wakeup_clear(uint8_t src, uint8_t target);
 
 #ifdef FPGA
     #define TEST_PASS do { \

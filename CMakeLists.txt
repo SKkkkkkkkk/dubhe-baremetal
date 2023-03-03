@@ -232,6 +232,7 @@ set(ENABLE_USE_I2C_WO OFF)
 set(ENABLE_USE_MAILBOX OFF)
 set(ENABLE_USE_DDR ON)
 set(ENABLE_USE_SYSCTRL ON)
+set(ENABLE_USE_PMON0 OFF)
 
 
 ### LIBS
@@ -546,6 +547,15 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
         add_subdirectory(${SDK_DIR}/hw/sysctrl)
         set(link_libs ${link_libs} sysctrl)
     endif()
+    ### USE_PMON0 
+    cmake_dependent_option(
+        USE_PMON0 "Use PMON0" ON
+        "NOT $CACHE{BOARD} STREQUAL QEMU;${ENABLE_USE_PMON0}" OFF
+        )
+    if(USE_PMON0)
+        add_subdirectory(${SDK_DIR}/hw/pmon0)
+        set(link_libs ${link_libs} pmon0)
+    endif()
 
 endif()
 
@@ -604,27 +614,6 @@ add_custom_target($CACHE{PROJECT_NAME}.dump ALL
 
 ## bin
 
-if($CACHE{WHERE_TO_LOAD} STREQUAL "MEMMAP_SCHEME_1")
-add_custom_target( $CACHE{PROJECT_NAME}.bin ALL
-	COMMAND ${CMAKE_OBJCOPY} -j .ram -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}_ram.bin
-	COMMAND ${CMAKE_OBJCOPY} -R .ram -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
-    COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
-	COMMAND ${CMAKE_OBJCOPY} -R .ram -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
-    COMMAND hexdump -e '"%08x\\n"' -v ${PROJECT_NAME}.bin > ${PROJECT_NAME}.hex
-    DEPENDS $CACHE{PROJECT_NAME}.elf
-    WORKING_DIRECTORY   "${CMAKE_BINARY_DIR}"
-)
-
-set_property(TARGET $CACHE{PROJECT_NAME}.elf
-    APPEND
-    PROPERTY
-        ADDITIONAL_CLEAN_FILES
-				$CACHE{PROJECT_NAME}_ram.bin
-                $CACHE{PROJECT_NAME}.bin
-                $CACHE{PROJECT_NAME}.dump
-                $CACHE{PROJECT_NAME}.verilog.hex
-)
-else()
 add_custom_target( $CACHE{PROJECT_NAME}.bin ALL
     COMMAND ${CMAKE_OBJCOPY} -O binary $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.bin
     COMMAND ${CMAKE_OBJCOPY} -O verilog  $CACHE{PROJECT_NAME}.elf $CACHE{PROJECT_NAME}.verilog.hex
@@ -642,4 +631,3 @@ set_property(TARGET $CACHE{PROJECT_NAME}.elf
                 $CACHE{PROJECT_NAME}.dump
                 $CACHE{PROJECT_NAME}.verilog.hex
 )
-endif()
