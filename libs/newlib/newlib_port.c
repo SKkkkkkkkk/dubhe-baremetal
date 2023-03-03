@@ -6,6 +6,14 @@
 #define CONSOLE_BAUDRATE 115200U
 #define UART_CLK		 20000000U
 
+#if  defined(M3)
+	#define UART_ID SEEHI_UART0
+#elif defined(A55)
+	#define UART_ID SEEHI_UART1
+#else
+	#error "Unsupport Core!"
+#endif
+
 #ifndef __unused
 	#define __unused __unused
 #endif
@@ -66,13 +74,7 @@
 	{
 		if(!uart_init)
 		{
-			#if  defined(M3)
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART0)!=0)
-			#elif defined(A55)
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART1)!=0)
-			#else
-			#error "Unsupport Core!"
-			#endif
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, UART_ID)!=0)
 			{
 				uart_init = false;
 				return 0;
@@ -82,9 +84,9 @@
 		int i;
 		for(i=0;i<len;i++)
 		{
-			uart_sendchar(SEEHI_UART0 ,ptr[i]);
+			uart_sendchar(UART_ID ,ptr[i]);
 			if(ptr[i] == '\n')
-				uart_sendchar(SEEHI_UART0,'\r');
+				uart_sendchar(UART_ID,'\r');
 		}
 		return i;
 	}
@@ -93,13 +95,7 @@
 	{
 		if(!uart_init)
 		{
-			#if  defined(M3)
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART0)!=0)
-			#elif defined(A55)
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, SEEHI_UART1)!=0)
-			#else
-			#error "Unsupport Core!"
-			#endif
+			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, UART_ID)!=0)
 			{
 				uart_init = false;
 				return 0;
@@ -109,7 +105,7 @@
 		int i;
 		for(i=0;i<len;i++)
 		{
-			ptr[i] = uart_getchar(SEEHI_UART0);
+			ptr[i] = uart_getchar(UART_ID);
 		}
 		return i;
 	}
@@ -162,7 +158,7 @@ void *_sbrk(int incr) {
 		while(1);
 	}
 	heap += incr;
-	if((uintptr_t)heap&0xf)
+	if((uintptr_t)heap&7)
 		_write(1, "Heap is not Aligned!\n\r", 22);
 	return prev_heap;
 }

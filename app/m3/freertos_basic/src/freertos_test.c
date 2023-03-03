@@ -10,7 +10,7 @@ void task1(void* arg)
 	volatile double i = 3.14;
 	while(1)
 	{
-		printf("task1: %f\n\r", i++);
+		printf("task1: %f\n\r", i++); // newlib-nano dont support printing float.
 	}
 }
 
@@ -21,7 +21,7 @@ void task2(void* arg)
 	volatile double i = 3.1415926;
 	while(1)
 	{
-		printf("task2: %f\n\r", i++);
+		printf("task2: %f\n\r", i++); // newlib-nano dont support printing float.
 	}
 }
 
