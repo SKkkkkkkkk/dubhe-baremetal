@@ -115,21 +115,6 @@ SECTIONS
 	} >DDR
 #endif
 
-#ifndef QEMU
-  .ram : ALIGN(8)
-  {
-    . = ALIGN(4);
-    __ram_start = .;
-    *(.ram_vector*)
-    *(.ram_func*)
-    *(.ram_data*)
-    __ram_end = .;
-  } > SYSRAM AT>DDR
-
-  __RAM_DATA_LMA_START__ = LOADADDR(.ram);
-  __RAM_DATA_SIZE__ = SIZEOF(.ram);
-#endif
-
   /*
    * SG veneers:
    * All SG veneers are placed in the special output section .gnu.sgstubs. Its start address
@@ -369,6 +354,23 @@ SECTIONS
 #endif
 
   PROVIDE(__stack = __StackTop);
+
+#ifndef QEMU
+  .ram : ALIGN(8)
+  {
+    . = ALIGN(4);
+    __ram_start = .;
+    *(.ram_vector*)
+    *(.ram_func*)
+    *(.ram_data*)
+    __ram_end = .;
+  } > SYSRAM AT>DDR
+
+  __RAM_DATA_LMA_START__ = LOADADDR(.ram);
+  __RAM_DATA_SIZE__ = SIZEOF(.ram);
+#endif
+
+
 
   /* Check if data + heap + stack exceeds SYSRAM limit */
 #if (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)

@@ -112,7 +112,7 @@ if($CACHE{CORE} STREQUAL "A55")
 elseif($CACHE{CORE} STREQUAL "M3")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch32gcc.cmake)
     set(compile_options_arch ${compile_options_arch} -mlittle-endian -mcpu=cortex-m3 -mthumb -mabi=aapcs -DM3)
-    # set(link_options ${link_options} --specs=nano.specs --specs=nosys.specs)
+    set(link_options ${link_options} --specs=nano.specs --specs=nosys.specs)
 
 ### CV32E40P
 
