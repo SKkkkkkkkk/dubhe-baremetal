@@ -11,7 +11,7 @@ void task1(void* arg)
 	while(1)
 	{
 		printf("task1: %f\n\r", (i++));
-		vTaskDelay(pdMS_TO_TICKS(1000));
+		// vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
@@ -23,7 +23,7 @@ void task2(void* arg)
 	while(1)
 	{
 		printf("task2: %f\n\r", (i++));
-		vTaskDelay(pdMS_TO_TICKS(2000));
+		// vTaskDelay(pdMS_TO_TICKS(2000));
 	}
 }
 

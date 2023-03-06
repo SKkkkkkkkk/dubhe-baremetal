@@ -36,6 +36,11 @@
 #ifndef _SYS_UUID_H_
 #define _SYS_UUID_H_
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+
 #include <cdefs.h>
 #include <stdint.h>
 
@@ -52,5 +57,9 @@ struct uuid {
 };
 
 typedef struct uuid uuid_t;
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif /* _SYS_UUID_H_ */

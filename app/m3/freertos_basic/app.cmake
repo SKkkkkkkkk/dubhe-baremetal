@@ -1,7 +1,8 @@
 # 添加app sources
 set(app_src
-	${CMAKE_CURRENT_LIST_DIR}/src/main.c
+	${CMAKE_CURRENT_LIST_DIR}/src/main.cc
 	${CMAKE_CURRENT_LIST_DIR}/src/freertos_test.c
+	# ${CMAKE_CURRENT_LIST_DIR}/src/complex.cc
 )
 
 # 添加app include dirs
