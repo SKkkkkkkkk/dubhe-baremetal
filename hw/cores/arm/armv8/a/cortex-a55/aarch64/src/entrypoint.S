@@ -136,7 +136,8 @@ data_init_end:
 	bl get_core_id
 	cmp x0, x19
 	bne secondary_core_boot
-	// bl config_mmu
+	bl config_mmu
+	bl call_init_array
 	bl main
 dead:
 	b	dead

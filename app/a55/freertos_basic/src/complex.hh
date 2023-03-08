@@ -1,8 +1,6 @@
 #ifndef __COMPLEX_HH__
 #define __COMPLEX_HH__
 
-
-// #include <iostream>
 #include <cstdio>
 
 class complex

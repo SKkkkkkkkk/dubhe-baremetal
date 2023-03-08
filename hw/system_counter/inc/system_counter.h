@@ -25,6 +25,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 // Sets the address of memory mapped counter module
 // addr - virtual address of counter module
 // void setSystemCounterBaseAddr(uint64_t addr);
@@ -81,6 +85,11 @@ uint32_t getCNTFID(uint32_t entry);
 // entry - 
 // value - 
 void setCNTFID(uint32_t entry, uint32_t value);
+
+
+#ifdef __cplusplus
+ }
+#endif
 
 #endif
 

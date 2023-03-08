@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <vector>
 
 void task1(void* arg)
 {
@@ -12,6 +13,13 @@ void task1(void* arg)
 	{
 		printf("task1: %f\n\r", (i++));
 		// vTaskDelay(pdMS_TO_TICKS(1000));
+
+		// std::vector<int> v;
+		// static const int MaxVecSize = 256;
+		// for (int i = 0; i < MaxVecSize; ++i) {
+		// 	v.push_back(i);
+		// }
+
 	}
 }
 
@@ -24,6 +32,12 @@ void task2(void* arg)
 	{
 		printf("task2: %f\n\r", (i++));
 		// vTaskDelay(pdMS_TO_TICKS(2000));
+
+		// std::vector<int> v;
+		// static const int MaxVecSize = 256;
+		// for (int i = 0; i < MaxVecSize; ++i) {
+		// 	v.push_back(i);
+		// }
 	}
 }
 

@@ -93,7 +93,7 @@ set(link_options -static -nostartfiles -Wl,--gc-sections -Wl,-Map=${CMAKE_CURREN
 # set(link_options ${link_options} -Wl,--no-warn-rwx-segments)
 set(link_libs)
 
-set(compile_options_cxx -fno-exceptions -fno-unwind-tables -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics)
+set(compile_options_cxx -fno-rtti -fno-exceptions -fno-unwind-tables -fno-use-cxa-atexit -fno-threadsafe-statics)
 
 ## 添加编译选项depends on CORE.
 

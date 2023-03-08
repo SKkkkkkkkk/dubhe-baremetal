@@ -69,5 +69,7 @@ void SystemInit (void)
 {
   SystemCoreClock = SYSTEM_CLOCK;
   __NVIC_SetPriorityGrouping(0);
+  extern void call_init_array();
+  call_init_array();
   return;
 }

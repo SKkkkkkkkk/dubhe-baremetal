@@ -94,6 +94,56 @@ SECTIONS
 	} >DDR
 #endif
 
+     .gcc_except_table  . : ONLY_IF_RO 
+     { 
+         *(.gcc_except_table .gcc_except_table.*) 
+ #if (WHERE_TO_LOAD == ROM)
+     } >_ROM
+ #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+ 	} >RAM
+ #else // DDR
+ 	} >DDR
+ #endif
+
+    .preinit_array . : {
+        . = ALIGN(8);   
+        __preinit_array_start = .;
+        KEEP(*(.preinit_array))
+        __preinit_array_end = .;
+ #if (WHERE_TO_LOAD == ROM)
+     } >_ROM
+ #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+ 	} >RAM
+ #else // DDR
+ 	} >DDR
+ #endif
+
+    .init_array . : {
+        . = ALIGN(8);   
+        __init_array_start = .;
+        KEEP(*(.init_array))
+        __init_array_end = .;
+ #if (WHERE_TO_LOAD == ROM)
+     } >_ROM
+ #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+ 	} >RAM
+ #else // DDR
+ 	} >DDR
+ #endif
+
+    .fini_array . : {
+        . = ALIGN(8);   
+        __fini_array_start = .;
+        KEEP(*(.fini_array))
+        __fini_array_end = .;
+ #if (WHERE_TO_LOAD == ROM)
+     } >_ROM
+ #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+ 	} >RAM
+ #else // DDR
+ 	} >DDR
+ #endif
+
     .rodata . : 
     {
         __RODATA_START__ = .;
