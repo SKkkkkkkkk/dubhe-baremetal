@@ -2314,7 +2314,7 @@ void master_slave_test(void)
 	BOOTSPI->CTRLR0 = ctrl0;
 
     //设置波特率
-    BOOTSPI->BAUDR = 24UL;
+    BOOTSPI->BAUDR = 20UL;
 
     //设置FIFO Threshold
     BOOTSPI->RXFTLR = 0UL;
