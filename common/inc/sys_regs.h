@@ -4,6 +4,11 @@
 #ifndef __SYS_REGS_H__
 #define __SYS_REGS_H__
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+
 #include <stdint.h>
 #include "chip_mem_layout.h"
 
@@ -12146,6 +12151,12 @@ typedef struct {
 #define SYS_ISO        ((volatile sys_iso*       )SYS_ISO_ADDR       )
 #define SYS_VERSION    ((volatile sys_version*   )SYS_VERSION_ADDR   )
 #define SYS_DEBUG      ((volatile sys_debug*     )SYS_DEBUG_ADDR     )
+
+
+#ifdef __cplusplus
+    }
+#endif
+
 
 #endif // __SYS_REGS_H__
 

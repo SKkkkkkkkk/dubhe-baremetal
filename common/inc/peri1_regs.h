@@ -4,6 +4,11 @@
 #ifndef __PERI1_REGS_H__
 #define __PERI1_REGS_H__
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+
 #include <stdint.h>
 #include "chip_mem_layout.h"
 
@@ -1197,6 +1202,12 @@ typedef struct {
 #define PERI1_I2S    ((volatile peri1_i2s*   )PERI1_I2S_ADDR   )
 #define PERI1_DMA    ((volatile peri1_dma*   )PERI1_DMA_ADDR   )
 #define PERI1_MAC    ((volatile peri1_mac*   )PERI1_MAC_ADDR   )
+
+
+#ifdef __cplusplus
+    }
+#endif
+
 
 #endif // __PERI1_REGS_H__
 

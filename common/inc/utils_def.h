@@ -8,6 +8,11 @@
 #ifndef UTILS_DEF_H
 #define UTILS_DEF_H
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+
 #include "_utils_def_exp.h"
 
 /* Compute the number of elements in the given array */
@@ -167,5 +172,11 @@
  * Ticks elapsed in one second with a signal of 1 KHz
  */
 #define KHZ_TICKS_PER_SEC U(1000)
+
+
+#ifdef __cplusplus
+	}
+#endif
+
 
 #endif /* UTILS_DEF_H */

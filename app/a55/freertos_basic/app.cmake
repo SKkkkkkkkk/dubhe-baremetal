@@ -1,7 +1,8 @@
 # 添加app sources
 set(app_src
-	${CMAKE_CURRENT_LIST_DIR}/src/main.c
-	${CMAKE_CURRENT_LIST_DIR}/src/freertos_test.c
+	${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/test.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/freertos_test.cc
 	${CMAKE_CURRENT_LIST_DIR}/src/freertos_port.c
 )
 

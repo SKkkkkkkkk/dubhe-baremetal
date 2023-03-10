@@ -34,6 +34,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 #ifndef IRQHANDLER_T
 #define IRQHANDLER_T
 /// Interrupt handler data type
@@ -196,5 +200,9 @@ uint32_t IRQ_GetPriorityGroupBits (void);
 #endif
 
 #endif  // IRQ_CTRL_H_
+
+#ifdef __cplusplus
+ }
+#endif
 
 #endif

@@ -2,7 +2,7 @@
 #define _CM3_CHIP_DEFINE_H_
 
 #ifdef __cplusplus
-extern C {
+extern "C" {
 #endif
 
 #include <utils_def.h>

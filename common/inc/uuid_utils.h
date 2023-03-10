@@ -7,6 +7,12 @@
 #ifndef __UUID_UTILS_H__
 #define __UUID_UTILS_H__
 
+
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+
 #include <stdint.h>
 #include <uuid.h>
 
@@ -46,5 +52,9 @@ uuid_t *make_uuid_from_4words(uuid_t *uuid,
 			      uint32_t uuid1,
 			      uint32_t uuid2,
 			      uint32_t uuid3);
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif /* __UUID_UTILS_H__ */

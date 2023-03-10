@@ -93,6 +93,8 @@ set(link_options -static -nostartfiles -Wl,--gc-sections -Wl,-Map=${CMAKE_CURREN
 # set(link_options ${link_options} -Wl,--no-warn-rwx-segments)
 set(link_libs)
 
+set(compile_options_cxx -fno-rtti -fno-exceptions -fno-unwind-tables -fno-use-cxa-atexit -fno-threadsafe-statics)
+
 ## 添加编译选项depends on CORE.
 
 ### A55
@@ -103,8 +105,10 @@ if($CACHE{CORE} STREQUAL "A55")
     set(compile_options_arch -mlittle-endian -march=armv8.1-a -DA55)
 
     if($CACHE{STDLIB_SRC} STREQUAL "aarch64_libc")
-        set(compile_options_common ${compile_options_common} -nostdinc -isystem${SDK_DIR}/libs/aarch64_libc/inc -isystem${SDK_DIR}/libs/aarch64_libc/inc/aarch64)
+        set(compile_options_common ${compile_options_common} -Daarch64_libc -nostdinc -isystem${SDK_DIR}/libs/aarch64_libc/inc -isystem${SDK_DIR}/libs/aarch64_libc/inc/aarch64)
         set(link_options ${link_options} -nostdlib)
+    else()
+        set(link_options ${link_options} -Wl,--wrap=memcpy -Wl,--wrap=memmove -Wl,--wrap=memset)
     endif()
 
 ### M3
@@ -210,7 +214,7 @@ endif()
 project($CACHE{PROJECT_NAME}
   VERSION 1.0
   DESCRIPTION "dubhe project."
-  LANGUAGES C ASM
+  LANGUAGES C CXX ASM
 )
 
 ## 每个模块添加一个使能开关，ON的一般是最小系统必须的，凡是不是必须的都默认OFF，如app工程需要，在app.cmake中再开启
@@ -586,6 +590,7 @@ target_compile_options($CACHE{PROJECT_NAME}.elf
         ${compile_options_common}
         ${compile_options_opt}
         ${compile_options_align}
+        $<$<COMPILE_LANGUAGE:CXX>:${compile_options_cxx}>
 )
 
 ### link options

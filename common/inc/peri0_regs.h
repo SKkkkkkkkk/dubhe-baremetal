@@ -4,6 +4,11 @@
 #ifndef __PERI0_REGS_H__
 #define __PERI0_REGS_H__
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+
 #include <stdint.h>
 #include "chip_mem_layout.h"
 
@@ -2605,6 +2610,12 @@ typedef struct {
 #define PERI0_CLK_EN     ((volatile peri0_clk_en*    )PERI0_CLK_EN_ADDR    )
 #define PERI0_REMAP      ((volatile peri0_remap*     )PERI0_REMAP_ADDR     )
 #define PERI0_PINMUX_REG ((volatile peri0_pinmux_reg*)PERI0_PINMUX_REG_ADDR)
+
+
+#ifdef __cplusplus
+    }
+#endif
+
 
 #endif // __PERI0_REGS_H__
 

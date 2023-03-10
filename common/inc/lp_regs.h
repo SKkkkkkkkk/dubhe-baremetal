@@ -4,6 +4,10 @@
 #ifndef __LP_REGS_H__
 #define __LP_REGS_H__
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 #include <stdint.h>
 #include "chip_mem_layout.h"
 
@@ -626,6 +630,12 @@ typedef struct {
 #define LP_CLKEN ((volatile lp_clken*)LP_CLKEN_ADDR)
 #define LP_DMAHS ((volatile lp_dmahs*)LP_DMAHS_ADDR)
 #define LP_CACHE ((volatile lp_cache*)LP_CACHE_ADDR)
+
+
+#ifdef __cplusplus
+    }
+#endif
+
 
 #endif // __LP_REGS_H__
 

@@ -59,6 +59,7 @@ void config_mmu(void)
 	tt_l1[2] = TT_S1_NORMAL_WBWA | TT_S1_OUTER_SHARED | 0x80000000; // [0x80000000, 0xC0000000) // NORMAL_WBWA, INNER_SHARED, RW
 	tt_l1[3] = TT_S1_NORMAL_WBWA | TT_S1_OUTER_SHARED | 0xC0000000; // [0xC0000000, 0x100000000) // NORMAL_WBWA, INNER_SHARED, RW
 
+#ifndef QEMU
 	// L2 Table, 2M细粒度
 	tt_l2[0] = TT_S1_TABLE | (uint64_t)&tt_l3_1; // [0, 0x20_0000)  table entry => tt_l3_1
 	tt_l2[256] = TT_S1_TABLE | (uint64_t)&tt_l3_2; // [0x2000_0000, 0x2020_0000) table entry => tt_l3_2
@@ -72,13 +73,26 @@ void config_mmu(void)
 
 	for(uint8_t i = 0; i<64 ; i++) // 256KB SYSRAM, NORMAL_WBWA INNER_SHARED RW
 		tt_l3_2[i] = 3 | TT_S1_NORMAL_WBWA | TT_S1_OUTER_SHARED | (i*4096 + 0x20000000);
+#else // QEMU
+	for(uint16_t i = 0;i<64;i++) // flash
+		tt_l2[i] =  TT_S1_NORMAL_WBWA | TT_S1_OUTER_SHARED | TT_S1_PRIV_RO | (i*2*1024*1024);
 
+	for(uint16_t i = 64;i<112;i++) // devices
+		tt_l2[i] =  TT_S1_DEVICE_nGnRnE | (i*2*1024*1024);
+
+	for(uint16_t i = 112;i<120;i++) // secure_ram
+		tt_l2[i] =  TT_S1_NORMAL_WBWA | TT_S1_OUTER_SHARED | (i*2*1024*1024);
+
+	for(uint16_t i = 128;i<512;i++) // devices
+		tt_l2[i] =  TT_S1_DEVICE_nGnRnE | (i*2*1024*1024);
+#endif
 
 	dsbsy();
 
 	// enable i/d cache & mmu.
 	uint64_t sctlr_el3 = read_sctlr_el3();
-	sctlr_el3 |= (1<<0) | (1<<2) | (1<<12); 
+	sctlr_el3 |= (1<<0) | (1<<2) | (1<<12);
+	sctlr_el3 &= ~(1<<1);
 	write_sctlr_el3(sctlr_el3);
 	isb();
 }

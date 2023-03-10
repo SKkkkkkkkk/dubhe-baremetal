@@ -35,3 +35,10 @@ if($CACHE{OS} STREQUAL "FreeRTOS")
 			freertos_kernel
 	)
 endif()
+
+if($CACHE{CORE} STREQUAL "A55")
+	target_link_libraries(${LIB_OBJS_NAME}
+		PRIVATE
+			a55
+	)
+endif()

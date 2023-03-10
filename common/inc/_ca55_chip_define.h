@@ -1,7 +1,7 @@
 #ifndef _CA55_CHIP_DEFINE_H_
 #define _CA55_CHIP_DEFINE_H_
 #ifdef __cplusplus
-extern C {
+extern "C" {
 #endif
 
 #include <utils_def.h>
