@@ -386,9 +386,9 @@ int main()
     set_gpio_wakeup();
     // clear_ddr();
 
-	pm_ops.pm_to_poweroff = pmu_enter_poweroff;
-    // pm_ops.pm_to_sleep  = pmu_enter_suspend;
-    // pm_ops.pm_to_resume = pmu_enter_resume;
+	// pm_ops.pm_to_poweroff = pmu_enter_poweroff;
+	pm_ops.pm_to_sleep  = pmu_enter_suspend;
+	pm_ops.pm_to_resume = pmu_enter_resume;
 
     if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
                           &xTaskBuffer) == NULL)
