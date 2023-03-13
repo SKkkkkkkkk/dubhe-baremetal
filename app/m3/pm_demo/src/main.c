@@ -13,6 +13,7 @@
 #include "pinmux.h"
 #include "pmu.h"
 #include "i2c_wo.h"
+#include "main.h"
 
 #define TEST_SLEEP           0
 #define TEST_STANDBY         1
@@ -71,7 +72,7 @@ __ramfunc void irq_handler0(void)
 void irq_handler1(void)
 {
     count++;
-    printf("hello world in irq 1. %d\n", count);
+	MAIN_LOGD("hello world in irq 1. %d\n", count);
     return;
 }
 
@@ -83,7 +84,7 @@ void irq_handler_gpio(void)
 
     if (intstatus & (1 << KEY_EINT_PIN_NUM)) {
         gpio_clear_interrput(KEY_EINT_PIN_GROUP, KEY_EINT_PIN_NUM);
-        printf("gpio in irq 79. %d intstatus 0x%lx\n", count, intstatus);
+		MAIN_LOGD("gpio in irq 79. %d intstatus 0x%lx\n", count, intstatus);
     } else {
         printf("irq is not 79 intstatus 0x%lx\n", intstatus);
     }
@@ -103,13 +104,13 @@ void hardware_init_hook(void)
 
 static int pm_suspend(struct soc_device *dev, enum suspend_state_t state)
 {
-    printf("--> %s.\n", __func__);
+	MAIN_LOGD("--> %s.\n", __func__);
     return 0;
 }
 
 static int pm_resume(struct soc_device *dev, enum suspend_state_t state)
 {
-    printf("--> %s.\n", __func__);
+	MAIN_LOGD("--> %s.\n", __func__);
     return 0;
 }
 
@@ -129,13 +130,13 @@ static struct soc_device pm_dev = {
 
 static int pm_suspend_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
-    printf("--> %s.\n", __func__);
+	MAIN_LOGD("--> %s.\n", __func__);
     return 0;
 }
 
 static int pm_resume_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
-    printf("--> %s.\n", __func__);
+	MAIN_LOGD("--> %s.\n", __func__);
     return 0;
 }
 
@@ -316,7 +317,7 @@ void set_power_off_seq(void)
 
 int pmu_enter_suspend(void)
 {
-    printf("pmu_enter_suspend enter\n");
+    MAIN_LOGD("pmu_enter_suspend enter\n");
     set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
     set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
 
@@ -328,7 +329,7 @@ int pmu_enter_suspend(void)
 
 int pmu_enter_resume(void)
 {
-    printf("pmu_enter_resume enter\n");
+    MAIN_LOGD("pmu_enter_resume enter\n");
     set_pmu_wakeup_clear(1, 0x2);
     set_pmu_wakeup_clear(3, 0x2);
 
@@ -338,7 +339,7 @@ int pmu_enter_resume(void)
 
 int pmu_enter_poweroff(void)
 {
-    printf("pmu_enter_poweroff enter\n");
+    MAIN_LOGD("pmu_enter_poweroff enter\n");
     set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
     set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
 
@@ -350,7 +351,7 @@ int pmu_enter_poweroff(void)
 
 int main()
 {
-    printf("test %s ...\n", __FILE__);
+	MAIN_LOGD("test %s ...\n", __FILE__);
 
 	extern char __ram_start, __RAM_DATA_LMA_START__;
 	extern char __RAM_DATA_SIZE__;
@@ -395,7 +396,7 @@ int main()
         while (1)
             ;
 
-    if (xTaskCreate(task2, "task2", 512, NULL, 1, NULL) != pdPASS)
+    if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
         while (1)
             ;
     vTaskStartScheduler();

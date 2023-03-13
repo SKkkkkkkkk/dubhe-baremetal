@@ -9,6 +9,7 @@
 #include "m3.h"
 #include "pm.h"
 #include "mailbox.h"
+#include "main.h"
 
 enum {
     TEST_SLEEP = 1,
@@ -61,9 +62,9 @@ static inline void a55_to_m3_irq_handler(void)
 
             pm_mode = a55_to_m3_data & (DEFAULT_MAILBOX_MASK >> 16);
             single_to_m3_suspend();
-			seehi_mailbox_lock(DEFAULT_MAILBOX_LOCKCH);
+            seehi_mailbox_lock(DEFAULT_MAILBOX_LOCKCH);
             b2a_send(DEFAULT_MAILBOX_CH, A55_TO_M3_SUSPEND, A55_TO_M3_RESPOND);
-			seehi_mailbox_unlock(DEFAULT_MAILBOX_LOCKCH);
+            seehi_mailbox_unlock(DEFAULT_MAILBOX_LOCKCH);
         } else {
             printf("pm modes param is err!!!\n");
         }
@@ -109,35 +110,35 @@ void task1(void *arg)
     printf("task1\n");
     while (1) {
         if (xSemaphoreTake(pmSemaphore, portMAX_DELAY)) {
-            printf("\nPM example start!\n");
-            printf("Support 3 low power modes: sleep/standby/hibernation\n");
+            MAIN_LOGD("\nPM example start!\n");
+            MAIN_LOGD("Support 3 low power modes: sleep/standby/hibernation\n");
 
             if (pm_mode == TEST_SLEEP) {
                 /*enetr sleep test*/
-                printf(
+                MAIN_LOGD(
                     "Enter sleep mode, setup wakeup source irq&timer&button\n");
                 /* 唤醒源配置初始化 */
 
                 pm_enter_mode(PM_MODE_SLEEP);
-                printf("Exit sleep mode\n\n");
+                MAIN_LOGD("Exit sleep mode\n\n");
                 /* 唤醒源配置关闭 */
             } else if (pm_mode == TEST_STANDBY) {
                 /*enetr sleep test*/
-                printf("Enter standby mode, setup wakeup source "
+                MAIN_LOGD("Enter standby mode, setup wakeup source "
                        "irq&timer&button\n");
                 /* 唤醒源配置初始化 */
 
                 pm_enter_mode(PM_MODE_STANDBY);
-                printf("Exit standby mode\n\n");
+                MAIN_LOGD("Exit standby mode\n\n");
                 /* 唤醒源配置关闭 */
             } else if (pm_mode == TEST_HIBERNATION) {
                 /*enetr sleep test*/
-                printf("Enter hibernation mode, setup wakeup source "
+                MAIN_LOGD("Enter hibernation mode, setup wakeup source "
                        "irq&timer&button\n");
                 /* 唤醒源配置初始化 */
 
                 pm_enter_mode(PM_MODE_HIBERNATION);
-                printf("Exit hibernation mode\n\n");
+                MAIN_LOGD("Exit hibernation mode\n\n");
                 /* 唤醒源配置关闭 */
             } else {
                 printf("pm_mode err!!!\n");
@@ -151,11 +152,9 @@ void task1(void *arg)
 
 void task2(void *arg)
 {
-    /* int32_t test_count = 0; */
-
     printf("task2\n");
     while (1) {
-        // single_func();
-        vTaskDelay(100);
+        vTaskDelay(1000);
+		// single_to_m3_suspend();
     }
 }
