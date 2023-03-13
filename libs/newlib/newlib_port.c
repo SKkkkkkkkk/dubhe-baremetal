@@ -158,8 +158,8 @@ void *_sbrk(int incr) {
 		while(1);
 	}
 	heap += incr;
-	if((uintptr_t)heap&7)
-		_write(1, "Heap is not Aligned!\n\r", 22);
+	// if((uintptr_t)heap&7)
+		// _write(1, "Heap is not Aligned!\n\r", 22);
 	return prev_heap;
 }
 
