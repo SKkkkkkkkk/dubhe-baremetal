@@ -3,14 +3,14 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "complex.hh"
-#include <iostream> // do not use!
-using namespace std;
+// #include <iostream> // do not use!
+// using namespace std;
 
-// extern "C" // C++ call C
-// {
+extern "C" // C++ call C
+{
 	void task1(void* arg);
 	void task2(void* arg);
-// }
+}
 
 
 extern "C" void call_init_array();
@@ -21,10 +21,10 @@ int main()
 
 	printf("hello world.\n\r");
 
-	if (xTaskCreate(task1, "task1", configMINIMAL_STACK_SIZE*4, NULL, 1, NULL) != pdPASS)
+	if (xTaskCreate(task1, "task1", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
 	while (1)
 		;
-	if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE*4, NULL, 1, NULL) != pdPASS)
+	if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
 		while (1)
 			;
 	vTaskStartScheduler();
