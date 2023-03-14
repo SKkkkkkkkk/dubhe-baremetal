@@ -604,7 +604,10 @@ target_link_options($CACHE{PROJECT_NAME}.elf
 ### link libs
 
 target_link_libraries($CACHE{PROJECT_NAME}.elf
-    PRIVATE -Wl,--start-group ${link_libs} -Wl,--end-group linkerscript
+    PRIVATE 
+        linkerscript
+        -Wl,--start-group ${link_libs} -Wl,--end-group
+        -Wl,--start-group ${app_libs} -Wl,--end-group
 )
 
 # Cumtom targets
