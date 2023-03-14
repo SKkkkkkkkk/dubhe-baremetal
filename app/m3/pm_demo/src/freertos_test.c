@@ -35,7 +35,14 @@ enum {
 static SemaphoreHandle_t pmSemaphore;
 static int32_t           pm_mode = TEST_SLEEP;
 
-void single_to_m3_suspend(void) { xSemaphoreGive(pmSemaphore); }
+void single_to_m3_suspend(void)
+{
+    static signed long xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+
+    xSemaphoreGiveFromISR(pmSemaphore, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
 
 static inline void seehi_mailbox_lock(uint32_t ch)
 {
@@ -63,6 +70,8 @@ static inline void a55_to_m3_irq_handler(void)
             pm_mode = a55_to_m3_data & (DEFAULT_MAILBOX_MASK >> 16);
             single_to_m3_suspend();
             seehi_mailbox_lock(DEFAULT_MAILBOX_LOCKCH);
+            printf("A55_TO_M3_SUSPEND, A55_TO_M3_ACK a55_to_m3_data 0x%x \n",
+                   (int) a55_to_m3_data);
             b2a_send(DEFAULT_MAILBOX_CH, A55_TO_M3_SUSPEND, A55_TO_M3_RESPOND);
             seehi_mailbox_unlock(DEFAULT_MAILBOX_LOCKCH);
         } else {
@@ -84,8 +93,9 @@ void mailbox_irq_handler(void)
 {
     uint32_t status;
     status = MAILBOX_A2B->a2b_status;
-    if (status & (0x1 < DEFAULT_MAILBOX_CH)) {              // ch0
-        MAILBOX_A2B->a2b_status = 0x1 < DEFAULT_MAILBOX_CH; // clear irq
+    if ((status & (0x1 < DEFAULT_MAILBOX_CH)) ==
+        (0x1 < DEFAULT_MAILBOX_CH)) {     // ch0
+        MAILBOX_A2B->a2b_status = status; // clear irq
         a55_to_m3_irq_handler();
     } else {
     }
@@ -97,7 +107,7 @@ static inline void b2a_init()
     MAILBOX_B2A->b2a_status =
         0x0f; // Clear the interrupt by writing 1 to this bit.
 
-    NVIC_SetPriority(Mailbox_IRQn, 0);
+    NVIC_SetPriority(Mailbox_IRQn, 0x4);
     NVIC_SetVector(Mailbox_IRQn, (uint32_t) mailbox_irq_handler);
     NVIC_EnableIRQ(Mailbox_IRQn);
 }
@@ -107,7 +117,9 @@ void task1(void *arg)
     pmSemaphore = xSemaphoreCreateBinary();
     pm_set_test_level(TEST_NONE); // none mode
 
-    printf("task1\n");
+    b2a_init();
+
+    MAIN_LOGD("task1 wait pmSemaphore\n");
     while (1) {
         if (xSemaphoreTake(pmSemaphore, portMAX_DELAY)) {
             MAIN_LOGD("\nPM example start!\n");
@@ -125,7 +137,7 @@ void task1(void *arg)
             } else if (pm_mode == TEST_STANDBY) {
                 /*enetr sleep test*/
                 MAIN_LOGD("Enter standby mode, setup wakeup source "
-                       "irq&timer&button\n");
+                          "irq&timer&button\n");
                 /* 唤醒源配置初始化 */
 
                 pm_enter_mode(PM_MODE_STANDBY);
@@ -134,7 +146,7 @@ void task1(void *arg)
             } else if (pm_mode == TEST_HIBERNATION) {
                 /*enetr sleep test*/
                 MAIN_LOGD("Enter hibernation mode, setup wakeup source "
-                       "irq&timer&button\n");
+                          "irq&timer&button\n");
                 /* 唤醒源配置初始化 */
 
                 pm_enter_mode(PM_MODE_HIBERNATION);
@@ -152,9 +164,9 @@ void task1(void *arg)
 
 void task2(void *arg)
 {
-    printf("task2\n");
+    MAIN_LOGD("task2 idle\n");
     while (1) {
         vTaskDelay(1000);
-		// single_to_m3_suspend();
+        // single_to_m3_suspend();
     }
 }
