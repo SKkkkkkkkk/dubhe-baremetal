@@ -398,7 +398,15 @@ static void __suspend_enter(enum suspend_state_t state)
         /* TODO: set system bus to low freq */
         /* 调用汇编代码实现 */
         /* __cpu_sleep(state); */
+
+        if (pm_ops.pm_to_sleep != NULL)
+            pm_ops.pm_to_sleep();
+
         cpu_sleep();
+
+        if (pm_ops.pm_to_resume != NULL)
+            pm_ops.pm_to_resume();
+
         /* 配置标识表明唤醒之前的状态 */
         /* TODO: restore system bus to normal freq */
         PM_LOGN("PM_MODE_SLEEP  exit\n"); /* debug info. */
@@ -420,6 +428,7 @@ static void __suspend_enter(enum suspend_state_t state)
 
         if (pm_ops.pm_to_resume != NULL)
             pm_ops.pm_to_resume();
+
         /* 配置标识表明唤醒之前的状态 */
         PM_LOGN("PM_MODE_STANDBY  exit\n"); /* debug info. */
     }
