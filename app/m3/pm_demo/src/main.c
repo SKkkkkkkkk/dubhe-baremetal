@@ -337,6 +337,14 @@ int pmu_enter_resume(void)
     return 0;
 }
 
+int pmu_enter_resume_core0(void)
+{
+    MAIN_LOGD("pmu_enter_resume_core0 enter\n");
+	global_set_power_on_a55(AP, OP4);
+	global_set_power_on_a55(CORE0, OP4);
+	return 0;
+}
+
 int pmu_enter_poweroff(void)
 {
     MAIN_LOGD("pmu_enter_poweroff enter\n");
@@ -388,8 +396,8 @@ int main()
     // clear_ddr();
 
 	// pm_ops.pm_to_poweroff = pmu_enter_poweroff;
-	pm_ops.pm_to_sleep  = pmu_enter_suspend;
-	pm_ops.pm_to_resume = pmu_enter_resume;
+	// pm_ops.pm_to_sleep  = pmu_enter_suspend;
+	pm_ops.pm_to_resume = pmu_enter_resume_core0;
 
     if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
                           &xTaskBuffer) == NULL)
