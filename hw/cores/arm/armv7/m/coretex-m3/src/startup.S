@@ -131,8 +131,9 @@ Reset_Handler:
 .L_loop2_done:
                 bl       SystemInit
                 bl       main
-                b .
-
+dead:
+                wfi
+                b dead
                 @ .fnend
                 .size    Reset_Handler, . - Reset_Handler
 

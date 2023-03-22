@@ -140,6 +140,7 @@ data_init_end:
 	bl call_init_array
 	bl main
 dead:
+	wfi
 	b	dead
 endfunc entrypoint
 
