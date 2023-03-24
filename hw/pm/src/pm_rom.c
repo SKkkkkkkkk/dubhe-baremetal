@@ -97,7 +97,7 @@ int ktime_get(void)
         if (time_id == SYSTIMER_ERR_ID) return -1;
     }
 
-    if (time_id) return (systimer_get_elapsed_time(time_id, IN_MS));
+    if (time_id != SYSTIMER_ERR_ID) return (systimer_get_elapsed_time(time_id, IN_MS));
 
     return -1;
 }
@@ -112,8 +112,8 @@ void suspend_test_finish(const char *label)
     msec = ktime_to_msecs(abs(nj));
     PM_LOGN("%s took %d ms\n", label, msec);
 
-    if (time_id) systimer_release_timer(time_id);
-    time_id = SYSTIMER_ERR_ID;
+    // if (time_id) systimer_release_timer(time_id);
+    // time_id = SYSTIMER_ERR_ID;
 }
 
 int suspend_test(int level)
@@ -210,7 +210,7 @@ int dpm_suspend_noirq(enum suspend_state_t state)
 {
     int                wakeup;
     struct soc_device *dev       = NULL;
-    ktime_t            starttime = ktime_get();
+	ktime_t            starttime = ktime_get();
     int                error     = 0;
 
     while (!list_empty(&dpm_late_early_list)) {
@@ -312,7 +312,7 @@ int dpm_suspend(enum suspend_state_t state)
 void dpm_resume_noirq(enum suspend_state_t state)
 {
     struct soc_device *dev;
-    ktime_t            starttime = ktime_get();
+    // ktime_t            starttime = ktime_get();
     int                error;
 
     while (!list_empty(&dpm_noirq_list)) {
@@ -332,7 +332,8 @@ void dpm_resume_noirq(enum suspend_state_t state)
         }
         put_device(dev);
     }
-    dpm_show_time(starttime, state, "noirq");
+
+    // dpm_show_time(starttime, state, "noirq");
 }
 
 /**
@@ -345,7 +346,7 @@ void dpm_resume_noirq(enum suspend_state_t state)
 void dpm_resume(enum suspend_state_t state)
 {
     struct soc_device *dev;
-    ktime_t            starttime = ktime_get();
+    // ktime_t            starttime = ktime_get();
     int                error;
 
     while (!list_empty(&dpm_suspended_list)) {
@@ -365,7 +366,7 @@ void dpm_resume(enum suspend_state_t state)
         }
         put_device(dev);
     }
-    dpm_show_time(starttime, state, "resume");
+    // dpm_show_time(starttime, state, "resume");
 }
 
 /**
@@ -427,7 +428,7 @@ static int suspend_enter(enum suspend_state_t state)
     PM_LOGD("suspend core\n");
     if (!(suspend_test(TEST_CORE) || wakeup)) {
         __record_dbg_status(PM_SUSPEND_ENTER | 3);
-        printf("suspend_ops.enter(state);\n");
+        PM_LOGD("suspend_ops.enter(state);\n");
         suspend_ops.enter(state);
         __record_dbg_status(PM_SUSPEND_ENTER | 4);
     }

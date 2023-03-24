@@ -52,7 +52,7 @@ static uint32_t _pm_tmo = OS_WAIT_FOREVER;
 
 static int __suspend_begin(enum suspend_state_t state)
 {
-    PM_LOGD("--> %s line %d\n", __func__, __LINE__);
+    PM_LOGD("%s line %d\n", __func__, __LINE__);
     /* set SEVONPEND flag */
     SCB->SCR = 0x10;
 
@@ -368,7 +368,7 @@ __ramfunc static void cpu_suspend(void)
 static void __suspend_enter(enum suspend_state_t state)
 {
 
-    PM_LOGD("--> %s line %d\n", __func__, __LINE__);
+    PM_LOGD("%s line %d\n", __func__, __LINE__);
     /* 写到无复位寄存器表明最终的位置 */
     __record_dbg_status(PM_SUSPEND_ENTER | 5);
 
@@ -441,7 +441,7 @@ static void __suspend_enter(enum suspend_state_t state)
 
 static void __suspend_end(enum suspend_state_t state)
 {
-    PM_LOGD("--> %s line %d\n", __func__, __LINE__);
+    PM_LOGD("%s line %d\n", __func__, __LINE__);
     /* clear SEVONPEND flag */
     SCB->SCR = 0x0;
 }
