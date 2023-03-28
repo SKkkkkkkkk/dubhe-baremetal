@@ -20,7 +20,7 @@ int count = 0;
 #define WAKEUP_PIN_GROUP	(WAKEUP_PIN / 32)
 #define WAKEUP_PIN_NUM		(WAKEUP_PIN % 32)
 #define DEBUG_REGS			(0x4e000ee0)
-#define DEBUG_REGS_RST		(0x4e000ff0)
+#define DEBUG_REGS_RST		(0x4e000ee4)
 #define DUMP_LOG(x)			(REG32(DEBUG_REGS) = (0x1UL << (x)) | REG32(DEBUG_REGS))
 
 void set_power_off_m3(uint8_t pid)
@@ -431,6 +431,8 @@ int main (void)
 		DUMP_LOG(0);
 		// systimer_delay(1, IN_S);
 #if PMIC_WAKEUP
+		i2c_wo_appower_enable(0);
+		pmic_clear_irq_wo(1);
 		pmic_to_sleep_delay(500);
 		i2c_wo_start();
 		rtc_init();

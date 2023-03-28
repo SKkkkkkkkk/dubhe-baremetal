@@ -345,7 +345,7 @@ int main (void)
 
 	set_pmu_reg(PMU,PMU_IMR_PMU_WAKEUP_5_MASK_ADDR,(0x1f<<PMU_ISR_PMIC_PWR_GOOD_LSB));
 
-	// printf("core0 0x2e000ff0 = 0x%x\n", REG32(0x2e000ff0));
+	printf("core0 0x2e000ff0 = 0x%x\n", REG32(0x2e000ff0));
 	if( REG32(0x2e000ff0) == 0){
 		printf("core0 is cold boot\n");
 
@@ -448,7 +448,7 @@ int main (void)
 		systimer_delay(100, IN_MS);
         wakeup_core(1, core1_c_entry); //core1 enter to WFI
 		systimer_delay(100, IN_MS);
-		set_power_off_a55(DDR0);
+		// set_power_off_a55(DDR0);
 		// set_power_off_seq();
         // seehi_cmd(0xff000000);
 #if GIC_INTREFACE

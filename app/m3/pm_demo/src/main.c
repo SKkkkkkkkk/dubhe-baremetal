@@ -84,9 +84,9 @@ void irq_handler_gpio(void)
 
     if (intstatus & (1 << KEY_EINT_PIN_NUM)) {
         gpio_clear_interrput(KEY_EINT_PIN_GROUP, KEY_EINT_PIN_NUM);
-		MAIN_LOGD("gpio in irq 79. %d intstatus 0x%lx\n", count, intstatus);
+		MAIN_LOGD("gpio irq 79. %d intstatus 0x%lx\n", count, intstatus);
     } else {
-        printf("irq is not 79 intstatus 0x%lx\n", intstatus);
+        printf("gpio irq 79 intstatus 0x%lx\n", intstatus);
     }
 
     return;

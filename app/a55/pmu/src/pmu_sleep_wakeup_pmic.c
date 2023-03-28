@@ -705,6 +705,7 @@ int main(void)
 		GIC_DisableInterface();
 #endif
 #if PMIC_WAKEUP
+		i2c_wo_appower_enable(0);
 		pmic_to_sleep_delay(500);
 		i2c_wo_start();
 		rtc_init();
