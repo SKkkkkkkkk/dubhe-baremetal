@@ -21,10 +21,3 @@ target_compile_options(${LIB_OBJS_NAME}
 		${compile_options_opt}
 		${compile_options_align}
 )
-
-if($CACHE{CORE} STREQUAL "A55")
-	target_link_libraries(${LIB_OBJS_NAME}
-		PUBLIC
-			aarch64_libc
-	)
-endif()
