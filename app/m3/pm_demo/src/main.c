@@ -92,6 +92,18 @@ void irq_handler_gpio(void)
     return;
 }
 
+void irq_handler_rtc(void)
+{
+    uint32_t intstatus = REG32(RTC_BASE + 0x200);
+
+    REG32(RTC_BASE + 0x200) = 0;
+    printf("rtc irq status 0x%lx\r\n", intstatus);
+    count++;
+
+    return;
+}
+
+
 void hardware_init_hook(void)
 {
     /* 时钟相关 */
@@ -344,6 +356,7 @@ int pmu_enter_resume(void)
 
     global_set_power_on_a55(AP, OP4);
     global_set_power_on_a55(CORE0, OP4);
+
     return 0;
 }
 
@@ -402,6 +415,9 @@ int main()
 
     NVIC_SetVector(GPIO0_IRQn, (uintptr_t) irq_handler_gpio);
     NVIC_EnableIRQ(GPIO0_IRQn);
+
+    NVIC_SetVector(RTC_IRQn, (uintptr_t) irq_handler_rtc);
+    NVIC_EnableIRQ(RTC_IRQn);
 
     hardware_init_hook();
 
