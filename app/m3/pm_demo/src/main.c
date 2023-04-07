@@ -72,7 +72,7 @@ __ramfunc void irq_handler0(void)
 void irq_handler1(void)
 {
     count++;
-	MAIN_LOGD("hello world in irq 1. %d\n", count);
+    MAIN_LOGD("hello world in irq 1. %d\n", count);
     return;
 }
 
@@ -84,13 +84,25 @@ void irq_handler_gpio(void)
 
     if (intstatus & (1 << KEY_EINT_PIN_NUM)) {
         gpio_clear_interrput(KEY_EINT_PIN_GROUP, KEY_EINT_PIN_NUM);
-		MAIN_LOGD("gpio in irq 79. %d intstatus 0x%lx\n", count, intstatus);
+        MAIN_LOGD("gpio irq 79. %d intstatus 0x%lx\n", count, intstatus);
     } else {
-        printf("irq is not 79 intstatus 0x%lx\n", intstatus);
+        printf("gpio irq 79 intstatus 0x%lx\n", intstatus);
     }
 
     return;
 }
+
+void irq_handler_rtc(void)
+{
+    uint32_t intstatus = REG32(RTC_BASE + 0x200);
+
+    REG32(RTC_BASE + 0x200) = 0;
+    printf("rtc irq status 0x%lx\r\n", intstatus);
+    count++;
+
+    return;
+}
+
 
 void hardware_init_hook(void)
 {
@@ -104,13 +116,13 @@ void hardware_init_hook(void)
 
 static int pm_suspend(struct soc_device *dev, enum suspend_state_t state)
 {
-	MAIN_LOGD("--> %s.\n", __func__);
+    MAIN_LOGD("seehi--> %s.\n", __func__);
     return 0;
 }
 
 static int pm_resume(struct soc_device *dev, enum suspend_state_t state)
 {
-	MAIN_LOGD("--> %s.\n", __func__);
+    MAIN_LOGD("seehi--> %s.\n", __func__);
     return 0;
 }
 
@@ -130,13 +142,13 @@ static struct soc_device pm_dev = {
 
 static int pm_suspend_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
-	MAIN_LOGD("--> %s.\n", __func__);
+    MAIN_LOGD("seehi--> %s.\n", __func__);
     return 0;
 }
 
 static int pm_resume_noirq(struct soc_device *dev, enum suspend_state_t state)
 {
-	MAIN_LOGD("--> %s.\n", __func__);
+    MAIN_LOGD("seehi--> %s.\n", __func__);
     return 0;
 }
 
@@ -317,37 +329,57 @@ void set_power_off_seq(void)
 
 int pmu_enter_suspend(void)
 {
-    MAIN_LOGD("pmu_enter_suspend enter\n");
+    MAIN_LOGD("%s enter\n", __func__);
     set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
     set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
 
     set_power_off_seq();
+
+	i2c_wo_appower_enable(0);
     pmic_to_sleep_delay(500);
+
+    timer_disable(Timerx2_T1);
 
     return 0;
 }
 
 int pmu_enter_resume(void)
 {
-    MAIN_LOGD("pmu_enter_resume enter\n");
+    MAIN_LOGD("%s enter\n", __func__);
     set_pmu_wakeup_clear(1, 0x2);
     set_pmu_wakeup_clear(3, 0x2);
 
+	i2c_wo_appower_enable(0);
     pmic_clear_irq_wo(1);
+
+    timer_enable(Timerx2_T1);
+
+    global_set_power_on_a55(AP, OP4);
+    global_set_power_on_a55(CORE0, OP4);
+
+    return 0;
+}
+
+int pmu_enter_suspend_core0(void)
+{
+    MAIN_LOGD("%s enter\n", __func__);
+    timer_disable(Timerx2_T1);
     return 0;
 }
 
 int pmu_enter_resume_core0(void)
 {
-    MAIN_LOGD("pmu_enter_resume_core0 enter\n");
-	global_set_power_on_a55(AP, OP4);
-	global_set_power_on_a55(CORE0, OP4);
-	return 0;
+    MAIN_LOGD("%s enter\n", __func__);
+    timer_enable(Timerx2_T1);
+
+    global_set_power_on_a55(AP, OP4);
+    global_set_power_on_a55(CORE0, OP4);
+    return 0;
 }
 
 int pmu_enter_poweroff(void)
 {
-    MAIN_LOGD("pmu_enter_poweroff enter\n");
+    MAIN_LOGD("%s enter\n", __func__);
     set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
     set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
 
@@ -359,12 +391,12 @@ int pmu_enter_poweroff(void)
 
 int main()
 {
-	MAIN_LOGD("test %s ...\n", __FILE__);
+    MAIN_LOGD("test %s ...\n", __FILE__);
 
-	extern char __ram_start, __RAM_DATA_LMA_START__;
-	extern char __RAM_DATA_SIZE__;
-    int        size = (uint32_t) &__RAM_DATA_SIZE__;
-	memcpy(&__ram_start, &__RAM_DATA_LMA_START__, size);
+    extern char __ram_start, __RAM_DATA_LMA_START__;
+    extern char __RAM_DATA_SIZE__;
+    int         size = (uint32_t) &__RAM_DATA_SIZE__;
+    memcpy(&__ram_start, &__RAM_DATA_LMA_START__, size);
 
     memcpy(__VECTOR_TABLE_IN_SRAM, __VECTOR_TABLE,
            sizeof(__VECTOR_TABLE_IN_SRAM));
@@ -384,6 +416,9 @@ int main()
     NVIC_SetVector(GPIO0_IRQn, (uintptr_t) irq_handler_gpio);
     NVIC_EnableIRQ(GPIO0_IRQn);
 
+    NVIC_SetVector(RTC_IRQn, (uintptr_t) irq_handler_rtc);
+    NVIC_EnableIRQ(RTC_IRQn);
+
     hardware_init_hook();
 
     pm_register_ops(PM_DEV);
@@ -395,16 +430,18 @@ int main()
     set_gpio_wakeup();
     // clear_ddr();
 
-	// pm_ops.pm_to_poweroff = pmu_enter_poweroff;
-	// pm_ops.pm_to_sleep  = pmu_enter_suspend;
-	pm_ops.pm_to_resume = pmu_enter_resume_core0;
+    // pm_ops.pm_to_poweroff = pmu_enter_poweroff;
+    // pm_ops.pm_to_sleep  = pmu_enter_suspend;
+    pm_ops.pm_to_sleep  = pmu_enter_suspend_core0;
+    pm_ops.pm_to_resume = pmu_enter_resume_core0;
 
     if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
                           &xTaskBuffer) == NULL)
         while (1)
             ;
 
-    if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) != pdPASS)
+    if (xTaskCreate(task2, "task2", configMINIMAL_STACK_SIZE, NULL, 1, NULL) !=
+        pdPASS)
         while (1)
             ;
     vTaskStartScheduler();
