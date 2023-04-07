@@ -32,6 +32,8 @@ app/cv32e40p/hello/build.sh
 
 - **CORE**:A55, M3, CV32E40P.
 
+- **PRIMARY_CORE**: 0, 1, 2, 3.
+
 - **OS**:NO_SYS, FreeRTOS.
 
 - **BOARD**:RTL, QEMU, FPGA, EVB.
@@ -43,9 +45,9 @@ app/cv32e40p/hello/build.sh
 # Tips
 
 1. ccmake可以在显示和修改工程配置信息(cmake-gui也可以)
-   
+
    1. cmake -S ../../../ -B build -DPROJECT_NAME=hello -DPROJECT_PATH=. -DCORE=A55 -DBOARD=FPGA -DBUILD_TYPE=Debug -DWHERE_TO_LOAD=ALL_IN_DDR
-   
+
    2. ccmake build![](docs/imgs/ccmake.png)
 
 2. 添加新模块请阅读 docs/how_to_create_new_module.md.
