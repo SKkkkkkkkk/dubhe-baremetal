@@ -3,10 +3,11 @@
 
 	.globl entrypoint
 func entrypoint
-	mov x0, 0
+	mov x0, #PRIMARY_CORE
 	mov x19, x0 // x19 save the primary core id.
 
 	mov	x1, #(SCTLR_I_BIT | SCTLR_A_BIT | SCTLR_SA_BIT)
+	// mov	x1, #(SCTLR_I_BIT | SCTLR_SA_BIT)
 	asm_read_sctlr_elx
 	orr	x0, x0, x1
 	asm_write_sctlr_elx x1
