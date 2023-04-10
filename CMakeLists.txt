@@ -23,6 +23,10 @@ endif()
 
 set(CORE "A55" CACHE STRING "Core: A55, M3, CV32E40P.")
 
+# 选择Primary Core
+
+set(PRIMARY_CORE "0" CACHE STRING "Primary Core: 0, 1, 2, 3.")
+
 # 选择borad
 
 set(BOARD "QEMU" CACHE STRING "Board: RTL, QEMU, FPGA, EVB")
@@ -103,6 +107,8 @@ if($CACHE{CORE} STREQUAL "A55")
     set(STDLIB_SRC "newlib" CACHE STRING "STDLIB_SRC: newlib, aarch64_libc.")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/aarch64gcc.cmake)
     set(compile_options_arch -mlittle-endian -march=armv8.1-a -DA55)
+
+    set(compile_options_common ${compile_options_common} -DPRIMARY_CORE=$CACHE{PRIMARY_CORE})
 
     if($CACHE{STDLIB_SRC} STREQUAL "aarch64_libc")
         set(compile_options_common ${compile_options_common} -Daarch64_libc -nostdinc -isystem${SDK_DIR}/libs/aarch64_libc/inc -isystem${SDK_DIR}/libs/aarch64_libc/inc/aarch64)
