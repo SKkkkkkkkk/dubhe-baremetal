@@ -96,7 +96,8 @@ void irq_handler_rtc(void)
 {
     uint32_t intstatus = REG32(RTC_BASE + 0x200);
 
-    REG32(RTC_BASE + 0x200) = 0;
+    REG32(RTC_BASE + 0x200) = intstatus & (~0x1);
+    
     printf("rtc irq status 0x%lx\r\n", intstatus);
     count++;
 
@@ -333,19 +334,22 @@ int pmu_enter_suspend(void)
     set_pmu_wakeup(1, 0x2); // set wakeup gpio16 target:lp
     set_pmu_wakeup(3, 0x2); // set wakeup rtc target:lp
 
-    set_power_off_seq();
-
 	i2c_wo_appower_enable(0);
     pmic_to_sleep_delay(500);
 
     timer_disable(Timerx2_T1);
+
+    /* open irq mask */
+    REG32(LP_CFG_BASE + 0x30) = REG32(LP_CFG_BASE + 0x30) | 0x400;
 
     return 0;
 }
 
 int pmu_enter_resume(void)
 {
+    // unsigned int data;
     MAIN_LOGD("%s enter\n", __func__);
+
     set_pmu_wakeup_clear(1, 0x2);
     set_pmu_wakeup_clear(3, 0x2);
 
@@ -353,6 +357,14 @@ int pmu_enter_resume(void)
     pmic_clear_irq_wo(1);
 
     timer_enable(Timerx2_T1);
+
+    /* close irq mask */
+    REG32(LP_CFG_BASE + 0x30) = (REG32(LP_CFG_BASE + 0x30) & 0xFFFFFBFF);
+
+    // data =  REG32(LP_CFG_BASE + 0x30);
+    // MAIN_LOGD("lp_sys irq mask 0x%x\r\n",  data);
+    pinmux(84, 0);
+    pinmux(85, 0);
 
     global_set_power_on_a55(AP, OP4);
     global_set_power_on_a55(CORE0, OP4);
@@ -416,6 +428,8 @@ int main()
     NVIC_SetVector(GPIO0_IRQn, (uintptr_t) irq_handler_gpio);
     NVIC_EnableIRQ(GPIO0_IRQn);
 
+    /*  */
+    REG32(LP_CFG_BASE + 0x30) = REG32(LP_CFG_BASE + 0x30) & 0xFFFFFBFF;
     NVIC_SetVector(RTC_IRQn, (uintptr_t) irq_handler_rtc);
     NVIC_EnableIRQ(RTC_IRQn);
 
@@ -432,8 +446,8 @@ int main()
 
     // pm_ops.pm_to_poweroff = pmu_enter_poweroff;
     // pm_ops.pm_to_sleep  = pmu_enter_suspend;
-    pm_ops.pm_to_sleep  = pmu_enter_suspend_core0;
-    pm_ops.pm_to_resume = pmu_enter_resume_core0;
+    pm_ops.pm_to_sleep  = pmu_enter_suspend;
+    pm_ops.pm_to_resume = pmu_enter_resume;
 
     if (xTaskCreateStatic(task1, "task1", STACK_SIZE, NULL, 1, xStack,
                           &xTaskBuffer) == NULL)
