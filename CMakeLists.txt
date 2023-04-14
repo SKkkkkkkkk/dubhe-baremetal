@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15...3.26)
 include (build_helper/out_of_source.cmake)
 include (CMakeDependentOption)
 set(SDK_DIR ${CMAKE_SOURCE_DIR})

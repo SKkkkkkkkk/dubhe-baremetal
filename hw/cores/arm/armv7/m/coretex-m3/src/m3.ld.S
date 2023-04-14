@@ -364,7 +364,7 @@ SECTIONS
     *(.ram_func*)
     *(.ram_data*)
     __ram_end = .;
-  } > SYSRAM AT>DDR
+  } > AXI_SRAM AT>DDR
 
   __RAM_DATA_LMA_START__ = LOADADDR(.ram);
   __RAM_DATA_SIZE__ = SIZEOF(.ram);
