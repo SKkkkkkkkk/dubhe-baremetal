@@ -19,6 +19,8 @@ static inline void setpc(uint64_t pc)
 
 int main()
 {
+	setbuf(stdout, NULL);
+	setbuf(stdin, NULL);
 	initSystemCounter(0, 0);
 	printf("FWU_SRAM: "BUILD_TIMESTAMP"\n\r");
 	printf("git hash: "GIT_HASH"\n\r");

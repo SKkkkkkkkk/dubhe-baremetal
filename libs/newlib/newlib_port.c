@@ -281,7 +281,27 @@ void _fini()
 
 void *__wrap_memcpy(void *dst, const void *src, size_t len)
 {
-	if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+	bool need_aligned = true;
+
+	switch (GET_EL(read_CurrentEl()))
+	{
+	case MODE_EL3:
+		if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL2:
+		if( ((read_sctlr_el2() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el2() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL1:
+		if( ((read_sctlr_el1() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el1() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	default:
+		break;
+	}	
+
+	if(!need_aligned)
 	{
 		// _write(1, "__real_memcpy\n\r", 15);
 		extern void *__real_memcpy(void *dst, const void *src, size_t len);
@@ -300,7 +320,27 @@ void *__wrap_memcpy(void *dst, const void *src, size_t len)
 
 void *__wrap_memmove(void *dst, const void *src, size_t len)
 {
-	if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+	bool need_aligned = true;
+
+	switch (GET_EL(read_CurrentEl()))
+	{
+	case MODE_EL3:
+		if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL2:
+		if( ((read_sctlr_el2() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el2() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL1:
+		if( ((read_sctlr_el1() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el1() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	default:
+		break;
+	}	
+
+	if(!need_aligned)
 	{
 		// _write(1, "__real_memmove\n\r", 16);
 		extern void *__real_memmove(void *dst, const void *src, size_t len);
@@ -331,7 +371,27 @@ void *__wrap_memmove(void *dst, const void *src, size_t len)
 
 void *__wrap_memset(void *dst, int val, size_t count)
 {
-	if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+	bool need_aligned = true;
+
+	switch (GET_EL(read_CurrentEl()))
+	{
+	case MODE_EL3:
+		if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL2:
+		if( ((read_sctlr_el2() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el2() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL1:
+		if( ((read_sctlr_el1() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el1() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	default:
+		break;
+	}	
+
+	if(!need_aligned)
 	{
 		// _write(1, "__real_memset\n\r", 15);
 		extern void *__real_memset(void *dst, int val, size_t count);
