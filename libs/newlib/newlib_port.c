@@ -438,4 +438,49 @@ void *__wrap_memset(void *dst, int val, size_t count)
 
 	return dst;
 }
+
+int __wrap_memcmp( const void * s1, const void * s2, size_t len )
+{
+	bool need_aligned = true;
+
+	switch (GET_EL(read_CurrentEl()))
+	{
+	case MODE_EL3:
+		if( ((read_sctlr_el3() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el3() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL2:
+		if( ((read_sctlr_el2() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el2() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	case MODE_EL1:
+		if( ((read_sctlr_el1() & SCTLR_M_BIT) == SCTLR_M_BIT) && ((read_sctlr_el1() & SCTLR_A_BIT) == 0ULL) )
+			need_aligned = false;
+		break;
+	default:
+		break;
+	}	
+
+	if(!need_aligned)
+	{
+		extern int __real_memcmp(const void *s1, const void *s2, size_t len);
+		return __real_memcmp(s1, s2, len);
+	}
+
+	const unsigned char *s = s1;
+	const unsigned char *d = s2;
+	unsigned char sc;
+	unsigned char dc;
+
+	while (len--) {
+		sc = *s++;
+		dc = *d++;
+		if (sc - dc)
+			return (sc - dc);
+	}
+
+	return 0;
+}
+
+
 #endif

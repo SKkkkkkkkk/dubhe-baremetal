@@ -138,7 +138,9 @@ data_init_end:
 	cmp x0, x19
 	bne secondary_core_boot
 	// bl config_mmu
+#if !defined(aarch64_libc)
 	bl call_init_array
+#endif
 	bl main
 dead:
 	wfi

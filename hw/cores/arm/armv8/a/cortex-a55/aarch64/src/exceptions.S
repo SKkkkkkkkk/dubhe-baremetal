@@ -93,12 +93,12 @@ end_vector_entry serror_aarch32
 
 	func _sync_exception_sph
 _sync_exception_sph:
-	asm_read_sysreg_elx esr
-	mov x1, x0
-	asm_read_sysreg_elx far
-	mov x2, x0
-	asm_read_sysreg_elx elr
-	mov x3, x0
+	// asm_read_sysreg_elx esr
+	// mov x1, x0
+	// asm_read_sysreg_elx far
+	// mov x2, x0
+	// asm_read_sysreg_elx elr
+	// mov x3, x0
 	b .
 endfunc _sync_exception_sph
 

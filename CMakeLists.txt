@@ -114,7 +114,7 @@ if($CACHE{CORE} STREQUAL "A55")
         set(compile_options_common ${compile_options_common} -Daarch64_libc -nostdinc -isystem${SDK_DIR}/libs/aarch64_libc/inc -isystem${SDK_DIR}/libs/aarch64_libc/inc/aarch64)
         set(link_options ${link_options} -nostdlib)
     else()
-        set(link_options ${link_options} -Wl,--wrap=memcpy -Wl,--wrap=memmove -Wl,--wrap=memset)
+        set(link_options ${link_options} -Wl,--wrap=memcpy -Wl,--wrap=memmove -Wl,--wrap=memset -Wl,--wrap=memcmp)
     endif()
 
 ### M3

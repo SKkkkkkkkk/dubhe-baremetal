@@ -28,5 +28,5 @@ void wdt_irqhandler(void)
 {
 	printf("in irq.\n\r");
 	wdt_clear_irq(WDT0_ID);
-	wdt_feed(WDT0_ID);
+	// wdt_feed(WDT0_ID);
 }
