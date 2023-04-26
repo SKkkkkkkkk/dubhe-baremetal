@@ -128,7 +128,7 @@ elseif($CACHE{CORE} STREQUAL "M3")
 
 elseif($CACHE{CORE} STREQUAL "CV32E40P")
     set(CMAKE_TOOLCHAIN_FILE ${SDK_DIR}/build_helper/riscv_gcc.cmake)
-    set(compile_options_arch ${compile_options_arch} -march=rv32imc -mabi=ilp32 -DCV32E40P)
+    set(compile_options_arch ${compile_options_arch} -march=rv32im_zicsr -mabi=ilp32 -DCV32E40P)
 
 ### unsupport
 
