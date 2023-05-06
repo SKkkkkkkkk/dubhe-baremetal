@@ -51,7 +51,7 @@ int uart_update(enum output_device o_device)
 				}
 				else
 				{
-					if(!flash_init(BOOTSPI_ID, 2, 3, UNKNOWN_FLASH))
+					if(!flash_init(BOOTSPI_ID, 8, 3, UNKNOWN_FLASH))
 					{
 						addr = -1;
 						break;
