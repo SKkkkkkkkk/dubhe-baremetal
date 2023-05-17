@@ -3,6 +3,8 @@ include (build_helper/out_of_source.cmake)
 include (CMakeDependentOption)
 set(SDK_DIR ${CMAKE_SOURCE_DIR})
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # 选择project
 
 set(PROJECT_NAME "a" CACHE STRING "Project name.")
