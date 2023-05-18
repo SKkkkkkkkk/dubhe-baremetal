@@ -95,8 +95,7 @@ set(compile_options_arch) # depends on core
 set(compile_options_board) # depends on board
 set(compile_options_opt)  # depends on build type --specs=nosys.specs
 set(compile_options_common -Wall -Werror -ffunction-sections -fdata-sections -DGIT_HASH="${git_hash}" -DBUILD_TIMESTAMP="${BUILD_TIMESTAMP}")
-set(link_options -static -nostartfiles -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
-# set(link_options ${link_options} -Wl,--no-warn-rwx-segments)
+set(link_options -static -nostartfiles -Wl,--fatal-warning -Wl,--gc-sections -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/$CACHE{PROJECT_NAME}.map -Wl,--print-memory-usage)
 set(link_libs)
 
 set(compile_options_cxx -fno-rtti -fno-exceptions -fno-unwind-tables -fno-use-cxa-atexit -fno-threadsafe-statics)
@@ -224,6 +223,11 @@ project($CACHE{PROJECT_NAME}
   DESCRIPTION "dubhe project."
   LANGUAGES C CXX ASM
 )
+
+## With ld.bfd version 2.39 and newer new warnings are added. Skip those since we are not loaded by a elf loader.
+if(${CMAKE_C_COMPILER_VERSION} VERSION_GREATER_EQUAL 12.2.0)
+    set(link_options ${link_options} -Wl,--no-warn-rwx-segments)
+endif()
 
 ## 每个模块添加一个使能开关，ON的一般是最小系统必须的，凡是不是必须的都默认OFF，如app工程需要，在app.cmake中再开启
 
