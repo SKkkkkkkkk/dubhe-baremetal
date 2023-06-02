@@ -1,0 +1,3 @@
+tar ext:1234
+set scheduler-locking on 
+add-symbol-file ../openamp_device/build/openamp_device.elf

@@ -1,0 +1,1 @@
+aarch64-none-elf-gdb build/openamp_driver.elf -x gdb_init_qemu
