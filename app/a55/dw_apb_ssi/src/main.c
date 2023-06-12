@@ -67,7 +67,7 @@ int main()
 	nor_flash_test(BOOTSPI_ID, UNKNOWN_FLASH);
 
 	// void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model);
-	// flash_fastest_read_test(SPI2_ID, GD25LQ128);
+	// flash_fastest_read_test(BOOTSPI_ID, W25Q64JW);
 
 	// void master_slave_test(void);
 	// master_slave_test();

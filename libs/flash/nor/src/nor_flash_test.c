@@ -123,7 +123,7 @@ void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 	#define TEST_SECTOR_NUMS 2
 	for(uint32_t i = 0;i<CASE1_SIZE;i++)
 		case1_w_buf[i] = i%256;
-	for(uint32_t i = 0;i<TEST_SECTOR_NUMS;i++)
+	for(uint32_t i = 0;i<(CASE1_SIZE/4096+2);i++)
 		flash_sector_erase(spi_id, (CASE1_ADDR&0xfffff000)+4096*i);
 	FLASH_WRITE(spi_id, CASE1_ADDR, case1_w_buf, CASE1_SIZE);
 	memset(case1_r_buf, 0xa5, CASE1_SIZE);
@@ -140,7 +140,7 @@ void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 
 	for(uint32_t i = 0;i<CASE2_SIZE;i++)
 		case2_w_buf[i] = i%256;
-	for(uint32_t i = 0;i<TEST_SECTOR_NUMS;i++)
+	for(uint32_t i = 0;i<(CASE2_SIZE/4096+2);i++)
 		flash_sector_erase(spi_id, (CASE2_ADDR&0xfffff000)+4096*i);
 	FLASH_WRITE(spi_id, CASE2_ADDR, case2_w_buf, CASE2_SIZE);
 	memset(case2_r_buf, 0xa5, CASE2_SIZE);
@@ -156,7 +156,7 @@ void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 
 	for(uint32_t i = 0;i<CASE3_SIZE;i++)
 		case3_w_buf[i] = i%256;
-	for(uint32_t i = 0;i<TEST_SECTOR_NUMS;i++)
+	for(uint32_t i = 0;i<(CASE3_SIZE/4096+2);i++)
 		flash_sector_erase(spi_id, (CASE3_ADDR&0xfffff000)+4096*i);
 	FLASH_WRITE(spi_id, CASE3_ADDR, case3_w_buf, CASE3_SIZE);
 	memset(case3_r_buf, 0xa5, CASE3_SIZE);
@@ -173,7 +173,7 @@ void nor_flash_test(spi_id_t spi_id, flash_model_t flash_model)
 
 	for(uint32_t i = 0;i<CASE4_SIZE;i++)
 		case4_w_buf[i] = i%256;
-	for(uint32_t i = 0;i<TEST_SECTOR_NUMS;i++)
+	for(uint32_t i = 0;i<(CASE4_SIZE/4096+2);i++)
 		flash_sector_erase(spi_id, (CASE4_ADDR&0xfffff000)+4096*i);
 	FLASH_WRITE(spi_id, CASE4_ADDR, case4_w_buf, CASE4_SIZE);
 	memset(case4_r_buf, 0xa5, CASE4_SIZE);
@@ -282,7 +282,7 @@ void flash_fastest_read_test(spi_id_t spi_id, flash_model_t flash_model)
 
 	for(uint32_t i = 0;i<CASE5_SIZE;i++)
 		case5_w_buf[i] = i%256;
-	for(uint32_t i = 0;i<(CASE5_SIZE/4096+1);i++)
+	for(uint32_t i = 0;i<(CASE5_SIZE/4096+2);i++)
 		flash_sector_erase(spi_id, (CASE5_ADDR&0xfffff000)+4096*i);
 	FLASH_WRITE(spi_id, CASE5_ADDR, case5_w_buf, CASE5_SIZE);
 	
