@@ -307,6 +307,7 @@ static int rpmsg_endpoint_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
 static void rpmsg_service_unbind(struct rpmsg_endpoint *ept)
 {
     (void) ept;
+    rpmsg_destroy_ept(&lept);
     printf("unexpected Remote endpoint destroy\r\n");
     shutdown_req = 1;
 }
@@ -390,13 +391,16 @@ int openamp_demo(void)
     // sprintf(buf, "hello cnt %d", 1);
     // rpmsg_send(&lept, buf, strlen(buf));
 
-    while (1) {
+    while (!shutdown_req) {
         ret = remoteproc_get_notification(&rproc_inst, RSC_NOTIFY_ID_ANY);
         if (ret != 0)
             printf("remoteproc_get_notification failed, ret=%d.\r\n", ret);
     }
 
+    /* Destroy the RPMsg endpoint */
+    rpmsg_destroy_ept(&lept);
     cleanup_system();
+
     printf("clean up system.\r\n");
 
     return ret;
