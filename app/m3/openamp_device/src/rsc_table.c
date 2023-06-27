@@ -18,11 +18,13 @@
 
 #define RPMSG_VDEV_DFEATURES        (1 << VIRTIO_RPMSG_F_NS)
 
-#define NUM_VRINGS                  0x02
+#define SHARED_MEM_BASE 0x79540000UL
+
+#define NUM_OF_VRINGS               0x02
 #define VRING_ALIGN                 0x1000
-#define RING_TX                     FW_RSC_U32_ADDR_ANY
-#define RING_RX                     FW_RSC_U32_ADDR_ANY
-#define VRING_SIZE                  256
+#define VRING0_ADDR                 SHARED_MEM_BASE
+#define VRING1_ADDR                 (SHARED_MEM_BASE + 0x8000UL)
+#define NUM_OF_VRING_ENTRIES        256
 
 #define NUM_TABLE_ENTRIES           1
 
@@ -42,13 +44,20 @@ struct remote_resource_table __resource resources = {
 
 	/* Virtio device entry */
 	{
-	 RSC_VDEV, VIRTIO_ID_RPMSG, 31, RPMSG_VDEV_DFEATURES, 0, 0, 0,
-	 NUM_VRINGS, {0, 0},
+	 RSC_VDEV, // type
+	 VIRTIO_ID_RPMSG, // id
+	 31, // notifyid
+	 RPMSG_VDEV_DFEATURES, // dfeatures
+	 RPMSG_VDEV_DFEATURES, // gfeatures
+	 0, // config_len
+	 0, // status
+	 NUM_OF_VRINGS, // num_of_vrings
+	 {0, 0}, // reserved
 	 },
 
 	/* Vring rsc entry - part of vdev rsc entry */
-	{RING_TX, VRING_ALIGN, VRING_SIZE, 1, 0},
-	{RING_RX, VRING_ALIGN, VRING_SIZE, 2, 0},
+	{VRING0_ADDR, VRING_ALIGN, NUM_OF_VRING_ENTRIES, 1 /* notifyid */, 0},
+	{VRING1_ADDR, VRING_ALIGN, NUM_OF_VRING_ENTRIES, 2 /* notifyid */, 0},
 };
 
 void *get_resource_table(int rsc_id, int *len)
