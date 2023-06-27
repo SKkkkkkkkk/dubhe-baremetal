@@ -45,14 +45,13 @@ void *get_resource_table(int rsc_id, int *len);
 #define VRING1_ADDR                 (SHARED_MEM_BASE + 0x4000UL)
 #define NUM_OF_VRING_ENTRIES        8
 
-#define RPMSG_VDEV_DFEATURES        0
-// #define RPMSG_VDEV_DFEATURES        (1 << VIRTIO_RPMSG_F_NS)
+// #define RPMSG_VDEV_DFEATURES        0
+#define RPMSG_VDEV_DFEATURES        (1 << VIRTIO_RPMSG_F_NS)
 
 #define NUM_TABLE_ENTRIES           1
 
-#define HOST_EPT_ADDRESS                1024
-#define REMOTE_EPT_ADDRESS              1025
-
+// #define HOST_EPT_ADDRESS                1024
+// #define REMOTE_EPT_ADDRESS              1025
 
 #if defined __cplusplus
 }

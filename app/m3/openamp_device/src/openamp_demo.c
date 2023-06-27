@@ -45,7 +45,7 @@ rproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
 {
 	struct remoteproc_mem *mem;
 	metal_phys_addr_t lpa, lda;
-	struct metal_io_region *tmpio;
+	struct metal_io_region *io_region;
 
 	lpa = *pa;
 	lda = *da;
@@ -60,27 +60,27 @@ rproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
 	mem = metal_allocate_memory(sizeof(*mem));
 	if (!mem)
 		return NULL;
-	tmpio = metal_allocate_memory(sizeof(*tmpio));
-	if (!tmpio) {
+	io_region = metal_allocate_memory(sizeof(*io_region));
+	if (!io_region) {
 		metal_free_memory(mem);
 		return NULL;
 	}
-	remoteproc_init_mem(mem, NULL, lpa, lda, size, tmpio);
+	remoteproc_init_mem(mem, NULL, lpa, lda, size, io_region);
 	/* va is the same as pa in this platform */
-	metal_io_init(tmpio, (void *)lpa, &mem->pa, size,
+	metal_io_init(io_region, (void *)lpa, &mem->pa, size,
 		      sizeof(metal_phys_addr_t) << 3, attribute, NULL);
 	remoteproc_add_mem(rproc, mem);
 	*pa = lpa;
 	*da = lda;
 	if (io) {
-		*io = tmpio;
+		*io = io_region;
 	} else {
-		metal_free_memory(tmpio);
+		metal_free_memory(io_region);
 		metal_free_memory(mem);
 		return NULL;
 	}
 
-	return metal_io_phys_to_virt(tmpio, mem->pa);
+	return metal_io_phys_to_virt(io_region, mem->pa);
 }
 
 static int rproc_start(struct remoteproc *rproc)

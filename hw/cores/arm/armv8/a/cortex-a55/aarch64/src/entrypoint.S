@@ -119,9 +119,9 @@ clear_loop:
 	b.lo	clear_loop
 clear_loop_end:
 
-	ldr x0, =__DATA_RAM_START__
-	ldr x1, =__DATA_ROM_START__
-	ldr x2, =__DATA_SIZE__
+	ldr x0, =__RW_RAM_START__
+	ldr x1, =__RW_ROM_START__
+	ldr x2, =__RW_SIZE__
 	cmp x0, x1
 	b.eq data_init_end
 data_init_start:
@@ -137,7 +137,9 @@ data_init_end:
 	bl get_core_id
 	cmp x0, x19
 	bne secondary_core_boot
-	// bl config_mmu
+#if defined(ENABLE_MMU_CACHE) && (ENABLE_MMU_CACHE != 0)
+	bl config_mmu
+#endif
 #if !defined(aarch64_libc)
 	bl call_init_array
 #endif

@@ -53,6 +53,12 @@ else()
     message(FATAL_ERROR "unsupport core!")
 endif()
 
+# Enable MMU&Cache
+cmake_dependent_option(
+    ENABLE_MMU_CACHE "Enable MMU&Cache: ON, OFF" OFF
+    "$CACHE{CORE} STREQUAL A55" OFF
+)
+
 # GIT_HASH
 ## 在程序中可以打印git 提交版本hash值。printf("git hash:"GIT_HASH)
 execute_process(
@@ -116,6 +122,10 @@ if($CACHE{CORE} STREQUAL "A55")
         set(link_options ${link_options} -nostdlib)
     else()
         set(link_options ${link_options} -Wl,--wrap=memcpy -Wl,--wrap=memmove -Wl,--wrap=memset -Wl,--wrap=memcmp)
+    endif()
+
+    if($CACHE{ENABLE_MMU_CACHE})
+        set(compile_options_common ${compile_options_common} -DENABLE_MMU_CACHE=1)
     endif()
 
 ### M3

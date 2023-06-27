@@ -180,7 +180,6 @@ SECTIONS
     {
         __DATA_START__ = .; 
         *(SORT_BY_ALIGNMENT(.data*))
-        . = ALIGN(16);
         __DATA_END__ = .; 
 #if (WHERE_TO_LOAD == ROM)
     } >RAM
@@ -190,9 +189,22 @@ SECTIONS
 	} >DDR
 #endif
 
-    __DATA_RAM_START__ = __DATA_START__;
-    __DATA_RAM_END__ = __DATA_END__;
-    ASSERT(__DATA_RAM_END__ == ALIGN(16), "__DATA_RAM_END__ address is not aligned on 16B.")
+	.resource_table . : {
+		. = ALIGN(4);
+		*(.resource_table)
+		. = ALIGN(16);
+		__RSC_TABLE_END__ = .;
+#if (WHERE_TO_LOAD == ROM)
+    } >RAM
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+	} >RAM
+#else // DDR
+	} >DDR
+#endif
+
+	__RW_RAM_START__ = __DATA_START__;
+    __RW_RAM_END__ = __RSC_TABLE_END__;
+    ASSERT(__RW_RAM_END__ == ALIGN(16), "__RW_RAM_END__ address is not aligned on 16B.")
 
     .bss (NOLOAD) : ALIGN(16) 
     {
@@ -257,13 +269,13 @@ SECTIONS
 
     __RAM_START__ = ADDR(.data);
     __RAM_END__ = .;
-    __DATA_ROM_START__ = LOADADDR(.data);
-    __DATA_SIZE__ = SIZEOF(.data);
+    __RW_ROM_START__ = LOADADDR(.data);
+    __RW_SIZE__ = __RW_RAM_END__ - __RW_RAM_START__;
     __BSS_SIZE__ = SIZEOF(.bss);
 
 
 #if (WHERE_TO_LOAD == ROM)
-    __ROM_END__ = __DATA_ROM_START__ + __DATA_SIZE__;
+    __ROM_END__ = __RW_ROM_START__ + __RW_SIZE__;
     ASSERT(__ROM_END__ <= (__ROM_BASE + __ROM_SIZE), "ROM content has exceeded its limit.")
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
     ASSERT(__RAM_END__ <= (__RAM_BASE + __RAM_SIZE), "RW section has exceeded its limit.")

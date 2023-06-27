@@ -7,10 +7,11 @@ qemu-system-aarch64 \
 -d unimp \
 -semihosting-config enable=on,target=native \
 -bios build/openamp_driver.bin \
--device loader,addr=0x50000000,cpu-num=1 \
--device loader,addr=0x50000000,file=../openamp_device/build/openamp_device.bin,force-raw=on \
+-device loader,addr=0x40000000,cpu-num=1 \
+-device loader,addr=0x40100000,file=../openamp_device/build/openamp_device.elf,force-raw=on \
 -S -s
 
+# -device loader,addr=0x50000000,file=../openamp_device/build/openamp_device.bin,force-raw=on \
 # -device loader,addr=0x00000000,cpu-num=0 \
 # -device loader,addr=0x00000000,file=build/openamp_driver.bin,force-raw=on \
 

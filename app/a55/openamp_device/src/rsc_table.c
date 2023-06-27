@@ -14,7 +14,7 @@
 
 /* Place resource table in special ELF section */
 #define __section_t(S)          __attribute__((__section__(#S)))
-#define __resource              //__section_t(.resource_table)
+#define __resource              __section_t(.resource_table)
 
 struct remote_resource_table __resource resources = {
 	/* Version */
@@ -28,21 +28,21 @@ struct remote_resource_table __resource resources = {
 
 	/* Offsets of rsc entries */
 	{
-	 offsetof(struct remote_resource_table, rpmsg_vdev),
-	 },
+		offsetof(struct remote_resource_table, rpmsg_vdev),
+	},
 
 	/* Virtio device entry */
 	{
-	 RSC_VDEV, // type
-	 VIRTIO_ID_RPMSG, // id
-	 31, // notifyid
-	 RPMSG_VDEV_DFEATURES, // dfeatures
-	 0, // gfeatures
-	 0, // config_len
-	 0, // status
-	 NUM_OF_VRINGS, // num_of_vrings
-	 {0, 0}, // reserved
-	 },
+		RSC_VDEV, // type
+		VIRTIO_ID_RPMSG, // id
+		31, // notifyid
+		RPMSG_VDEV_DFEATURES, // dfeatures
+		0, // gfeatures
+		0, // config_len
+		0, // status
+		NUM_OF_VRINGS, // num_of_vrings
+		{0, 0}, // reserved
+	},
 
 	/* Vring rsc entry - part of vdev rsc entry */
 	{VRING0_ADDR, VRING_ALIGN, NUM_OF_VRING_ENTRIES, 1 /* notifyid */, 0},

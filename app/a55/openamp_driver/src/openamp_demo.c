@@ -18,6 +18,19 @@
 #define SHPOOL_SIZE		0x80000UL
 #define SHARED_BUF_OFFSET 0UL
 
+
+static struct remoteproc rproc_inst;
+
+/* RPMsg virtio shared buffer pool */
+static struct rpmsg_virtio_shm_pool shpool;
+
+/* Endpoint */
+static struct rpmsg_endpoint ept;
+#define RPMSG_SERVICE_NAME         "rpmsg-openamp-demo-channel"
+
+#define SHUTDOWN_MSG	0xEF56A55A
+
+
 static struct remoteproc * rproc_init(struct remoteproc *rproc,
 			const struct remoteproc_ops *ops, void *arg)
 {
@@ -38,9 +51,9 @@ rproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
 			metal_phys_addr_t *da, size_t size,
 			unsigned int attribute, struct metal_io_region **io)
 {
-	struct remoteproc_mem *mem;
 	metal_phys_addr_t lpa, lda;
-	struct metal_io_region *tmpio;
+	struct remoteproc_mem *mem;
+	struct metal_io_region *io_region;
 
 	lpa = *pa;
 	lda = *da;
@@ -58,21 +71,21 @@ rproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
 	mem = metal_allocate_memory(sizeof(*mem));
 	if (!mem)
 		return NULL;
-	tmpio = metal_allocate_memory(sizeof(*tmpio));
-	if (!tmpio) {
+	io_region = metal_allocate_memory(sizeof(*io_region));
+	if (!io_region) {
 		metal_free_memory(mem);
 		return NULL;
 	}
-	remoteproc_init_mem(mem, NULL, lpa, lda, size, tmpio);
+	remoteproc_init_mem(mem, NULL, lpa, lda, size, io_region);
 	/* va is the same as pa in this platform */
-	metal_io_init(tmpio, (void *)lpa, &mem->pa, size,
+	metal_io_init(io_region, (void *)lpa, &mem->pa, size,
 		      sizeof(metal_phys_addr_t) << 3, attribute, NULL);
 	remoteproc_add_mem(rproc, mem);
 	*pa = lpa;
 	*da = lda;
 	if (io)
-		*io = tmpio;
-	return metal_io_phys_to_virt(tmpio, mem->pa);
+		*io = io_region;
+	return metal_io_phys_to_virt(io_region, mem->pa);
 }
 
 static int rproc_start(struct remoteproc *rproc)
@@ -100,35 +113,79 @@ and load
 * them to destination memory - implementation is provided by the 
 application.
 */
-int mem_image_open(void *store, const char *path, const void **img_data)
+#define LPERROR(format, ...) printf(format, ##__VA_ARGS__)
+#define LPRINTF(format, ...) printf(format, ##__VA_ARGS__)
+
+int mem_image_open(void *store, const char *path, const void **image_data)
 {
-	return 0;
+	(void)(path);
+	if (image_data == NULL) {
+		LPERROR("%s: input image_data is NULL\r\n", __func__);
+		return -EINVAL;
+	}
+	*image_data = store;
+	/* return an abitrary length, as the whole firmware is in memory */
+	return 899744;
 }
 
 void mem_image_close(void *store)
 {
-	return;
+	/* The image is in memory, does nothing */
+	(void)store;
 }
 
 int mem_image_load(void *store, size_t offset, size_t size,
-		const void **data,
-		metal_phys_addr_t pa,
-		struct metal_io_region *io, char is_blocking)
+		   const void **data, metal_phys_addr_t pa,
+		   struct metal_io_region *io,
+		   char is_blocking)
 {
+	(void)is_blocking;
 
-	return 0;
+	LPRINTF("%s: offset=0x%lx, size=0x%lx\n\r",
+		__func__, offset, size);
+	if (pa == METAL_BAD_PHYS) {
+		if (data == NULL) {
+			LPERROR("%s: data is NULL while pa is ANY\r\n",
+				__func__);
+			return -EINVAL;
+		}
+		*data = (const void *)((const char *)store + offset);
+	} else {
+		void *va;
+
+		if (io == NULL) {
+			LPERROR("%s, io is NULL while pa is not ANY\r\n",
+				__func__);
+			return -EINVAL;
+		}
+		va = metal_io_phys_to_virt(io, pa);
+		if (va == NULL) {
+			LPERROR("%s: no va is found\r\n", __func__);
+			return -EINVAL;
+		}
+		memcpy(va, (const void *)((const char *)store + offset), size);
+	}
+
+	return (int)size;
 }
 
-struct image_store_ops mem_image_store_ops = {
+const struct image_store_ops mem_image_store_ops = {
 	.open = mem_image_open,
 	.close = mem_image_close,
 	.load = mem_image_load,
 	.features = SUPPORT_SEEK,
 };
 
-
+volatile static bool ns_service_ready = false;
 void wait_ns_announcement()
 {
+	int ret;
+	while(!ns_service_ready)
+	{
+		ret = remoteproc_get_notification(&rproc_inst, RSC_NOTIFY_ID_ANY);
+		if( ret != 0) 
+			printf("remoteproc_get_notification failed, ret=%d.\r\n", ret);
+	}
 	return;
 }
 
@@ -136,17 +193,6 @@ void wait_ns_announcement()
 
 int init_system(void);
 void cleanup_system(void);
-
-static struct remoteproc rproc_inst;
-
-/* RPMsg virtio shared buffer pool */
-static struct rpmsg_virtio_shm_pool shpool;
-
-/* Endpoint */
-static struct rpmsg_endpoint ept;
-#define RPMSG_SERVICE_NAME         "rpmsg-openamp-demo-channel"
-
-#define SHUTDOWN_MSG	0xEF56A55A
 
 /* Endpoint data receive call back function */
 static int rpmsg_endpoint_cb(struct rpmsg_endpoint *ept, void *data, size_t len, uint32_t src, void *priv) {
@@ -174,14 +220,34 @@ static int rpmsg_endpoint_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
 	return RPMSG_SUCCESS;
 }
 
-/* Name service announcement call back function for channel creation */
-// static void rpmsg_name_service_bind_cb(struct rpmsg_device *rdev,
-// const char *name, uint32_t dest) {
-// }
 /* Name service announcement call back function for channel deletion */
 static void rpmsg_service_unbind(struct rpmsg_endpoint *ept) {
 }
 
+/* Name service announcement call back function for channel creation */
+static void rpmsg_name_service_bind_cb(struct rpmsg_device *rdev,
+const char *name, uint32_t dest) {
+	int ret;
+	LPRINTF("Master: new endpoint notification is received.\r\n");
+	if (strcmp(name, RPMSG_SERVICE_NAME))
+		LPERROR("Unexpected name service %s.\r\n", name);
+	else
+	{
+		ret = rpmsg_create_ept(&ept, rdev, RPMSG_SERVICE_NAME,
+				RPMSG_ADDR_ANY, dest,
+				rpmsg_endpoint_cb,
+				rpmsg_service_unbind);
+		if(ret)
+		{
+			printf("rpmsg_create_ept failed, ret=%d.\r\n", ret);
+			return;
+		}
+		else
+		{
+			ns_service_ready = true;
+		}
+	}
+}
 
 int openamp_demo(int role)
 {
@@ -194,15 +260,12 @@ int openamp_demo(int role)
 	struct rpmsg_device * rpmsg_dev;
 	int rsc_size;
 	void* rsc_table;
+	(void)rsc_size;
+	(void)rsc_table;
 	(void)ret;
 	(void)rpmsg_dev;
 
-	if (role == VIRTIO_DEV_DRIVER)
-		printf("this is the host.\n");
-	else
-		printf("this is the remote.\n");
-
-
+	printf("this is the host.\n");
 
 	init_system();
 
@@ -223,30 +286,16 @@ int openamp_demo(int role)
 	remoteproc_config(&rproc_inst, NULL);
 
 	/* Load the image */
-	// #define RMT_IMAGE_MEM_ADDR 0x40000000UL
-	// remoteproc_load(&rproc_inst, NULL, (void*)RMT_IMAGE_MEM_ADDR, &mem_image_store_ops, NULL);
+	#define REMOTE_IMAGE_MEM_ADDR 0x40100000UL
+	remoteproc_load(&rproc_inst, NULL, (void*)REMOTE_IMAGE_MEM_ADDR, &mem_image_store_ops, NULL);
 
-	rsc_table = get_resource_table(0, &rsc_size);
-
-	/* mmap resource table */
-	pa = (metal_phys_addr_t)rsc_table;
-	(void *)remoteproc_mmap(&rproc_inst , &pa,
-				NULL, rsc_size,
-				NORM_NONCACHE | STRONG_ORDERED,
-				&rproc_inst.rsc_io);
-	/* parse resource table to remoteproc */
-	ret = remoteproc_set_rsc_table(&rproc_inst, rsc_table, rsc_size);
-
-	if (role == VIRTIO_DEV_DRIVER)
-	{
-		/* Start the remote processor */
-		ret = remoteproc_start(&rproc_inst);
-		if (ret) {
-			printf("failed to start processor\r\n");
-			return ret;
-		}
-		printf("successfully started the processor\r\n");
+	/* Start the remote processor */
+	ret = remoteproc_start(&rproc_inst);
+	if (ret) {
+		printf("failed to start processor\r\n");
+		return ret;
 	}
+	printf("successfully started the processor\r\n");
 
 	printf("Creating virtio...\r\n");
 	/* Setup the communication mechanism */
@@ -268,21 +317,16 @@ int openamp_demo(int role)
 	if (!rpmsg_vdev)
 		return 1;
 	
-	if (role == VIRTIO_DEV_DRIVER) {
-		/* Only RPMsg virtio driver needs to initialize the
-		 * shared buffers pool
-		 */
-		rpmsg_virtio_init_shm_pool(&shpool, shbuf, SHPOOL_SIZE);
+	/* Only RPMsg virtio driver needs to initialize the
+		* shared buffers pool
+		*/
+	rpmsg_virtio_init_shm_pool(&shpool, shbuf, SHPOOL_SIZE);
 
-		/* RPMsg virtio device can set shared buffers pool
-		 * argument to NULL
-		 */
-		ret =  rpmsg_init_vdev(rpmsg_vdev, vdev, NULL,
-					shbuf_io, &shpool);
-	} else {
-		ret =  rpmsg_init_vdev(rpmsg_vdev, vdev, NULL,
-					shbuf_io, NULL);
-	}
+	/* RPMsg virtio device can set shared buffers pool
+		* argument to NULL
+		*/
+	ret =  rpmsg_init_vdev(rpmsg_vdev, vdev, rpmsg_name_service_bind_cb,
+				shbuf_io, &shpool);
 
 	if (ret) {
 		printf("failed rpmsg_init_vdev, error_num: %d.\r\n", ret);
@@ -291,33 +335,12 @@ int openamp_demo(int role)
 	/* Get the rpmsg device */
 	rpmsg_dev = rpmsg_virtio_get_rpmsg_device(rpmsg_vdev);
 
-	/* Wait for the name service announcement before endpoint creation */
-	// wait_ns_announcement();
+	/* Wait for the name service announcement */
+	wait_ns_announcement();
 
-	/* NS announcement is received, create the endpoint*/
-	uint32_t src_addr, dst_addr;
-	if (role == VIRTIO_DEV_DRIVER) {
-		src_addr = HOST_EPT_ADDRESS;
-		dst_addr = REMOTE_EPT_ADDRESS;
-	} else {
-		src_addr = REMOTE_EPT_ADDRESS;
-		dst_addr = HOST_EPT_ADDRESS;
-	}
-	ret = rpmsg_create_ept(&ept, rpmsg_dev, RPMSG_SERVICE_NAME, 
-								src_addr, 
-								dst_addr,
-								rpmsg_endpoint_cb, rpmsg_service_unbind);
-
-	if (ret) {
-		printf("Failed to create endpoint, ret=%d.\r\n", ret);
-		return -1;
-	}
-
-
-	/* Endpoint is created - send data using the rpmsg comm APIs */
+	/* Endpoint is created - sending the first message */
 	#define HELLO_MSG "hello"
-	if( role == VIRTIO_DEV_DRIVER)
-		rpmsg_send(&ept, HELLO_MSG, strlen(HELLO_MSG));
+	rpmsg_send(&ept, HELLO_MSG, strlen(HELLO_MSG));
 
 	while(1)
 	{
