@@ -195,10 +195,11 @@ static int                   shutdown_req = 0;
 static int                   cmd_case     = 0;
 static char                  t_data[ 0x10000 ];
 #define SHUTDOWN_MSG   0xEF56A55A
-#define LINUX_SEND_MSG 0x55030000
-#define LINUX_SEND_FIX 0x55030001
-#define LINUX_SEND_ACC 0x55030002
-#define LINUX_READ_MSG 0x55030003
+#define LINUX_SEND_MSG   0x55030000
+#define LINUX_SEND_FIX   0x55030001
+#define LINUX_SEND_ACC   0x55030002
+#define LINUX_SEND_LONG  0x55030003
+#define LINUX_READ_MSG   0x55030004
 
 static void m3_send_data(char c, int size)
 {
@@ -254,6 +255,10 @@ static int rpmsg_endpoint_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
         // printf("msg 0x%x size 0x%x\n", msg, size);
         m3_send_data((char) msg, size);
         break;
+    case LINUX_SEND_LONG:
+        cmd_case = 5;
+        cnt      = 0;
+        break;
     default:
         // printf("cmd = 0x%x\n\r", cmd);
     }
@@ -296,6 +301,12 @@ static int rpmsg_endpoint_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
                 }
                 size = 0;
             }
+        }
+    } else if (cmd_case == 5) {
+        if ((cnt % 100) == 0) {
+            printf(
+                "Received a55:  len 0x%x total 0x%x cmd_case %d cnt 0x%x\n\r",
+                len, total, cmd_case, cnt);
         }
     }
 
