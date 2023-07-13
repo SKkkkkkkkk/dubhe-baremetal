@@ -58,8 +58,10 @@ void Interrupt9_Handler(void)
                 data &= 0xffff;
                 if (data == MSG_DATA_LINUX_CREATE_TTY_EPT) {
                     vdev_rsc->status = 0x4;
+                    printf("MSG_DATA_LINUX_CREATE_TTY_EPT !!!\n");
                 } else if (data == MSG_DATA_LINUX_DESTROY_TTY_EPT) {
                     vdev_rsc->status = 0x0;
+                    printf("MSG_DATA_LINUX_DESTROY_TTY_EPT !!!\n");
                 }
                 // printf("vdev_rsc->status = 0x%x data 0x%lx\n\r",
                 // vdev_rsc->status, data);
@@ -106,9 +108,9 @@ static void *rproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
                         metal_phys_addr_t *da, size_t size,
                         unsigned int attribute, struct metal_io_region **io)
 {
-	struct remoteproc_mem *mem;
-	metal_phys_addr_t lpa, lda;
-	struct metal_io_region *io_region;
+    struct remoteproc_mem  *mem;
+    metal_phys_addr_t       lpa, lda;
+    struct metal_io_region *io_region;
 
     lpa = *pa;
     lda = *da;
@@ -117,30 +119,29 @@ static void *rproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
     if (lpa == METAL_BAD_PHYS) lpa = lda;
     if (lda == METAL_BAD_PHYS) lda = lpa;
 
-	mem = metal_allocate_memory(sizeof(*mem));
-	if (!mem)
-		return NULL;
-	io_region = metal_allocate_memory(sizeof(*io_region));
-	if (!io_region) {
-		metal_free_memory(mem);
-		return NULL;
-	}
-	remoteproc_init_mem(mem, NULL, lpa, lda, size, io_region);
-	/* va is the same as pa in this platform */
-	metal_io_init(io_region, (void *)lpa, &mem->pa, size,
-		      sizeof(metal_phys_addr_t) << 3, attribute, NULL);
-	remoteproc_add_mem(rproc, mem);
-	*pa = lpa;
-	*da = lda;
-	if (io) {
-		*io = io_region;
-	} else {
-		metal_free_memory(io_region);
-		metal_free_memory(mem);
-		return NULL;
-	}
+    mem = metal_allocate_memory(sizeof(*mem));
+    if (!mem) return NULL;
+    io_region = metal_allocate_memory(sizeof(*io_region));
+    if (!io_region) {
+        metal_free_memory(mem);
+        return NULL;
+    }
+    remoteproc_init_mem(mem, NULL, lpa, lda, size, io_region);
+    /* va is the same as pa in this platform */
+    metal_io_init(io_region, (void *) lpa, &mem->pa, size,
+                  sizeof(metal_phys_addr_t) << 3, attribute, NULL);
+    remoteproc_add_mem(rproc, mem);
+    *pa = lpa;
+    *da = lda;
+    if (io) {
+        *io = io_region;
+    } else {
+        metal_free_memory(io_region);
+        metal_free_memory(mem);
+        return NULL;
+    }
 
-	return metal_io_phys_to_virt(io_region, mem->pa);
+    return metal_io_phys_to_virt(io_region, mem->pa);
 }
 
 static int rproc_start(struct remoteproc *rproc) { return 0; }
@@ -194,12 +195,12 @@ static struct rpmsg_endpoint lept;
 static int                   shutdown_req = 0;
 static int                   cmd_case     = 0;
 static char                  t_data[ 0x10000 ];
-#define SHUTDOWN_MSG   0xEF56A55A
-#define LINUX_SEND_MSG   0x55030000
-#define LINUX_SEND_FIX   0x55030001
-#define LINUX_SEND_ACC   0x55030002
-#define LINUX_SEND_LONG  0x55030003
-#define LINUX_READ_MSG   0x55030004
+#define SHUTDOWN_MSG    0xEF56A55A
+#define LINUX_SEND_MSG  0x55030000
+#define LINUX_SEND_FIX  0x55030001
+#define LINUX_SEND_ACC  0x55030002
+#define LINUX_SEND_LONG 0x55030003
+#define LINUX_READ_MSG  0x55030004
 
 static void m3_send_data(char c, int size)
 {
@@ -336,6 +337,7 @@ int openamp_demo(void)
     struct metal_io_region     *shbuf_io;
     struct rpmsg_device        *rpmsg_dev;
 
+    printf("this is the remote new.\n");
 #ifndef QEMU
     b2a_init();
 #endif

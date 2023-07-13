@@ -14,7 +14,7 @@
 
 /* Place resource table in special ELF section */
 #define __section_t(S)          __attribute__((__section__(#S)))
-#define __resource              //__section_t(.resource_table)
+#define __resource              __section_t(.resource_table)
 
 #define RPMSG_VDEV_DFEATURES        (1 << VIRTIO_RPMSG_F_NS)
 
