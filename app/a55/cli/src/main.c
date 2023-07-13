@@ -3,7 +3,7 @@
 int main()
 {
 	// setbuf(stdout, NULL);
-	// setbuf(stdin, NULL);
+	setbuf(stdin, NULL);
 	printf("hello world.\n\r");
 	
 	void CLIRegisterCommand(void);
