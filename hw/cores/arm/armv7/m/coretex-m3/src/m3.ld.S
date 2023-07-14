@@ -292,6 +292,19 @@ SECTIONS
 	} >DDR
 #endif
 
+	.resource_table . : {
+		. = ALIGN(4);
+		*(.resource_table)
+		. = ALIGN(16);
+		__RSC_TABLE_END__ = .;
+#if (WHERE_TO_LOAD == ROM)
+    } >SYSRAM
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+	} >SYSRAM
+#else // DDR
+	} >DDR
+#endif
+
   /*
    * Secondary bss section, optional
    *
