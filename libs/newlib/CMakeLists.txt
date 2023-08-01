@@ -7,6 +7,11 @@ target_sources(${LIB_OBJS_NAME}
 		newlib_port.c
 )
 
+target_include_directories( ${LIB_OBJS_NAME}
+	PUBLIC
+		.
+)
+
 target_compile_options(${LIB_OBJS_NAME}
 	PRIVATE
 		${compile_options_arch}

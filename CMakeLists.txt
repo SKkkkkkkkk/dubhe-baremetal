@@ -25,6 +25,10 @@ endif()
 
 set(CORE "A55" CACHE STRING "Core: A55, M3, CV32E40P.")
 
+# 选择Hardware Version
+
+set(HW_VERSION "HW_VERSION_MPW" CACHE STRING "Hardware Version: HW_VERSION_MPW, HW_VERSION_FM.")
+
 # 选择Primary Core
 
 set(PRIMARY_CORE "0" CACHE STRING "Primary Core: 0, 1, 2, 3.")
@@ -75,6 +79,7 @@ message(STATUS ${BUILD_TIMESTAMP} )
 # 打印工程配置信息
 
 message(STATUS "Project     : $CACHE{PROJECT_NAME}")
+message(STATUS "HW_VERSION  : $CACHE{HW_VERSION}")
 message(STATUS "Core        : $CACHE{CORE}")
 message(STATUS "OS          : $CACHE{OS}")
 message(STATUS "Board       : $CACHE{BOARD}")
@@ -153,6 +158,16 @@ if(NOT $CACHE{CORE} STREQUAL "M3")
     set(compile_options_align -mstrict-align)
 else()
     set(compile_options_align -mno-unaligned-access)
+endif()
+
+## 添加编译选项depends on HW_VERSION.
+
+if($CACHE{HW_VERSION} STREQUAL "HW_VERSION_MPW")
+    set(compile_options_common ${compile_options_common} -DHW_VERSION_MPW)
+elseif($CACHE{HW_VERSION} STREQUAL "HW_VERSION_FM")
+    set(compile_options_common ${compile_options_common} -DHW_VERSION_FM)
+else()
+    message(FATAL_ERROR "Unsupport HW_VERSION!")
 endif()
 
 ## 添加编译选项depends on OS.

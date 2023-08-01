@@ -1,6 +1,7 @@
 #include "gic.h"
 #include "irq_ctrl.h"
 #include <stdio.h>
+#include "console_config.h"
 
 #ifdef __GNUC__
 	#pragma GCC diagnostic push
@@ -11,6 +12,7 @@
 
 int main()
 {
+	console_config(1, 20000000, 115200);
 	GIC_Enable();
 	printf("Generic Timer Test:\n\r");
 	void EL3_physical_timer_delay1(void);

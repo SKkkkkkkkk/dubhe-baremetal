@@ -3,13 +3,21 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#define CONSOLE_BAUDRATE 115200U
-#define UART_CLK		 20000000U
+#define DEFAULT_CONSOLE_BAUDRATE 115200U
+#define DEFAULT_UART_CLK		 20000000U
 
-#if  defined(M3)
-	#define UART_ID SEEHI_UART0
+#if defined(M3)
+	#ifdef QEMU
+		#define UART_ID 0
+	#else
+		#define UART_ID SEEHI_UART0
+	#endif
 #elif defined(A55)
-	#define UART_ID SEEHI_UART1
+	#ifdef QEMU
+		#define UART_ID 0
+	#else
+		#define UART_ID SEEHI_UART1
+	#endif
 #else
 	#error "Unsupport Core!"
 #endif
@@ -18,99 +26,80 @@
 	#define __unused __unused
 #endif
 
+static bool console_init = false;
 #if defined QEMU
-	#include "pl011.h"
-	static bool uart_init = false;
-	int _write (int fd __unused, char *ptr, int len)
+
+#include "pl011.h"
+void console_config(int console_id __unused, int console_input_clk __unused, int baudrate)
+{
+	uart_config _uart_config = {
+		.data_bits = 8,
+		.stop_bits = 1,
+		.parity = false,
+		.baudrate = 9600
+	};
+	(void)uart_configure(&_uart_config);
+	console_init = true;
+}
+
+int _write (int fd __unused, char *ptr, int len)
+{
+	if(!console_init)
+		console_config(UART_ID, DEFAULT_UART_CLK, DEFAULT_CONSOLE_BAUDRATE);
+	int i;
+	for(i=0;i<len;i++)
 	{
-		if(!uart_init)
-		{
-			uart_config _uart_config = {
-				.data_bits = 8,
-				.stop_bits = 1,
-				.parity = false,
-				.baudrate = 9600
-			};
-			if(uart_configure(&_uart_config) != UART_OK)
-				return 0;
-			uart_init = true;
-		}
-
-		int i;
-		for(i=0;i<len;i++)
-		{
-			uart_putchar(ptr[i]);
-			if(ptr[i] == '\n')
-				uart_putchar('\r');
-		}
-		return i;
+		uart_putchar(ptr[i]);
+		if(ptr[i] == '\n')
+			uart_putchar('\r');
 	}
+	return i;
+}
 
-	int _read(int fd __unused, char* ptr, int len)
-	{
-		if(!uart_init)
-		{
-			uart_config _uart_config = {
-				.data_bits = 8,
-				.stop_bits = 1,
-				.parity = false,
-				.baudrate = 9600
-			};
-			if(uart_configure(&_uart_config) != UART_OK)
-				return 0;
-			uart_init = true;
-		}
+int _read(int fd __unused, char* ptr, int len)
+{
+	if(!console_init)
+		console_config(UART_ID, DEFAULT_UART_CLK, DEFAULT_CONSOLE_BAUDRATE);
+	int i;
+	for(i=0;i<len;i++)
+		while(uart_getchar(ptr+i)!=UART_OK);
+	return i;
+}
 
-
-		int i;
-		for(i=0;i<len;i++)
-			while(uart_getchar(ptr+i)!=UART_OK);
-		return i;
-	}
 #else
-	#include "dw_apb_uart.h"
-	static bool uart_init = false;
-	int _write (int fd __unused, char *ptr, int len)
-	{
-		if(!uart_init)
-		{
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, UART_ID)!=0)
-			{
-				uart_init = false;
-				return 0;
-			}
-			uart_init = true;
-		}
-		int i;
-		for(i=0;i<len;i++)
-		{
-			uart_sendchar(UART_ID ,ptr[i]);
-			if(ptr[i] == '\n')
-				uart_sendchar(UART_ID,'\r');
-		}
-		return i;
-	}
 
-	int _read(int fd __unused, char* ptr, int len)
+#include "dw_apb_uart.h"
+void console_config(int console_id, int console_input_clk, int baudrate)
+{
+	(void)seehi_uart_config_baudrate(baudrate, console_input_clk, console_id);
+	console_init = true;
+}
+
+int _write (int fd __unused, char *ptr, int len)
+{
+	if(!console_init)
+		console_config(UART_ID, DEFAULT_UART_CLK, DEFAULT_CONSOLE_BAUDRATE);
+	int i;
+	for(i=0;i<len;i++)
 	{
-		if(!uart_init)
-		{
-			if(seehi_uart_config_baudrate(CONSOLE_BAUDRATE, UART_CLK, UART_ID)!=0)
-			{
-				uart_init = false;
-				return 0;
-			}
-			uart_init = true;
-		}
-		int i;
-		for(i=0;i<len;i++)
-		{
-			ptr[i] = uart_getchar(UART_ID);
-		}
-		return i;
+		uart_sendchar(UART_ID ,ptr[i]);
+		if(ptr[i] == '\n')
+			uart_sendchar(UART_ID,'\r');
 	}
+	return i;
+}
+
+int _read(int fd __unused, char* ptr, int len)
+{
+	if(!console_init)
+		console_config(UART_ID, DEFAULT_UART_CLK, DEFAULT_CONSOLE_BAUDRATE);
+	int i;
+	for(i=0;i<len;i++)
+		ptr[i] = uart_getchar(UART_ID);
+	return i;
+}
+
 #endif
-
 
 
 /* _exit */
