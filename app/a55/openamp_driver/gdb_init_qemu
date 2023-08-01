@@ -3,6 +3,6 @@ set scheduler-locking on
 add-symbol-file ../openamp_device/build/openamp_device.elf
 b remoteproc_load
 c
-finish
-set scheduler-locking off
-c
+#finish
+#set scheduler-locking off
+#c
