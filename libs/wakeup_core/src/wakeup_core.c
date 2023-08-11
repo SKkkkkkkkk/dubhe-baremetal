@@ -22,8 +22,8 @@ void wakeup_core(uint8_t core_id, void* func)
 	if(core_id==get_core_id())	return;
 	secondary_cores_entry[core_id*2+0] = (uint64_t)func;
 	secondary_cores_entry[core_id*2+1] = 0x123456788654321;
-	asm volatile("dsb 0xf":::"memory");
-	asm volatile("sev");
+	__asm__ volatile("dsb 0xf":::"memory");
+	__asm__ volatile("sev");
 	return;
 }
 #endif

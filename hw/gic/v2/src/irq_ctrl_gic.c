@@ -38,12 +38,12 @@
   */
   __STATIC_FORCEINLINE  void __DSB(void)
   {
-    asm volatile ("dsb 0xF":::"memory");
+    __asm__ volatile ("dsb 0xF":::"memory");
   }
 #else
   __STATIC_FORCEINLINE  void __DSB(void)
   {
-    asm volatile ("nop":::"memory");
+    __asm__ volatile ("nop":::"memory");
   }
 #endif
 

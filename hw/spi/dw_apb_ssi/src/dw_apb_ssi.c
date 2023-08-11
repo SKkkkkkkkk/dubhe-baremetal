@@ -2379,5 +2379,5 @@ void master_slave_test(void)
     BOOTSPI->SER = 0UL;
     //disable SPIS
     SPIS->SSIENR = 0UL;
-	while(1) asm volatile("");
+	while(1) __asm__ volatile("");
 }

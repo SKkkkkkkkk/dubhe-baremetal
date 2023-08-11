@@ -64,8 +64,10 @@
 		WDT1_IRQn			= (11+OFFSET_SPIs),
 		PMU_IRQn			= (12+OFFSET_SPIs),
 		NPU0_IRQn			= (13+OFFSET_SPIs),
+	#if defined(HW_VERSION_MPW) // Removed in FM
 		NPU1_IRQn			= (14+OFFSET_SPIs),
-		
+	#endif
+		DMAC0_IRQn			= (15+OFFSET_SPIs),
 		ISP_IRQn			= (16+OFFSET_SPIs),
 		ISP_MI_IRQn			= (17+OFFSET_SPIs),
 		ISP_FE_IRQn			= (18+OFFSET_SPIs),
@@ -73,14 +75,25 @@
 		DWP_VSE_IRQn		= (20+OFFSET_SPIs),
 		DWP_FE_IRQn			= (21+OFFSET_SPIs),
 		Uart4_IRQn			= (22+OFFSET_SPIs),
+	#if defined(HW_VERSION_MPW) // Substituted for GMAC in FM
 		GPU_GPU_IRQn		= (23+OFFSET_SPIs),
 		GPU_MMU_IRQn		= (24+OFFSET_SPIs),
 		GPU_Job_IRQn		= (25+OFFSET_SPIs),
 		GPU_Evet_IRQn		= (26+OFFSET_SPIs),
+	#else
+		GMAC_SBD_IRQn		= (23+OFFSET_SPIs),
+		GMAC_SBD_PERCH_IRQn	= (24+OFFSET_SPIs),	
+		GMAC_SBD_SFTY_IRQn  = (25+OFFSET_SPIs),
+	#endif
+	#if defined(HW_VERSION_MPW) // Substituted for CVE in FM
 		ROT_Raw_IRQn		= (27+OFFSET_SPIs),
 		ROT_YUV_IRQn		= (28+OFFSET_SPIs),
+	#else
+		CVE_ROTATE_IRQn		= (27+OFFSET_SPIs),
+		CVE_SCALER_IRQn		= (28+OFFSET_SPIs)
+	#endif
 		IDI_Bridge_IRQn		= (29+OFFSET_SPIs),
-		IDI_IRQn			= (30+OFFSET_SPIs),
+		IDMA_IRQn			= (30+OFFSET_SPIs),
 		DC_DE0_IRQn			= (31+OFFSET_SPIs),
 		DC_SE0_IRQn			= (32+OFFSET_SPIs),
 		PWM4_IRQn			= (33+OFFSET_SPIs),
@@ -145,7 +158,7 @@
 		PWM1_IRQn			= (92+OFFSET_SPIs),
 		PWM2_IRQn			= (93+OFFSET_SPIs),
 		PWM3_IRQn			= (94+OFFSET_SPIs),
-		efuse_intr_IRQn		= (95+OFFSET_SPIs),
+		EFUSE_INTR_IRQN		= (95+OFFSET_SPIs),
 		CPU_NCLUSTERPMUIRQ_IRQn	= (96+OFFSET_SPIs),	
 		CPU_NPMUIRQ0_IRQn	= (97+OFFSET_SPIs),
 		CPU_NPMUIRQ1_IRQn	= (98+OFFSET_SPIs),

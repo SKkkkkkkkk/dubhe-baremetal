@@ -280,6 +280,7 @@ set(ENABLE_USE_PMON0 OFF)
 
 set(ENABLE_USE_SYSTIMER ON)
 set(ENABLE_USE_NOR_FLASH OFF)
+set(ENABLE_USE_NAND_FLASH OFF)
 set(ENABLE_USE_PMIC OFF)
 set(ENABLE_USE_tinyCLI OFF)
 set(ENABLE_USE_SEMIHOSTING OFF)
@@ -436,6 +437,16 @@ if(NOT $CACHE{CORE} STREQUAL CV32E40P)
     if(USE_NOR_FLASH)
         add_subdirectory(${SDK_DIR}/libs/flash/nor)
         set(link_libs ${link_libs} nor_flash)
+    endif()
+
+    ### USE_NAND_FLASH (USE_DW_APB_SSI && ENABLE_USE_NAND_FLASH)
+    cmake_dependent_option(
+        USE_NAND_FLASH "Use nand flash" ON
+        "USE_DW_APB_SSI;ENABLE_USE_NAND_FLASH" OFF
+    )
+    if(USE_NAND_FLASH)
+        add_subdirectory(${SDK_DIR}/libs/flash/nand)
+        set(link_libs ${link_libs} nand_flash)
     endif()
 
     ### OS

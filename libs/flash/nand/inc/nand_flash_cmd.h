@@ -1,0 +1,27 @@
+#ifndef __NAND_FLASH_CMD_H__
+#define __NAND_FLASH_CMD_H__
+
+#define    CMD_NAND_BLOCK_ERASE_INS 			 0xD8
+#define    CMD_NAND_GET_FEATURE_INS 			 0x0F
+#define    CMD_NAND_PAGE_READ_INS 				 0x13
+#define    CMD_NAND_PROGRAM_EXEC_INS 			 0x10
+#define    CMD_NAND_PROGRAM_LOAD_INS 			 0x02
+#define    CMD_NAND_PROGRAM_LOAD_RANDOM_INS 	 0x84
+#define    CMD_NAND_READ_CACHE_INS 			 	 0x03
+#define    CMD_NAND_READ_CACHE_X2_INS 			 0x3B // dual wire I/O
+#define    CMD_NAND_READ_CACHE_X4_INS 			 0x6B // quad wire I/O
+#define    CMD_NAND_READ_ID 					 0x9F
+#define    CMD_NAND_RESET 						 0xFF
+#define    CMD_NAND_SET_FEATURE 				 0x1F
+#define    CMD_NAND_WRITE_DISABLE 				 0x04
+#define    CMD_NAND_WRITE_ENABLE 				 0x06
+
+#define	FEATURE_REG_NAND_BLKLOCK_REG_ADDR 		 0xA0
+#define	FEATURE_REG_NAND_CONFIGURATION_REG_ADDR  0xB0
+#define	FEATURE_REG_NAND_STATUS_REG_ADDR 		 0xC0
+#define	FEATURE_REG_NAND_DIE_SELECT_REC_ADDR	 0xD0
+
+#define NAND_PAGE_SIZE 2048U
+#define NAND_BLOCK_SIZE (NAND_PAGE_SIZE*64U)
+
+#endif
