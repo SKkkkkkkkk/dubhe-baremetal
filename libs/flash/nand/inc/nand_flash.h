@@ -10,6 +10,8 @@
 #include "dw_apb_ssi.h"
 #include "nand_flash_cmd.h"
 
+// #define NAND_FLASH_READ_ONLY
+
 
 typedef enum {
 	UNKNOWN_FLASH = 0,
@@ -27,11 +29,13 @@ uint8_t nand_get_feature(spi_id_t spi_id, uint8_t feature_addr);
 
 void nand_set_feature(spi_id_t spi_id, uint8_t feature_addr, uint8_t feature);
 
-int nand_flash_erase(spi_id_t spi_id, uint32_t addr);
-
 int nand_flash_read(spi_id_t spi_id, uint32_t addr, uint8_t * buf, uint32_t buf_size);
 
+#ifndef NAND_FLASH_READ_ONLY
+int nand_flash_erase(spi_id_t spi_id, uint32_t addr);
+
 int nand_flash_page_program(spi_id_t spi_id, uint32_t addr, uint8_t * const buf);
+#endif
 
 #ifdef __cplusplus
 	}

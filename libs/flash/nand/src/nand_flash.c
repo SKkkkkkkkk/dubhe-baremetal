@@ -81,18 +81,6 @@ static bool isFlashBusy(spi_id_t spi_id)
 	return status&1 ? true : false;
 }
 
-static bool isWriteEnable(spi_id_t spi_id)
-{
-	uint8_t status = nand_get_feature(spi_id, FEATURE_REG_NAND_STATUS_REG_ADDR);
-	return status&2 ? true : false;
-}
-
-static bool isProgramFail(spi_id_t spi_id)
-{
-	uint8_t status = nand_get_feature(spi_id, FEATURE_REG_NAND_STATUS_REG_ADDR);
-	return status&0x08 ? true : false;
-}
-
 static int nand_flash_page_read(spi_id_t spi_id, uint32_t addr, uint8_t * const buf, uint32_t buf_size)
 {
 	assert(buf);
@@ -138,6 +126,21 @@ int nand_flash_read(spi_id_t spi_id, uint32_t addr, uint8_t * buf, uint32_t buf_
 	
 	return 0;
 }
+
+#ifndef NAND_FLASH_READ_ONLY
+
+static bool isWriteEnable(spi_id_t spi_id)
+{
+	uint8_t status = nand_get_feature(spi_id, FEATURE_REG_NAND_STATUS_REG_ADDR);
+	return status&2 ? true : false;
+}
+
+static bool isProgramFail(spi_id_t spi_id)
+{
+	uint8_t status = nand_get_feature(spi_id, FEATURE_REG_NAND_STATUS_REG_ADDR);
+	return status&0x08 ? true : false;
+}
+
 
 int nand_flash_erase(spi_id_t spi_id, uint32_t addr)
 {
@@ -195,3 +198,5 @@ int nand_flash_page_program(spi_id_t spi_id, uint32_t addr, uint8_t * const buf)
 
 	return 0;
 }
+
+#endif
