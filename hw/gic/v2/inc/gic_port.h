@@ -90,7 +90,7 @@
 		ROT_YUV_IRQn		= (28+OFFSET_SPIs),
 	#else
 		CVE_ROTATE_IRQn		= (27+OFFSET_SPIs),
-		CVE_SCALER_IRQn		= (28+OFFSET_SPIs)
+		CVE_SCALER_IRQn		= (28+OFFSET_SPIs),
 	#endif
 		IDI_Bridge_IRQn		= (29+OFFSET_SPIs),
 		IDMA_IRQn			= (30+OFFSET_SPIs),
