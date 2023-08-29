@@ -54,13 +54,30 @@ void flash_deinit(spi_id_t spi_id);
 void flash_read_id(spi_id_t spi_id, uint8_t * const flash_id, uint8_t id_size);
 
 /**
- * @brief flash deinit.
+ * @brief flash sector erase.
  * @param[in] spi_id 选择spi。BOOTSPI，SPI0，SPI1，SPI2
  * @param[in] addr 擦除的起始地址，4KB对齐，一次擦除4KB
  * @remarks Note this function is not thread-safe!
  * 			If thread safety is required, the user must handle locking and unlockingthe region manually.
  */
 void flash_sector_erase(spi_id_t spi_id, uint32_t addr);
+
+/**
+ * @brief flash block erase.
+ * @param[in] spi_id 选择spi。BOOTSPI，SPI0，SPI1，SPI2
+ * @param[in] addr 擦除的起始地址，64KB对齐，一次擦除64KB
+ * @remarks Note this function is not thread-safe!
+ * 			If thread safety is required, the user must handle locking and unlockingthe region manually.
+ */
+void flash_block_erase(spi_id_t spi_id, uint32_t addr);
+
+/**
+ * @brief flash chiop erase.
+ * @param[in] spi_id 选择spi。BOOTSPI，SPI0，SPI1，SPI2
+ * @remarks Note this function is not thread-safe!
+ * 			If thread safety is required, the user must handle locking and unlockingthe region manually.
+ */
+void flash_chip_erase(spi_id_t spi_id);
 
 /**
  * @brief flash read(cpu搬运).

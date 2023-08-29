@@ -209,7 +209,7 @@ void flash_read(spi_id_t spi_id, uint32_t addr, uint8_t* const buf, uint32_t siz
 void flash_sector_erase(spi_id_t spi_id, uint32_t addr)
 {
 	assert((addr&4095)==0);
-	//1. write enable
+
 	uint8_t ext_ar;
 	uint8_t cmd[4] = {
 		Flash_SectorErase, 
@@ -218,6 +218,7 @@ void flash_sector_erase(spi_id_t spi_id, uint32_t addr)
 		(addr & 0x000000FFUL) >> 0UL,
 	};
 
+	//1. write enable
 	//2. send erase cmd
 	if(addr<=0xffffff)
 	{
@@ -239,6 +240,57 @@ void flash_sector_erase(spi_id_t spi_id, uint32_t addr)
 		_flash_write_enable(spi_id);
 		dw_spi_transmit_only(spi_id, &cmd, 4, 1);
 	}
+	
+	//3. wait for erase over
+	while(_flash_is_busy(spi_id));
+}
+
+void flash_block_erase(spi_id_t spi_id, uint32_t addr)
+{
+	assert((addr&65535)==0);
+	uint8_t ext_ar;
+	uint8_t cmd[4] = {
+		Flash_BlockErase, 
+		(addr & 0x00FF0000UL) >> 16UL,
+		(addr & 0x0000FF00UL) >> 8UL,
+		(addr & 0x000000FFUL) >> 0UL,
+	};
+
+	//1. write enable
+	//2. send erase cmd
+	if(addr<=0xffffff)
+	{
+		if((flash_model[spi_id]==GD25LQ255)||(flash_model[spi_id]==W25Q256JW))
+		{
+			ext_ar = _flash_read_extended_address_reg(spi_id);
+			if(ext_ar!=0)
+				_flash_write_extended_address_reg(spi_id, 0);
+		}
+		_flash_write_enable(spi_id);
+		dw_spi_transmit_only(spi_id, &cmd, 4, 1);
+	}
+	else
+	{
+		assert((flash_model[spi_id]==GD25LQ255)||(flash_model[spi_id]==W25Q256JW));
+		ext_ar = _flash_read_extended_address_reg(spi_id);
+		if(ext_ar!=1)
+			_flash_write_extended_address_reg(spi_id, 1);
+		_flash_write_enable(spi_id);
+		dw_spi_transmit_only(spi_id, &cmd, 4, 1);
+	}
+	
+	//3. wait for erase over
+	while(_flash_is_busy(spi_id));
+}
+
+void flash_chip_erase(spi_id_t spi_id)
+{
+	//1. write enable
+	_flash_write_enable(spi_id);
+
+	//2. send chip erase cmd
+	uint8_t cmd = Flash_ChipErase;
+	dw_spi_transmit_only(spi_id, &cmd, 1, 1);
 	
 	//3. wait for erase over
 	while(_flash_is_busy(spi_id));
