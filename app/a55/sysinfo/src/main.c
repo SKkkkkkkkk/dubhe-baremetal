@@ -275,6 +275,9 @@ void print_sysinfo()
 
 	value = REG32(SYS_BASE + 0xE20);
 	printf("gpu sys exist           = 0x%x\n", GET_BIT(value, 0));
+
+	value = REG32(SYS_BASE + 0xE80);
+	printf("fpga clok scheme       	= 0x%x\n", value & 0xff);
 }
 
 int main()
