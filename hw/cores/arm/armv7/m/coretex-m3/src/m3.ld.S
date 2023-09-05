@@ -208,9 +208,9 @@ SECTIONS
    * __etext is assumed by startup ROM to be the LMA of a section in SYSRAM
    * which must be 4byte aligned 
    */
-  __etext = ALIGN (4);
+  __etext = LOADADDR(.data);
 
-  .data : AT (__etext)
+  .data :  ALIGN(4)
   {
     __data_start__ = .;
     *(vtable)
@@ -242,9 +242,22 @@ SECTIONS
     /* All data end */
     __data_end__ = .;
 #if (WHERE_TO_LOAD == ROM)
-  } >SYSRAM
+  } >SYSRAM AT> _ROM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
+#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
+	} >SYSRAM
+#else // DDR
+	} >DDR
+#endif
+
+	.resource_table . : {
+		. = ALIGN(4);
+		*(.resource_table)
+		. = ALIGN(16);
+		__RSC_TABLE_END__ = .;
+#if (WHERE_TO_LOAD == ROM)
+    } >SYSRAM AT> _ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SYSRAM
 #else // DDR
@@ -286,19 +299,6 @@ SECTIONS
   } >SYSRAM
 #elif (WHERE_TO_LOAD == ALL_IN_AXI_SRAM)
   } >AXI_SRAM
-#elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
-	} >SYSRAM
-#else // DDR
-	} >DDR
-#endif
-
-	.resource_table . : {
-		. = ALIGN(4);
-		*(.resource_table)
-		. = ALIGN(16);
-		__RSC_TABLE_END__ = .;
-#if (WHERE_TO_LOAD == ROM)
-    } >SYSRAM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >SYSRAM
 #else // DDR

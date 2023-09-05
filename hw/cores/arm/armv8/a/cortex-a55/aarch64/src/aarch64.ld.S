@@ -173,16 +173,13 @@ SECTIONS
 #endif
     ASSERT(. == ALIGN(PAGE_SIZE), "RW_BASE address is not aligned on a page boundary.")
     .data . :
-#if (WHERE_TO_LOAD == ROM)
-    AT(ADDR(.rodata) + SIZEOF(.rodata))
-#endif
     ALIGN(16)
     {
         __DATA_START__ = .; 
         *(SORT_BY_ALIGNMENT(.data*))
         __DATA_END__ = .; 
 #if (WHERE_TO_LOAD == ROM)
-    } >RAM
+    } >RAM AT> _ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
@@ -195,7 +192,7 @@ SECTIONS
 		. = ALIGN(16);
 		__RSC_TABLE_END__ = .;
 #if (WHERE_TO_LOAD == ROM)
-    } >RAM
+    } >RAM AT> _ROM
 #elif (WHERE_TO_LOAD == ALL_IN_SYSRAM)
 	} >RAM
 #else // DDR
